@@ -1,0 +1,68 @@
+/* Stili base per tutti i moduli e form */
+
+form {
+    max-width: 500px;
+    margin: 30px auto;
+    padding: 20px;
+    border: 1px solid #ddd;
+    background-color: #fefefe;
+    border-radius: 6px;
+}
+
+label {
+    display: block;
+    font-weight: bold;
+    margin-top: 15px;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+textarea,
+select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #bbb;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 14px;
+    background-color: #fff;
+    color: #000;
+}
+
+textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+input[type="submit"],
+button {
+    background-color: #2ecc71;
+    color: white;
+    padding: 10px 18px;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    margin-top: 20px;
+    cursor: pointer;
+}
+
+input[type="submit"]:hover,
+button:hover {
+    background-color: #27ae60;
+}
+
+/* messaggi di errore */
+.error-message {
+    color: #e74c3c;
+    font-size: 13px;
+    margin-top: 5px;
+}
+
+.success-message {
+    color: #27ae60;
+    font-size: 13px;
+    margin-top: 5px;
+}

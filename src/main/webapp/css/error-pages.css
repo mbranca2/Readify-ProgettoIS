@@ -1,0 +1,137 @@
+/* Stili per le pagine di errore */
+.error-page {
+    background-color: #f8f9fa;
+    color: #333;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.error-main-wrapper {
+    flex: 1;
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 1rem;
+    width: 100%;
+}
+
+.error-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 2rem;
+    text-align: center;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.error-icon {
+    font-size: 3.5rem;
+    color: #dc3545;
+    margin: 0 0 1.5rem;
+    line-height: 1;
+}
+
+h1 {
+    color: #dc3545;
+    margin: 0 0 1rem;
+    font-size: 1.8rem;
+}
+
+p {
+    margin: 0 0 1.5rem;
+    font-size: 1.1rem;
+    line-height: 1.5;
+}
+
+.error-details {
+    margin: 1.5rem 0;
+    padding: 1rem;
+    background: #f8d7da;
+    color: #842029;
+    border-left: 4px solid #dc3545;
+    border-radius: 4px;
+    text-align: left;
+}
+
+.button-group {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.btn {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    border-radius: 4px;
+    font-weight: 600;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+}
+
+.btn:active {
+    transform: translateY(1px);
+}
+
+.btn-primary {
+    background-color: #007bff;
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #0069d9;
+    transform: translateY(-2px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+.btn-secondary {
+    background-color: #e2e6ea;
+    color: #333;
+}
+
+.btn-secondary:hover {
+    background-color: #cfd3d7;
+    transform: translateY(-2px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .error-main-wrapper {
+        margin: 1.5rem auto;
+        padding: 0.5rem;
+    }
+    
+    .error-container {
+        padding: 1.5rem;
+    }
+    
+    .error-icon {
+        font-size: 3rem;
+    }
+    
+    .button-group {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .custom-button {
+        width: 100%;
+        max-width: 280px;
+    }
+}
+
+@media print {
+    .button-group {
+        display: none;
+    }
+    
+    .error-container {
+        box-shadow: none;
+        border: 1px solid #ddd;
+    }
+}
