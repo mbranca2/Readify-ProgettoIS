@@ -52,6 +52,54 @@
         </div>
 
         <div class="form-group">
+            <label for="via">Indirizzo *</label>
+            <input type="text" id="via" name="via"
+                   value="${via}" required
+                   class="form-control">
+            <div class="invalid-feedback">Inserisci un indirizzo valido</div>
+        </div>
+
+        <div class="form-group">
+            <label for="citta">Città *</label>
+            <input type="text" id="citta" name="citta"
+                   value="${citta}" required
+                   class="form-control">
+            <div class="invalid-feedback">Inserisci una città valida</div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="cap">CAP *</label>
+                    <input type="text" id="cap" name="cap"
+                           value="${cap}" required pattern="\d{5}"
+                           title="Inserisci un CAP valido (5 cifre)"
+                           class="form-control">
+                    <div class="invalid-feedback">Inserisci un CAP valido (5 cifre)</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="provincia">Provincia *</label>
+                    <input type="text" id="provincia" name="provincia"
+                           value="${provincia}" required maxlength="2"
+                           pattern="[A-Za-z]{2}" title="Inserisci la sigla della provincia (es: RM, MI, TO)"
+                           class="form-control text-uppercase">
+                    <div class="invalid-feedback">Inserisci una provincia valida (es: SA, MI, NA)</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="paese">Paese *</label>
+                    <input type="text" id="paese" name="paese"
+                           value="${not empty paese ? paese : 'Italia'}"
+                           required
+                           class="form-control">
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
             <label for="password">Password *</label>
             <input type="password" id="password" name="password" 
                    required minlength="8" maxlength="100"

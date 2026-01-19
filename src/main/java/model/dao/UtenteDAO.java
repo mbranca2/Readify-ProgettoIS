@@ -72,7 +72,6 @@ public class UtenteDAO {
         utente.setCognome(rs.getString("cognome"));
         utente.setRuolo(rs.getString("ruolo"));
         utente.setTelefono(rs.getString("telefono"));
-        utente.setDataRegistrazione(rs.getDate("data_registrazione"));
         return utente;
     }
 

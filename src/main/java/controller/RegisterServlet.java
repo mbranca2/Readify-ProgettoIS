@@ -3,7 +3,9 @@ package controller;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
+import model.Indirizzo;
 import model.Utente;
+import model.dao.IndirizzoDAO;
 import model.dao.UtenteDAO;
 import utils.HashUtil;
 import utils.ValidatoreForm;
@@ -24,10 +26,15 @@ public class RegisterServlet extends HttpServlet {
         String nome = ValidatoreForm.pulisciInput(request.getParameter("nome"));
         String cognome = ValidatoreForm.pulisciInput(request.getParameter("cognome"));
         String telefono = ValidatoreForm.pulisciInput(request.getParameter("telefono"));
+        String via = ValidatoreForm.pulisciInput(request.getParameter("via"));
+        String citta = ValidatoreForm.pulisciInput(request.getParameter("citta"));
+        String cap = ValidatoreForm.pulisciInput(request.getParameter("cap"));
+        String provincia = ValidatoreForm.pulisciInput(request.getParameter("provincia"));
+        String paese = ValidatoreForm.pulisciInput(request.getParameter("paese"));
         boolean privacyAccettata = request.getParameter("privacy") != null;
 
         Map<String, String> errori = ValidatoreForm.validaRegistrazione(
-                nome, cognome, email, password, confermaPassword, telefono, privacyAccettata);
+                nome, cognome, email, password, confermaPassword, telefono, privacyAccettata, via, citta, cap, provincia, paese);
 
         if (!errori.isEmpty()) {
             request.setAttribute("nome", nome);
@@ -55,6 +62,24 @@ public class RegisterServlet extends HttpServlet {
             boolean successo = utenteDAO.inserisciUtente(nuovoUtente);
 
             if (successo) {
+                Indirizzo indirizzo = new Indirizzo();
+                indirizzo.setIdUtente(nuovoUtente.getIdUtente());
+                indirizzo.setVia(via);
+                indirizzo.setCitta(citta);
+                indirizzo.setCap(cap);
+                indirizzo.setProvincia(provincia.toUpperCase());
+                indirizzo.setPaese(paese);
+
+                IndirizzoDAO indirizzoDAO = new IndirizzoDAO();
+                boolean indirizzoInserito = indirizzoDAO.inserisciIndirizzo(indirizzo);
+
+                if (!indirizzoInserito) {
+                    // Gestisci l'errore di inserimento indirizzo
+                    // Potresti voler rimuovere l'utente appena creato o segnalare l'errore
+                    utenteDAO.eliminaUtente(nuovoUtente.getIdUtente());
+                    throw new ServletException("Errore durante la creazione dell'indirizzo");
+                }
+
                 response.sendRedirect(request.getContextPath() + "/jsp/login.jsp?registrazione=successo");
             } else {
                 request.setAttribute("erroreRegistrazione", "Registrazione fallita. L'email potrebbe essere già registrata.");
