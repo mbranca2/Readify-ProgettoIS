@@ -7,8 +7,11 @@ import model.dao.UtenteDAO;
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
+import model.Carrello;
+import model.dao.CarrelloDAO;
 
 @WebServlet("/login")
 public class LoginServlet extends HttpServlet {
@@ -52,11 +55,15 @@ public class LoginServlet extends HttpServlet {
             if (utente != null) {
                 // successo
                 HttpSession oldSession = request.getSession(false);
+                Carrello carrelloTemporaneo = null;
+
                 if (oldSession != null) {
+                    carrelloTemporaneo = (Carrello) oldSession.getAttribute("carrello");
                     oldSession.invalidate();
                 }
 
                 HttpSession newSession = request.getSession(true);
+
                 // imposto il cookie di sessione con le opzioni di sicurezza
                 if (request.isSecure()) {
                     response.setHeader("Set-Cookie", "JSESSIONID=" + newSession.getId() + "; HttpOnly; Secure; SameSite=Strict");
@@ -64,6 +71,37 @@ public class LoginServlet extends HttpServlet {
 
                 // memorizzo i dati dell'utente nella sessione
                 newSession.setAttribute("utente", utente);
+                newSession.setAttribute("idUtente", utente.getIdUtente());
+
+                // se c'era un carrello temporaneo, lo salvo nel database
+                if (carrelloTemporaneo != null && !carrelloTemporaneo.getArticoli().isEmpty()) {
+                    try {
+                        CarrelloDAO carrelloDAO = new CarrelloDAO();
+                        carrelloDAO.salvaCarrello(utente.getIdUtente(), carrelloTemporaneo);
+                        newSession.setAttribute("carrello", carrelloTemporaneo);
+                    } catch (SQLException e) {
+                        // Logga l'errore ma non interrompere il flusso di login
+                        System.err.println("Errore durante il salvataggio del carrello: " + e.getMessage());
+                        // Mantieni il carrello temporaneo in sessione per non perdere i dati
+                        newSession.setAttribute("carrello", carrelloTemporaneo);
+                    }
+                } else {
+                    //altrimenti carico il carrello esistente dell'utente
+                    try {
+                        CarrelloDAO carrelloDAO = new CarrelloDAO();
+                        Carrello carrello = carrelloDAO.getCarrelloByUtente(utente.getIdUtente());
+                        if (carrello != null) {
+                            newSession.setAttribute("carrello", carrello);
+                        } else {
+                            //se non esiste un carrello,ne creo uno vuoto
+                            newSession.setAttribute("carrello", new Carrello());
+                        }
+                    } catch (SQLException e) {
+                        System.err.println("Errore durante il caricamento del carrello: " + e.getMessage());
+                        //in caso di errore, creo un carrello vuoto
+                        newSession.setAttribute("carrello", new Carrello());
+                    }
+                }
 
                 String redirectAfterLogin = (String) newSession.getAttribute("redirectAfterLogin");
 

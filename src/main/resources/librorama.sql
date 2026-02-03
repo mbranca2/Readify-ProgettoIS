@@ -60,6 +60,25 @@ CREATE TABLE LibroCategoria (
     FOREIGN KEY (id_categoria) REFERENCES Categoria(id_categoria) ON DELETE CASCADE
 );
 
+CREATE TABLE Carrello (
+    id_carrello INT AUTO_INCREMENT PRIMARY KEY,
+    id_utente INT NOT NULL,
+    data_creazione TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    data_aggiornamento TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_utente) REFERENCES Utente(id_utente) ON DELETE CASCADE
+);
+
+CREATE TABLE DettaglioCarrello (
+    id_dettaglio INT AUTO_INCREMENT PRIMARY KEY,
+    id_carrello INT NOT NULL,
+    id_libro INT NOT NULL,
+    quantita INT NOT NULL DEFAULT 1,
+    prezzo_unitario DECIMAL(8,2) NOT NULL,
+    FOREIGN KEY (id_carrello) REFERENCES Carrello(id_carrello) ON DELETE CASCADE,
+    FOREIGN KEY (id_libro) REFERENCES Libro(id_libro),
+    CONSTRAINT chk_quantita_carrello CHECK (quantita > 0)
+);
+
 CREATE TABLE Ordine (
     id_ordine INT AUTO_INCREMENT PRIMARY KEY,
     id_utente INT NOT NULL,

@@ -48,7 +48,7 @@ public class VisualizzaOrdiniServlet extends HttpServlet {
             
             // Imposto messaggio di errorre
             request.setAttribute("errore", "Si è verificato un errore durante il recupero degli ordini.");
-            request.getRequestDispatcher("/jsp/errore.jsp").forward(request, response);
+            request.getRequestDispatcher("/jsp/error.jsp").forward(request, response);
         }
     }
 

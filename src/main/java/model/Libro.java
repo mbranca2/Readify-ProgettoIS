@@ -119,6 +119,19 @@ public class Libro {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Libro libro = (Libro) o;
+        return idLibro == libro.idLibro;
+    }
+
+    @Override
+    public int hashCode() {
+        return Integer.hashCode(idLibro);
+    }
+
+    @Override
     public String toString() {
         return "Libro{" +
                 "idLibro=" + idLibro +

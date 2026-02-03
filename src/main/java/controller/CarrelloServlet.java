@@ -3,10 +3,12 @@ import jakarta.servlet.*;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
 import model.*;
+import model.dao.CarrelloDAO;
 import model.dao.LibroDAO;
 import com.google.gson.Gson;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -20,77 +22,90 @@ public class CarrelloServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        HttpSession session = request.getSession();
+        HttpSession session = request.getSession(true); //creo nuova sessione se non esiste
         Carrello carrello = (Carrello) session.getAttribute("carrello");
-        // Creo un nuovo carrello se è la prima volta che l'utente lo apre
+
         if (carrello == null) {
             carrello = new Carrello();
             session.setAttribute("carrello", carrello);
         }
+
         String azione = request.getParameter("azione");
         String idLibroParam = request.getParameter("idLibro");
 
-        // Controllo che siano stati forniti tutti i dati necessari
         if (azione == null || idLibroParam == null || idLibroParam.isEmpty()) {
             inviaErrore(response, "Parametri mancanti");
             return;
         }
+
         try {
             int idLibro = Integer.parseInt(idLibroParam);
             LibroDAO libroDAO = new LibroDAO();
             Libro libro = libroDAO.trovaLibroPerId(idLibro);
+
             if (libro == null) {
                 inviaErrore(response, "Libro non trovato");
                 return;
             }
-            String referer = request.getHeader("referer");
-            String redirectUrl = (referer != null) ? referer : request.getContextPath() + "/carrello";
-            boolean successo = true;
+
+            boolean successo = false;
             String messaggio = "";
+
             switch (azione.toLowerCase()) {
                 case "aggiungi":
-                    successo = gestisciAggiungiLibro(carrello, libro, request);
+                    int quantita = request.getParameter("quantita") != null ?
+                            Integer.parseInt(request.getParameter("quantita")) : 1;
+                    successo = carrello.aggiungiLibro(libro, quantita);
                     messaggio = successo ? "Libro aggiunto al carrello" : "Quantità non disponibile";
                     break;
 
                 case "rimuovi":
                     successo = carrello.rimuoviLibro(idLibro);
-                    messaggio = successo ? "Libro rimosso dal carrello" : "Libro non trovato nel carrello";
+                    messaggio = successo ? "Libro rimosso dal carrello" : "Libro non trovato";
                     break;
 
                 case "aggiorna":
-                    successo = gestisciAggiornaQuantita(carrello, idLibro, request);
-                    messaggio = successo ? "Carrello aggiornato" : "Quantità non disponibile";
+                    int nuovaQuantita = Integer.parseInt(request.getParameter("quantita"));
+                    successo = carrello.aggiornaQuantita(idLibro, nuovaQuantita);
+                    messaggio = successo ? "Quantità aggiornata" : "Errore nell'aggiornamento";
                     break;
 
                 default:
                     inviaErrore(response, "Azione non valida");
                     return;
             }
+
+            // Se l'utente è loggato, salviamo il carrello nel database
+            if (session.getAttribute("utente") != null && successo) {
+                CarrelloDAO carrelloDAO = new CarrelloDAO();
+                carrelloDAO.salvaCarrello(((Utente)session.getAttribute("utente")).getIdUtente(), carrello);
+            }
+
             if (isAjaxRequest(request)) {
                 inviaRispostaJSON(response, successo, messaggio, carrello);
             } else {
-                String separator = redirectUrl.contains("?") ? "&" : "?";
-                redirectUrl += separator + (successo ? "successo=" : "errore=") +
-                        messaggio.replace(" ", "+");
-                response.sendRedirect(redirectUrl);
+                response.sendRedirect(request.getHeader("referer")); // riportato alla pagina precedente
             }
+
         } catch (NumberFormatException e) {
             inviaErrore(response, "ID libro non valido");
-        } catch (Exception e) {
-            System.err.println("Errore durante l'elaborazione della richiesta del carrello: " + e.getMessage());
-            inviaErrore(response, "Errore durante l'elaborazione della richiesta");
+        } catch (SQLException e) {
+            throw new ServletException("Errore nel database", e);
         }
     }
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        if (isAjaxRequest(request)) {
-            HttpSession session = request.getSession(false);
-            Carrello carrello = (session != null) ? (Carrello) session.getAttribute("carrello") : null;
-            inviaRispostaJSON(response, true, "", carrello);
-            return;
+        HttpSession session = request.getSession(true);
+        Carrello carrello = (Carrello) session.getAttribute("carrello");
+
+        if (carrello == null) {
+            carrello = new Carrello();
+            session.setAttribute("carrello", carrello);
         }
+
+        request.setAttribute("carrello", carrello);
         request.getRequestDispatcher("/jsp/visualizzaCarrello.jsp").forward(request, response);
     }
 
@@ -169,6 +184,4 @@ public class CarrelloServlet extends HttpServlet {
         }
         response.getWriter().write(gson.toJson(jsonResponse));
     }
-
-
 }

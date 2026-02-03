@@ -13,62 +13,124 @@
 <body>
 <jsp:include page="header.jsp" />
 
-<div class="cart-container">
-    <h1>Il tuo carrello</h1>
+<c:if test="${not empty successMessage}">
+    <div class="alert alert-success">${successMessage}</div>
+</c:if>
+<c:if test="${not empty errorMessage}">
+    <div class="alert alert-danger">${errorMessage}</div>
+</c:if>
+
+<div class="container mt-4">
+    <h2>Il tuo carrello</h2>
 
     <c:choose>
-        <c:when test="${empty sessionScope.carrello or sessionScope.carrello.vuoto}">
-            <div class="empty-cart">
-                <h2>Il tuo carrello è vuoto</h2>
-                <p>Non hai ancora aggiunto nessun libro al carrello.</p>
-                <a href="${pageContext.request.contextPath}/libri">Sfoglia il catalogo</a>
+        <c:when test="${empty carrello.articoli}">
+            <div class="alert alert-info">
+                Il tuo carrello è vuoto. <a href="${pageContext.request.contextPath}/">Torna allo shopping</a>
             </div>
         </c:when>
         <c:otherwise>
-            <div id="cart-items">
-                <c:forEach items="${sessionScope.carrello.articoli}" var="articolo">
-                    <div class="cart-item" data-product-id="${articolo.libro.idLibro}">
-                        <img src="${pageContext.request.contextPath}/img/libri/copertine/${not empty articolo.libro.copertina ? articolo.libro.copertina : 'default.jpg'}"
-                             alt="${articolo.libro.titolo}">
-                        <div class="item-details">
-                            <h3 class="item-title">${articolo.libro.titolo}</h3>
-                            <p class="item-author">di ${articolo.libro.autore}</p>
-                            Prezzo del libro: <p class="item-price"><fmt:formatNumber value="${articolo.libro.prezzo}" type="currency" currencySymbol="€" minFractionDigits="2" /></p>
-                            Prezzo totale libri: <p class="item-total subtotal" id="totale-${articolo.libro.idLibro}"><fmt:formatNumber value="${articolo.libro.prezzo * articolo.quantita}" type="currency" currencySymbol="€" minFractionDigits="2" /></p>
-                            <div class="quantity-controls">
-                                <button type="button" class="quantity-btn minus"
-                                        data-product-id="${articolo.libro.idLibro}"
-                                        style="padding: 6px 12px; background-color: #0d6efd; color: white; border: none; border-radius: 6px; font-weight: bold; font-size: 16px; cursor: pointer; margin-right: 5px;">
-                                    -
-                                </button>
-                                <input type="number" class="quantity-input"
-                                       value="${articolo.quantita}"
-                                       min="1"
-                                       max="${articolo.libro.disponibilita}"
-                                       data-product-id="${articolo.libro.idLibro}"
-                                       style="width: 50px; text-align: center; border: 1px solid #ccc; border-radius: 4px; padding: 4px;">
-                                <button type="button" class="quantity-btn plus"
-                                        data-product-id="${articolo.libro.idLibro}"
-                                        style="padding: 6px 12px; background-color: #0d6efd; color: white; border: none; border-radius: 6px; font-weight: bold; font-size: 16px; cursor: pointer; margin-left: 5px;">
-                                    +
-                                </button>
-                            </div>
-                            <button type="button" class="remove-btn"
-                                    data-product-id="${articolo.libro.idLibro}"
-                                    style="margin-top: 10px; padding: 6px 12px; background-color: #dc3545; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">
-                                Rimuovi
-                            </button>
-                        </div>
-                    </div>
-                </c:forEach>
-            </div>
-            <div class="cart-summary">
-                <div class="cart-total">
-                    Totale: <span id="cart-total"><fmt:formatNumber value="${sessionScope.carrello.totale}" type="currency" currencySymbol="€" minFractionDigits="2" /></span>
+            <c:if test="${empty sessionScope.utente}">
+                <div class="alert alert-warning">
+                    <i class="fas fa-info-circle"></i>
+                    Per salvare il carrello e procedere all'acquisto,
+                    <a href="${pageContext.request.contextPath}/login">accedi</a> o
+                    <a href="${pageContext.request.contextPath}/registrazione">registrati</a>.
                 </div>
-                <a href="${pageContext.request.contextPath}/checkout" class="checkout-btn">
-                    Procedi all'acquisto
+            </c:if>
+
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Prodotto</th>
+                        <th class="text-center">Prezzo unitario</th>
+                        <th class="text-center">Quantità</th>
+                        <th class="text-center">Totale</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <c:forEach items="${carrello.articoli}" var="articolo">
+                        <tr data-product-id="${articolo.libro.idLibro}">
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <img src="${pageContext.request.contextPath}/img/libri/copertine/${not empty articolo.libro.copertina ? articolo.libro.copertina : 'default.jpg'}"
+                                         alt="${articolo.libro.titolo}" class="img-thumbnail me-3" style="max-width: 80px;">
+                                    <div>
+                                        <h5 class="mb-1">${articolo.libro.titolo}</h5>
+                                        <p class="text-muted mb-0">${articolo.libro.autore}</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="align-middle text-center">
+                                <fmt:formatNumber value="${articolo.libro.prezzo}" type="currency" currencySymbol="€" minFractionDigits="2" maxFractionDigits="2"/>
+                            </td>
+                            <td class="align-middle text-center">
+                                <div class="d-flex justify-content-center">
+                                    <form action="${pageContext.request.contextPath}/carrello" method="post" class="d-inline">
+                                        <input type="hidden" name="idLibro" value="${articolo.libro.idLibro}">
+                                        <input type="hidden" name="quantita" value="${articolo.quantita - 1}">
+                                        <input type="hidden" name="azione" value="aggiorna">
+                                        <button type="submit" class="btn btn-sm btn-outline-secondary" ${articolo.quantita <= 1 ? 'disabled' : ''}>-</button>
+                                    </form>
+                                    <span class="mx-2">${articolo.quantita}</span>
+                                    <form action="${pageContext.request.contextPath}/carrello" method="post" class="d-inline">
+                                        <input type="hidden" name="idLibro" value="${articolo.libro.idLibro}">
+                                        <input type="hidden" name="quantita" value="${articolo.quantita + 1}">
+                                        <input type="hidden" name="azione" value="aggiorna">
+                                        <button type="submit" class="btn btn-sm btn-outline-secondary" ${articolo.quantita >= articolo.libro.disponibilita ? 'disabled' : ''}>+</button>
+                                    </form>
+                                </div>
+                            </td>
+                            <td class="align-middle text-center">
+                                <fmt:formatNumber value="${articolo.totale}" type="currency" currencySymbol="€" minFractionDigits="2" maxFractionDigits="2"/>
+                            </td>
+                            <td class="align-middle text-center">
+                                <form action="${pageContext.request.contextPath}/carrello" method="post" class="d-inline">
+                                    <input type="hidden" name="idLibro" value="${articolo.libro.idLibro}">
+                                    <input type="hidden" name="azione" value="rimuovi">
+                                    <button type="submit" class="btn btn-link text-danger p-0">
+                                        <i class="fas fa-trash-alt"></i>Rimuovi
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    </c:forEach>
+                    </tbody>
+                    <tfoot>
+                    <tr>
+                        <td colspan="3" class="text-end fw-bold">Totale articoli:</td>
+                        <td class="text-center fw-bold">${carrello.totaleArticoli}</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td colspan="3" class="text-end fw-bold">Totale:</td>
+                        <td class="text-center fw-bold">
+                            <fmt:formatNumber value="${carrello.totale}" type="currency" currencySymbol="€" minFractionDigits="2" maxFractionDigits="2"/>
+                        </td>
+                        <td></td>
+                    </tr>
+                    </tfoot>
+                </table>
+            </div>
+
+            <div class="d-flex justify-content-between mt-4">
+                <a href="${pageContext.request.contextPath}/" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>Continua lo shopping
                 </a>
+                <c:choose>
+                    <c:when test="${not empty sessionScope.utente}">
+                        <a href="${pageContext.request.contextPath}/checkout" class="btn btn-primary">
+                            Procedi all'acquisto <i class="fas fa-arrow-right ms-2"></i>
+                        </a>
+                    </c:when>
+                    <c:otherwise>
+                        <a href="${pageContext.request.contextPath}/login" class="btn btn-primary">
+                            Accedi per acquistare <i class="fas fa-sign-in-alt ms-2"></i>
+                        </a>
+                    </c:otherwise>
+                </c:choose>
             </div>
         </c:otherwise>
     </c:choose>
