@@ -20,7 +20,7 @@ public class ConfermaPagamentoServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("utente") == null) {
-            response.sendRedirect(request.getContextPath() + "/WEB-INF/jsp/login.jsp");
+            response.sendRedirect(request.getContextPath() + "/login");
             return;
         }
 

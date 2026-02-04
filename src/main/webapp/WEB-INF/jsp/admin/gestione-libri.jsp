@@ -46,7 +46,7 @@
 <div class="container">
     <div class="page-header">
         <h1>Gestione Libri</h1>
-        <a href="${pageContext.request.contextPath}/WEB-INF/jsp/admin/inserisciLibro.jsp" class="btn btn-primary">
+        <a href="${pageContext.request.contextPath}/admin/libri"> class="btn btn-primary">
             <span class="icon icon-plus"></span>Nuovo Libro
         </a>
     </div>

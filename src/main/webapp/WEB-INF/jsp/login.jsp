@@ -38,7 +38,7 @@
     </form>
     <script src="${pageContext.request.contextPath}/js/login-validation.js"></script>
 
-    <p>Non hai un account? <a href="${pageContext.request.contextPath}/WEB-INF/jsp/register.jsp">Registrati</a></p>
+    <p>Non hai un account? <a href="${pageContext.request.contextPath}/registrazione">Registrati</a></p>
 </main>
 
 <jsp:include page="footer.jsp" />

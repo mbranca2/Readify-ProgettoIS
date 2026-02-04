@@ -133,7 +133,7 @@
         </div>
     </form>
 
-    <p>Hai già un account? <a href="${pageContext.request.contextPath}/WEB-INF/jsp/login.jsp">Accedi</a></p>
+    <p>Hai già un account? <a href="${pageContext.request.contextPath}/login">Accedi</a></p>
 </main>
 
 <script src="${pageContext.request.contextPath}/js/form-validation.js"></script>

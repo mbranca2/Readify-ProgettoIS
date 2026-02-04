@@ -22,6 +22,12 @@ public class LoginServlet extends HttpServlet {
     private static final String USER_ATTRIBUTE = "utente";
 
     @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        request.getRequestDispatcher("/WEB-INF/jsp/login.jsp").forward(request, response);
+    }
+
+    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
@@ -97,8 +103,8 @@ public class LoginServlet extends HttpServlet {
                     response.sendRedirect(redirectAfterLogin);
                 } else {
                     String redirectPath = "admin".equals(utente.getRuolo())
-                            ? contextPath + "/WEB-INF/jsp/admin/dashboard.jsp"
-                            : contextPath + "/";
+                            ? contextPath + "/admin/dashboard"
+                            : contextPath + "/home";
                     response.sendRedirect(redirectPath);
                 }
             } else {

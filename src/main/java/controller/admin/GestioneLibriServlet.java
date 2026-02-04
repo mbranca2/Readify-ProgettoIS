@@ -22,7 +22,7 @@ public class GestioneLibriServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         HttpSession session = req.getSession(false);
         if (session == null || session.getAttribute("utente") == null) {
-            resp.sendRedirect("../WEB-INF/jsp/login.jsp");
+            resp.sendRedirect(req.getContextPath() + "/login");
             return;
         }
 
@@ -78,7 +78,7 @@ public class GestioneLibriServlet extends HttpServlet {
             sessione.setAttribute("autore", autore);
             sessione.setAttribute("categoria", categoria);
 
-            req.getRequestDispatcher("../WEB-INF/jsp/admin/gestione-libri.jsp").forward(req, resp);
+            req.getRequestDispatcher("/WEB-INF/jsp/admin/gestione-libri.jsp").forward(req, resp);
         } catch (Exception e) {
             System.err.println("[GestioneLibriServlet] Errore: " + e.getMessage());
             e.printStackTrace();
@@ -121,7 +121,7 @@ public class GestioneLibriServlet extends HttpServlet {
                 String titolo = (String) session.getAttribute("titolo");
                 String autore = (String) session.getAttribute("autore");
                 String categoria = (String) session.getAttribute("categoria");
-                StringBuilder url = new StringBuilder("../WEB-INF/jsp/admin/gestione-libri.jsp");
+                StringBuilder url = new StringBuilder(request.getContextPath() + "/admin/libri");
 
                 if (titolo != null || autore != null || categoria != null) {
                     url.append("?");
@@ -138,7 +138,7 @@ public class GestioneLibriServlet extends HttpServlet {
             String titolo = (String) session.getAttribute("titolo");
             String autore = (String) session.getAttribute("autore");
             String categoria = (String) session.getAttribute("categoria");
-            StringBuilder url = new StringBuilder("../WEB-INF/jsp/admin/gestione-libri.jsp");
+            StringBuilder url = new StringBuilder(request.getContextPath() + "/admin/libri");
 
             if (titolo != null || autore != null || categoria != null) {
                 url.append("?");

@@ -18,7 +18,7 @@ public class CheckoutServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         HttpSession session = req.getSession(false);
         if (session == null || session.getAttribute("utente") == null) {
-            resp.sendRedirect(req.getContextPath() + "/WEB-INF/jsp/login.jsp");
+            resp.sendRedirect(req.getContextPath() + "/login");
             return;
         }
 
@@ -35,7 +35,7 @@ public class CheckoutServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("utente") == null) {
-            response.sendRedirect(request.getContextPath() + "/WEB-INF/jsp/login.jsp");
+            response.sendRedirect(request.getContextPath() + "/login");
             return;
         }
 
@@ -45,7 +45,6 @@ public class CheckoutServlet extends HttpServlet {
             request.getRequestDispatcher("/WEB-INF/jsp/visualizzaCarrello.jsp").forward(request, response);
             return;
         }
-
-        response.sendRedirect(request.getContextPath() + "/WEB-INF/jsp/pagamento.jsp");
+        request.getRequestDispatcher("/WEB-INF/jsp/pagamento.jsp").forward(request, response);
     }
 }

@@ -17,6 +17,11 @@ import java.util.Map;
 
 @WebServlet("/registrazione")
 public class RegisterServlet extends HttpServlet {
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        request.getRequestDispatcher("/WEB-INF/jsp/register.jsp").forward(request, response);
+    }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -72,7 +77,7 @@ public class RegisterServlet extends HttpServlet {
                     utenteDAO.eliminaUtente(nuovoUtente.getIdUtente());
                     throw new ServletException("Errore durante la creazione dell'indirizzo");
                 }
-                response.sendRedirect(request.getContextPath() + "/WEB-INF/jsp/login.jsp?registrazione=successo");
+                response.sendRedirect(request.getContextPath() + "/login?registrazione=successo");
             } else {
                 request.setAttribute("erroreRegistrazione", "Registrazione fallita. L'email potrebbe essere già registrata.");
                 request.setAttribute("nome", nome);

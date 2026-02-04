@@ -19,7 +19,7 @@ public class GestioneUtentiServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         HttpSession session = req.getSession(false);
         if (session == null || session.getAttribute("utente") == null) {
-            resp.sendRedirect("../WEB-INF/jsp/login.jsp");
+            resp.sendRedirect(req.getContextPath() + "/login");
             return;
         }
 
@@ -41,7 +41,7 @@ public class GestioneUtentiServlet extends HttpServlet {
             listaUtenti.forEach(u -> System.out.println("Utente trovato: " + u.getEmail()));
         }
         req.setAttribute("listaUtenti", listaUtenti);
-        req.getRequestDispatcher("../WEB-INF/jsp/admin/gestione-utenti.jsp").forward(req, resp);
+        req.getRequestDispatcher("/WEB-INF/jsp/admin/gestione-utenti.jsp").forward(req, resp);
     }
 
     @Override

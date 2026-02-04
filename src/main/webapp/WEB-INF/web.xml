@@ -3,6 +3,9 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd"
          version="6.0">
+    <welcome-file-list>
+        <welcome-file>home</welcome-file>
+    </welcome-file-list>
     <filter>
         <filter-name>CarrelloFilter</filter-name>
         <filter-class>filter.CarrelloFilter</filter-class>
@@ -13,10 +16,10 @@
     </filter-mapping>
     <error-page>
         <error-code>500</error-code>
-        <location>/jsp/error500.jsp</location>
+        <location>/WEB-INF/jsp/error500.jsp</location>
     </error-page>
     <error-page>
         <exception-type>jakarta.servlet.ServletException</exception-type>
-        <location>/jsp/error.jsp</location>
+        <location>/WEB-INF/jsp/error.jsp</location>
     </error-page>
 </web-app>

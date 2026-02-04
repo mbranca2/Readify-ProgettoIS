@@ -23,7 +23,7 @@ public class ConfermaOrdineServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("utente") == null) {
-            response.sendRedirect(request.getContextPath() + "/WEB-INF/jsp/login.jsp");
+            response.sendRedirect(request.getContextPath() + "/login");
             return;
         }
 
@@ -63,8 +63,8 @@ public class ConfermaOrdineServlet extends HttpServlet {
                 aggiornaDisponibilitaLibri(carrello);
                 carrello.svuota();
                 session.setAttribute("carrello", carrello);
-                response.sendRedirect(request.getContextPath() +
-                        "/WEB-INF/jsp/conferma-ordine.jsp?id=" + ordine.getIdOrdine());
+                request.setAttribute("idOrdine", ordine.getIdOrdine());
+                request.getRequestDispatcher("/WEB-INF/jsp/conferma-ordine.jsp").forward(request, response);
             } else {
                 throw new ServletException("Errore durante il salvataggio dell'ordine");
             }
