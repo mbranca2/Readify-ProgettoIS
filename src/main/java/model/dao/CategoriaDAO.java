@@ -1,6 +1,6 @@
 package model.dao;
 
-import model.Categoria;
+import model.bean.Categoria;
 import utils.DBManager;
 
 import java.sql.*;

@@ -6,18 +6,22 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import model.Categoria;
-import model.Libro;
-import model.Utente;
+import model.bean.Categoria;
+import model.bean.Libro;
+import model.bean.Utente;
 import model.dao.CategoriaDAO;
 import model.dao.LibroDAO;
+import utils.DBManager;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.List;
 
 @WebServlet("/admin/libri")
 public class GestioneLibriServlet extends HttpServlet {
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         HttpSession session = req.getSession(false);
@@ -79,12 +83,14 @@ public class GestioneLibriServlet extends HttpServlet {
                 req.setAttribute("totalePagine", totalePagine);
                 req.setAttribute("paginaCorrente", pagina);
             }
+
             HttpSession sessione = req.getSession();
             sessione.setAttribute("titolo", titolo);
             sessione.setAttribute("autore", autore);
             sessione.setAttribute("categoria", categoria);
 
             req.getRequestDispatcher("/WEB-INF/jsp/admin/gestione-libri.jsp").forward(req, resp);
+
         } catch (Exception e) {
             System.err.println("[GestioneLibriServlet] Errore: " + e.getMessage());
             e.printStackTrace();
@@ -121,7 +127,34 @@ public class GestioneLibriServlet extends HttpServlet {
             Libro libro = libroDAO.trovaLibroPerId(id);
             if (libro != null) {
                 setLibroPropertiesFromRequest(libro, request);
-                libroDAO.aggiornaLibro(libro);
+
+                Connection conn = null;
+                try {
+                    conn = DBManager.getConnection();
+                    conn.setAutoCommit(false);
+
+                    boolean ok = libroDAO.aggiornaLibro(conn, libro);
+                    if (!ok) {
+                        conn.rollback();
+                        throw new ServletException("Aggiornamento libro fallito");
+                    }
+
+                    conn.commit();
+
+                } catch (SQLException e) {
+                    try {
+                        if (conn != null) conn.rollback();
+                    } catch (SQLException ignored) {}
+                    throw new ServletException("Errore durante l'aggiornamento del libro", e);
+
+                } finally {
+                    try {
+                        if (conn != null) {
+                            conn.setAutoCommit(true);
+                            conn.close();
+                        }
+                    } catch (SQLException ignored) {}
+                }
 
                 HttpSession session = request.getSession();
                 String titolo = (String) session.getAttribute("titolo");
@@ -137,9 +170,11 @@ public class GestioneLibriServlet extends HttpServlet {
                 }
                 response.sendRedirect(url.toString());
             }
+
         } else if ("elimina".equals(azione)) {
             int id = Integer.parseInt(request.getParameter("id"));
             libroDAO.eliminaLibro(id);
+
             HttpSession session = request.getSession();
             String titolo = (String) session.getAttribute("titolo");
             String autore = (String) session.getAttribute("autore");

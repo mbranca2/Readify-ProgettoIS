@@ -1,6 +1,6 @@
 package model.dao;
 
-import model.Utente;
+import model.bean.Utente;
 import utils.DBManager;
 import utils.HashUtil;
 

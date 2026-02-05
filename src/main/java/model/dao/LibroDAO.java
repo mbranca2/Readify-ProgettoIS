@@ -1,6 +1,6 @@
 package model.dao;
 
-import model.Libro;
+import model.bean.Libro;
 import utils.DBManager;
 
 import java.sql.*;
@@ -8,42 +8,70 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class LibroDAO {
-
     public boolean inserisciLibro(Libro libro) {
         String query = "INSERT INTO Libro (titolo, autore, prezzo, isbn, descrizione, disponibilita, copertina) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?)";
 
-        try (Connection conn = DBManager.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
-            stmt.setString(1, libro.getTitolo());
-            stmt.setString(2, libro.getAutore());
-            stmt.setBigDecimal(3, libro.getPrezzo());
-            stmt.setString(4, libro.getIsbn());
-            stmt.setString(5, libro.getDescrizione());
-            stmt.setInt(6, libro.getDisponibilita());
-            stmt.setString(7, libro.getCopertina());
+        Connection conn = null;
+        try {
+            conn = DBManager.getConnection();
+            conn.setAutoCommit(false);
 
-            int righeInserite = stmt.executeUpdate();
-            if (righeInserite > 0) {
-                ResultSet rs = stmt.getGeneratedKeys();
-                if (rs.next()) {
-                    libro.setIdLibro(rs.getInt(1));
-                    // Inserimento categorie
-                    inserisciCategorieLibro(libro.getIdLibro(), libro.getCategorie());
+            try (PreparedStatement stmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
+                stmt.setString(1, libro.getTitolo());
+                stmt.setString(2, libro.getAutore());
+                stmt.setBigDecimal(3, libro.getPrezzo());
+                stmt.setString(4, libro.getIsbn());
+                stmt.setString(5, libro.getDescrizione());
+                stmt.setInt(6, libro.getDisponibilita());
+                stmt.setString(7, libro.getCopertina());
+
+                int righeInserite = stmt.executeUpdate();
+                if (righeInserite > 0) {
+                    try (ResultSet rs = stmt.getGeneratedKeys()) {
+                        if (rs.next()) {
+                            libro.setIdLibro(rs.getInt(1));
+
+                            // Inserimento categorie nella STESSA transazione/connessione
+                            inserisciCategorieLibro(conn, libro.getIdLibro(), libro.getCategorie());
+                        }
+                    }
+                    conn.commit();
+                    return true;
                 }
-                return true;
+
+                conn.rollback();
+                return false;
+
+            } catch (SQLException e) {
+                conn.rollback();
+                throw e;
             }
-            return false;
+
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
+
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.setAutoCommit(true);
+                    conn.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 
-    private void inserisciCategorieLibro(int idLibro, List<Integer> idCategorie) throws SQLException {
+    private void inserisciCategorieLibro(Connection conn, int idLibro, List<Integer> idCategorie) throws SQLException {
+        if (idCategorie == null || idCategorie.isEmpty()) {
+            return;
+        }
+
         String query = "INSERT INTO LibroCategoria (id_libro, id_categoria) VALUES (?, ?)";
 
-        try (Connection conn = DBManager.getConnection(); PreparedStatement stmt = conn.prepareStatement(query)) {
+        try (PreparedStatement stmt = conn.prepareStatement(query)) {
             for (Integer idCategoria : idCategorie) {
                 stmt.setInt(1, idLibro);
                 stmt.setInt(2, idCategoria);
@@ -56,7 +84,8 @@ public class LibroDAO {
     public Libro trovaLibroPerId(int id) {
         String query = "SELECT * FROM Libro WHERE id_libro = ?";
 
-        try (Connection conn = DBManager.getConnection(); PreparedStatement stmt = conn.prepareStatement(query)) {
+        try (Connection conn = DBManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setInt(1, id);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
@@ -74,7 +103,8 @@ public class LibroDAO {
         List<Integer> categorie = new ArrayList<>();
         String query = "SELECT id_categoria FROM LibroCategoria WHERE id_libro = ?";
 
-        try (Connection conn = DBManager.getConnection(); PreparedStatement stmt = conn.prepareStatement(query)) {
+        try (Connection conn = DBManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setInt(1, idLibro);
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
@@ -97,12 +127,12 @@ public class LibroDAO {
         return libro;
     }
 
-    public boolean aggiornaLibro(Libro libro) {
+    public boolean aggiornaLibro(Connection conn, Libro libro) throws SQLException {
         String query = "UPDATE Libro SET titolo = ?, autore = ?, prezzo = ?, " +
                 "isbn = ?, descrizione = ?, disponibilita = ?, copertina = ? " +
                 "WHERE id_libro = ?";
 
-        try (Connection conn = DBManager.getConnection(); PreparedStatement stmt = conn.prepareStatement(query)) {
+        try (PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setString(1, libro.getTitolo());
             stmt.setString(2, libro.getAutore());
             stmt.setBigDecimal(3, libro.getPrezzo());
@@ -111,24 +141,23 @@ public class LibroDAO {
             stmt.setInt(6, libro.getDisponibilita());
             stmt.setString(7, libro.getCopertina());
             stmt.setInt(8, libro.getIdLibro());
-            aggiornaCategorie(libro.getIdLibro(), libro.getCategorie());
+
+            aggiornaCategorie(conn, libro.getIdLibro(), libro.getCategorie());
+
             return stmt.executeUpdate() > 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
         }
     }
 
-    private void aggiornaCategorie(int idLibro, List<Integer> nuoveCategorie) throws SQLException {
+    private void aggiornaCategorie(Connection conn, int idLibro, List<Integer> nuoveCategorie) throws SQLException {
         String deleteQuery = "DELETE FROM LibroCategoria WHERE id_libro = ?";
 
-        try (Connection conn = DBManager.getConnection(); PreparedStatement stmt = conn.prepareStatement(deleteQuery)) {
+        try (PreparedStatement stmt = conn.prepareStatement(deleteQuery)) {
             stmt.setInt(1, idLibro);
             stmt.executeUpdate();
         }
-        inserisciCategorieLibro(idLibro, nuoveCategorie);
-    }
 
+        inserisciCategorieLibro(conn, idLibro, nuoveCategorie);
+    }
 
     public List<Libro> trovaLibriConFiltro(String titolo, String autore, String categoriaId, int offset, int limit) {
         List<Libro> libri = new ArrayList<>();
@@ -152,7 +181,8 @@ public class LibroDAO {
         query += " ORDER BY l.titolo LIMIT ? OFFSET ?";
         System.out.println("[LibroDAO] Query generata: " + query);
 
-        try (Connection conn = DBManager.getConnection(); PreparedStatement stmt = conn.prepareStatement(query)) {
+        try (Connection conn = DBManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
             int paramIndex = 1;
             if (categoriaId != null && !categoriaId.trim().isEmpty()) {
                 try {
@@ -201,7 +231,8 @@ public class LibroDAO {
             query += " AND LOWER(l.autore) LIKE LOWER(?) ";
         }
 
-        try (Connection conn = DBManager.getConnection(); PreparedStatement stmt = conn.prepareStatement(query)) {
+        try (Connection conn = DBManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
             int paramIndex = 1;
             if (categoriaId != null && !categoriaId.trim().isEmpty()) {
                 try {
@@ -251,7 +282,8 @@ public class LibroDAO {
 
     public boolean eliminaLibro(int idLibro) {
         String query = "DELETE FROM Libro WHERE id_libro = ?";
-        try (Connection conn = DBManager.getConnection(); PreparedStatement stmt = conn.prepareStatement(query)) {
+        try (Connection conn = DBManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setInt(1, idLibro);
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {

@@ -4,8 +4,8 @@ import jakarta.servlet.*;
 import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
-import model.Carrello;
-import model.Utente;
+import model.bean.Carrello;
+import model.bean.Utente;
 import model.dao.CarrelloDAO;
 
 import java.io.IOException;

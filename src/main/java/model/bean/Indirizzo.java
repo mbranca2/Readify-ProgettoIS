@@ -1,4 +1,4 @@
-package model;
+package model.bean;
 
 public class Indirizzo {
     private int idIndirizzo;

@@ -7,15 +7,13 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import model.Carrello;
-import model.Libro;
-import model.Utente;
-import model.dao.CarrelloDAO;
-import model.dao.LibroDAO;
+import model.bean.Carrello;
+import model.bean.Utente;
+import service.ServiceFactory;
+import service.cart.CartFacade;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -24,121 +22,121 @@ import java.util.Map;
 @WebServlet("/carrello")
 public class CarrelloServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
+
     private final Gson gson = new Gson();
+    private final CartFacade cartFacade = ServiceFactory.cartFacade();
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession(true);
-        Carrello carrello = (Carrello) session.getAttribute("carrello");
 
-        if (carrello == null) {
-            carrello = new Carrello();
-            session.setAttribute("carrello", carrello);
-        }
+        Integer idUtente = resolveUserId(session);
+
+        Carrello carrello = cartFacade.getCurrentCart(idUtente, session);
 
         String azione = request.getParameter("azione");
         String idLibroParam = request.getParameter("idLibro");
 
-        if (azione == null || idLibroParam == null || idLibroParam.isEmpty()) {
-            inviaErrore(response, "Parametri mancanti");
+        if (azione == null || azione.isBlank() || idLibroParam == null || idLibroParam.isBlank()) {
+            handleError(request, response, "Parametri mancanti");
             return;
         }
 
         try {
             int idLibro = Integer.parseInt(idLibroParam);
-            LibroDAO libroDAO = new LibroDAO();
-            Libro libro = libroDAO.trovaLibroPerId(idLibro);
-
-            if (libro == null) {
-                inviaErrore(response, "Libro non trovato");
-                return;
-            }
 
             boolean successo;
             String messaggio;
 
             switch (azione.toLowerCase()) {
-                case "aggiungi":
-                    int quantita = request.getParameter("quantita") != null ?
-                            Integer.parseInt(request.getParameter("quantita")) : 1;
-                    successo = carrello.aggiungiLibro(libro, quantita);
+                case "aggiungi": {
+                    int quantita = 1;
+                    String qParam = request.getParameter("quantita");
+                    if (qParam != null && !qParam.isBlank()) {
+                        quantita = Integer.parseInt(qParam);
+                    }
+
+                    successo = cartFacade.addBook(idUtente, session, idLibro, quantita);
                     messaggio = successo ? "Libro aggiunto al carrello" : "Quantità non disponibile";
                     break;
-                case "rimuovi":
-                    successo = carrello.rimuoviLibro(idLibro);
+                }
+
+                case "rimuovi": {
+                    successo = cartFacade.removeBook(idUtente, session, idLibro);
                     messaggio = successo ? "Libro rimosso dal carrello" : "Libro non trovato";
                     break;
-                case "aggiorna":
-                    int nuovaQuantita = Integer.parseInt(request.getParameter("quantita"));
-                    successo = carrello.aggiornaQuantita(idLibro, nuovaQuantita);
+                }
+
+                case "aggiorna": {
+                    String qParam = request.getParameter("quantita");
+                    if (qParam == null || qParam.isBlank()) {
+                        handleError(request, response, "Quantità mancante");
+                        return;
+                    }
+                    int nuovaQuantita = Integer.parseInt(qParam);
+
+                    successo = cartFacade.updateQuantity(idUtente, session, idLibro, nuovaQuantita);
                     messaggio = successo ? "Quantità aggiornata" : "Errore nell'aggiornamento";
                     break;
+                }
+
                 default:
-                    inviaErrore(response, "Azione non valida");
+                    handleError(request, response, "Azione non valida");
                     return;
             }
 
-            if (session.getAttribute("utente") != null && successo) {
-                CarrelloDAO carrelloDAO = new CarrelloDAO();
-                carrelloDAO.salvaCarrello(((Utente) session.getAttribute("utente")).getIdUtente(), carrello);
-            }
+            carrello = (Carrello) session.getAttribute("carrello");
 
             if (isAjaxRequest(request)) {
                 inviaRispostaJSON(response, successo, messaggio, carrello);
             } else {
-                response.sendRedirect(request.getHeader("referer")); // riportato alla pagina precedente
+                response.sendRedirect(request.getHeader("referer"));
             }
+
         } catch (NumberFormatException e) {
-            inviaErrore(response, "ID libro non valido");
-        } catch (SQLException e) {
-            throw new ServletException("Errore nel database", e);
+            handleError(request, response, "Parametri numerici non validi");
+        } catch (Exception e) {
+            e.printStackTrace();
+            handleError(request, response, "Errore interno");
         }
     }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession(true);
-        Carrello carrello = (Carrello) session.getAttribute("carrello");
+        Integer idUtente = resolveUserId(session);
 
-        if (carrello == null) {
-            carrello = new Carrello();
-            session.setAttribute("carrello", carrello);
-        }
+        Carrello carrello = cartFacade.getCurrentCart(idUtente, session);
+
         request.setAttribute("carrello", carrello);
         request.getRequestDispatcher("/WEB-INF/jsp/visualizzaCarrello.jsp").forward(request, response);
     }
 
-    private boolean gestisciAggiungiLibro(Carrello carrello, Libro libro, HttpServletRequest request) {
-        int quantitaAggiungi = 1;
-        try {
-            String quantitaParam = request.getParameter("quantita");
-            if (quantitaParam != null && !quantitaParam.isEmpty()) {
-                quantitaAggiungi = Integer.parseInt(quantitaParam);
-            }
-            return carrello.aggiungiLibro(libro, quantitaAggiungi);
-        } catch (NumberFormatException e) {
-            return false;
+    private Integer resolveUserId(HttpSession session) {
+        Object u = session.getAttribute("utente");
+        if (u instanceof Utente) {
+            return ((Utente) u).getIdUtente();
         }
-    }
 
-    private boolean gestisciAggiornaQuantita(Carrello carrello, int idLibro, HttpServletRequest request) {
-        try {
-            String quantitaParam = request.getParameter("quantita");
-            if (quantitaParam == null || quantitaParam.isEmpty()) {
-                throw new NumberFormatException("Quantità mancante");
-            }
-            int nuovaQuantita = Integer.parseInt(quantitaParam);
-            return carrello.aggiornaQuantita(idLibro, nuovaQuantita);
-        } catch (NumberFormatException e) {
-            return false;
-        }
+        Object legacy = session.getAttribute("idUtente");
+        if (legacy instanceof Integer) return (Integer) legacy;
+
+        return null;
     }
 
     private boolean isAjaxRequest(HttpServletRequest request) {
         return "XMLHttpRequest".equals(request.getHeader("X-Requested-With"));
     }
 
-    private void inviaErrore(HttpServletResponse response, String messaggio) throws IOException {
+    private void handleError(HttpServletRequest request, HttpServletResponse response, String messaggio) throws IOException {
+        if (isAjaxRequest(request)) {
+            inviaErroreJSON(response, messaggio);
+        } else {
+            response.sendRedirect(request.getHeader("referer"));
+        }
+    }
+
+    private void inviaErroreJSON(HttpServletResponse response, String messaggio) throws IOException {
         response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
@@ -146,7 +144,6 @@ public class CarrelloServlet extends HttpServlet {
         Map<String, Object> errorResponse = new HashMap<>();
         errorResponse.put("success", false);
         errorResponse.put("message", messaggio);
-        errorResponse.put("carrello", null);
 
         response.getWriter().write(gson.toJson(errorResponse));
     }
@@ -154,6 +151,7 @@ public class CarrelloServlet extends HttpServlet {
     private void inviaRispostaJSON(HttpServletResponse response, boolean successo, String messaggio, Carrello carrello) throws IOException {
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
+
         Map<String, Object> jsonResponse = new HashMap<>();
         jsonResponse.put("success", successo);
         jsonResponse.put("message", messaggio);
@@ -181,6 +179,7 @@ public class CarrelloServlet extends HttpServlet {
             jsonResponse.put("totale", BigDecimal.ZERO);
             jsonResponse.put("articoli", new ArrayList<>());
         }
+
         response.getWriter().write(gson.toJson(jsonResponse));
     }
 }

@@ -1,7 +1,7 @@
 package model.dao;
 
-import model.Carrello;
-import model.Libro;
+import model.bean.Carrello;
+import model.bean.Libro;
 import utils.DBManager;
 
 import java.sql.*;
@@ -15,14 +15,16 @@ public class CarrelloDAO {
                 "LEFT JOIN DettaglioCarrello dc ON c.id_carrello = dc.id_carrello " +
                 "LEFT JOIN Libro l ON dc.id_libro = l.id_libro " +
                 "WHERE c.id_utente = ?";
+
         Carrello carrello = new Carrello();
 
-        try (Connection conn = DBManager.getConnection(); PreparedStatement stmt = conn.prepareStatement(query)) {
+        try (Connection conn = DBManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setInt(1, idUtente);
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 if (rs.getInt("id_carrello") == 0) {
-                    return null; // Nessun carrello trovato
+                    return null;
                 }
 
                 if (rs.getInt("id_dettaglio") != 0) {
@@ -42,11 +44,10 @@ public class CarrelloDAO {
         return carrello;
     }
 
-    public int creaCarrello(int idUtente) throws SQLException {
+    public int creaCarrello(Connection conn, int idUtente) throws SQLException {
         String query = "INSERT INTO Carrello (id_utente) VALUES (?)";
 
-        try (Connection conn = DBManager.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
+        try (PreparedStatement stmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setInt(1, idUtente);
             int affectedRows = stmt.executeUpdate();
             if (affectedRows == 0) {
@@ -63,29 +64,30 @@ public class CarrelloDAO {
         }
     }
 
+    public void salvaCarrello(Connection conn, int idUtente, Carrello carrello) throws SQLException {
+        int idCarrello = getCarrelloIdByUtente(conn, idUtente);
+        if (idCarrello == 0) {
+            idCarrello = creaCarrello(conn, idUtente);
+        } else {
+            svuotaCarrello(conn, idCarrello);
+        }
+
+        for (Carrello.ArticoloCarrello articolo : carrello.getArticoli()) {
+            aggiungiArticoloAlCarrello(conn, idCarrello, articolo);
+        }
+    }
+
     public void salvaCarrello(int idUtente, Carrello carrello) throws SQLException {
         Connection conn = null;
-
         try {
             conn = DBManager.getConnection();
             conn.setAutoCommit(false);
 
-            int idCarrello = getCarrelloIdByUtente(conn, idUtente);
-            if (idCarrello == 0) {
-                idCarrello = creaCarrello(idUtente);
-            } else {
-                svuotaCarrello(conn, idCarrello);
-            }
+            salvaCarrello(conn, idUtente, carrello);
 
-            for (Carrello.ArticoloCarrello articolo : carrello.getArticoli()) {
-                aggiungiArticoloAlCarrello(conn, idCarrello, articolo);
-            }
             conn.commit();
         } catch (SQLException e) {
-            if (conn != null) {
-                conn.rollback();
-            }
-
+            if (conn != null) conn.rollback();
             throw e;
         } finally {
             if (conn != null) {
@@ -134,7 +136,8 @@ public class CarrelloDAO {
                 "JOIN Carrello c ON dc.id_carrello = c.id_carrello " +
                 "WHERE c.id_utente = ? AND dc.id_libro = ?";
 
-        try (Connection conn = DBManager.getConnection(); PreparedStatement stmt = conn.prepareStatement(query)) {
+        try (Connection conn = DBManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setInt(1, idUtente);
             stmt.setInt(2, idLibro);
             stmt.executeUpdate();
@@ -152,11 +155,19 @@ public class CarrelloDAO {
                 "SET dc.quantita = ? " +
                 "WHERE c.id_utente = ? AND dc.id_libro = ?";
 
-        try (Connection conn = DBManager.getConnection(); PreparedStatement stmt = conn.prepareStatement(query)) {
+        try (Connection conn = DBManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setInt(1, quantita);
             stmt.setInt(2, idUtente);
             stmt.setInt(3, idLibro);
             stmt.executeUpdate();
+        }
+    }
+
+    public void svuotaCarrelloUtente(Connection conn, int idUtente) throws SQLException {
+        int idCarrello = getCarrelloIdByUtente(conn, idUtente);
+        if (idCarrello != 0) {
+            svuotaCarrello(conn, idCarrello);
         }
     }
 }

@@ -6,13 +6,14 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import model.Carrello;
-import model.Utente;
-import model.dao.CarrelloDAO;
-import model.dao.UtenteDAO;
+import model.bean.Carrello;
+import model.bean.Utente;
+import service.ServiceFactory;
+import service.account.AccountService;
+import service.account.AccountServiceException;
+import service.cart.CartFacade;
 
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -20,6 +21,8 @@ import java.util.Map;
 public class LoginServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private static final String USER_ATTRIBUTE = "utente";
+    private final AccountService accountService = ServiceFactory.accountService();
+    private final CartFacade cartFacade = ServiceFactory.cartFacade();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -56,63 +59,49 @@ public class LoginServlet extends HttpServlet {
         }
 
         try {
-            Utente utente = UtenteDAO.login(email.trim(), password);
-            if (utente != null) {
-                HttpSession oldSession = request.getSession(false);
-                Carrello carrelloTemporaneo = null;
-
-                if (oldSession != null) {
-                    carrelloTemporaneo = (Carrello) oldSession.getAttribute("carrello");
-                    oldSession.invalidate();
-                }
-
-                HttpSession newSession = request.getSession(true);
-                if (request.isSecure()) {
-                    response.setHeader("Set-Cookie", "JSESSIONID=" + newSession.getId() + "; HttpOnly; Secure; SameSite=Strict");
-                }
-                newSession.setAttribute("utente", utente);
-                newSession.setAttribute("idUtente", utente.getIdUtente());
-
-                if (carrelloTemporaneo != null && !carrelloTemporaneo.getArticoli().isEmpty()) {
-                    try {
-                        CarrelloDAO carrelloDAO = new CarrelloDAO();
-                        carrelloDAO.salvaCarrello(utente.getIdUtente(), carrelloTemporaneo);
-                        newSession.setAttribute("carrello", carrelloTemporaneo);
-                    } catch (SQLException e) {
-                        System.err.println("Errore durante il salvataggio del carrello: " + e.getMessage());
-                        newSession.setAttribute("carrello", carrelloTemporaneo);
-                    }
-                } else {
-                    try {
-                        CarrelloDAO carrelloDAO = new CarrelloDAO();
-                        Carrello carrello = carrelloDAO.getCarrelloByUtente(utente.getIdUtente());
-                        if (carrello != null) {
-                            newSession.setAttribute("carrello", carrello);
-                        } else {
-                            newSession.setAttribute("carrello", new Carrello());
-                        }
-                    } catch (SQLException e) {
-                        System.err.println("Errore durante il caricamento del carrello: " + e.getMessage());
-                        newSession.setAttribute("carrello", new Carrello());
-                    }
-                }
-
-                String redirectAfterLogin = (String) newSession.getAttribute("redirectAfterLogin");
-                if (redirectAfterLogin != null && !redirectAfterLogin.isEmpty()) {
-                    newSession.removeAttribute("redirectAfterLogin");
-                    response.sendRedirect(redirectAfterLogin);
-                } else {
-                    String redirectPath = "admin".equals(utente.getRuolo())
-                            ? contextPath + "/admin/dashboard"
-                            : contextPath + "/home";
-                    response.sendRedirect(redirectPath);
-                }
-            } else {
-                handleLoginError(request, response, "Email o password non corretti", email);
+            // --- LOGIN via Service ---
+            Utente utente;
+            try {
+                utente = accountService.login(email.trim(), password);
+            } catch (AccountServiceException ex) {
+                handleLoginError(request, response, ex.getMessage(), email);
+                return;
             }
+
+            HttpSession oldSession = request.getSession(false);
+            Carrello carrelloTemporaneo = null;
+
+            if (oldSession != null) {
+                carrelloTemporaneo = (Carrello) oldSession.getAttribute("carrello");
+                oldSession.invalidate();
+            }
+
+            HttpSession newSession = request.getSession(true);
+            if (request.isSecure()) {
+                response.setHeader("Set-Cookie",
+                        "JSESSIONID=" + newSession.getId() + "; HttpOnly; Secure; SameSite=Strict");
+            }
+            newSession.setAttribute("utente", utente);
+            newSession.setAttribute("idUtente", utente.getIdUtente());
+
+            // --- Carrello: delega alla Facade ---
+            cartFacade.syncAfterLogin(utente.getIdUtente(), carrelloTemporaneo, newSession);
+
+            String redirectAfterLogin = (String) newSession.getAttribute("redirectAfterLogin");
+            if (redirectAfterLogin != null && !redirectAfterLogin.isEmpty()) {
+                newSession.removeAttribute("redirectAfterLogin");
+                response.sendRedirect(redirectAfterLogin);
+            } else {
+                String redirectPath = "admin".equals(utente.getRuolo())
+                        ? contextPath + "/admin/dashboard"
+                        : contextPath + "/home";
+                response.sendRedirect(redirectPath);
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
-            handleLoginError(request, response, "Si è verificato un errore durante il login. Riprova più tardi.", email);
+            handleLoginError(request, response,
+                    "Si è verificato un errore durante il login. Riprova più tardi.", email);
         }
     }
 

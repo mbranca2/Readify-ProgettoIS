@@ -1,16 +1,20 @@
 package model.dao;
 
-import model.Indirizzo;
+import model.bean.Indirizzo;
 import utils.DBManager;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class IndirizzoDAO {
+
     public boolean inserisciIndirizzo(Indirizzo indirizzo) {
-        String query = "INSERT INTO Indirizzo (id_utente, via, cap, citta, provincia, paese) " + "VALUES (?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO Indirizzo (id_utente, via, cap, citta, provincia, paese) VALUES (?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = DBManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
+
             stmt.setInt(1, indirizzo.getIdUtente());
             stmt.setString(2, indirizzo.getVia());
             stmt.setString(3, indirizzo.getCap());
@@ -20,12 +24,14 @@ public class IndirizzoDAO {
 
             int righeInserite = stmt.executeUpdate();
             if (righeInserite > 0) {
-                ResultSet rs = stmt.getGeneratedKeys();
-                if (rs.next()) {
-                    indirizzo.setIdIndirizzo(rs.getInt(1));
+                try (ResultSet rs = stmt.getGeneratedKeys()) {
+                    if (rs.next()) {
+                        indirizzo.setIdIndirizzo(rs.getInt(1));
+                    }
                 }
                 return true;
             }
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -35,16 +41,83 @@ public class IndirizzoDAO {
     public Indirizzo trovaIndirizzoPerId(int id) {
         String query = "SELECT * FROM Indirizzo WHERE id_indirizzo = ?";
 
-        try (Connection conn = DBManager.getConnection(); PreparedStatement stmt = conn.prepareStatement(query)) {
+        try (Connection conn = DBManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
             stmt.setInt(1, id);
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                return mappaRisultatoAIndirizzo(rs);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return mappaRisultatoAIndirizzo(rs);
+                }
             }
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public Indirizzo trovaIndirizzoPerIdUtente(int idUtente) {
+        String query = "SELECT * FROM Indirizzo WHERE id_utente = ? ORDER BY id_indirizzo ASC";
+
+        try (Connection conn = DBManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setInt(1, idUtente);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return mappaRisultatoAIndirizzo(rs);
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public List<Indirizzo> trovaIndirizziPerUtente(int idUtente) {
+        List<Indirizzo> indirizzi = new ArrayList<>();
+        String query = "SELECT * FROM Indirizzo WHERE id_utente = ? ORDER BY id_indirizzo ASC";
+
+        try (Connection conn = DBManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setInt(1, idUtente);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    indirizzi.add(mappaRisultatoAIndirizzo(rs));
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return indirizzi;
+    }
+
+    public boolean aggiornaIndirizzo(Indirizzo indirizzo) {
+        String query = "UPDATE Indirizzo SET via = ?, cap = ?, citta = ?, provincia = ?, paese = ? " +
+                "WHERE id_indirizzo = ? AND id_utente = ?";
+
+        try (Connection conn = DBManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setString(1, indirizzo.getVia());
+            stmt.setString(2, indirizzo.getCap());
+            stmt.setString(3, indirizzo.getCitta());
+            stmt.setString(4, indirizzo.getProvincia());
+            stmt.setString(5, indirizzo.getPaese());
+            stmt.setInt(6, indirizzo.getIdIndirizzo());
+            stmt.setInt(7, indirizzo.getIdUtente());
+
+            return stmt.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     private Indirizzo mappaRisultatoAIndirizzo(ResultSet rs) throws SQLException {
@@ -57,39 +130,5 @@ public class IndirizzoDAO {
         indirizzo.setProvincia(rs.getString("provincia"));
         indirizzo.setPaese(rs.getString("paese"));
         return indirizzo;
-    }
-
-    public Indirizzo trovaIndirizzoPerIdUtente(int id) {
-        String query = "SELECT * FROM Indirizzo WHERE id_utente = ?";
-
-        try (Connection conn = DBManager.getConnection(); PreparedStatement stmt = conn.prepareStatement(query)) {
-            stmt.setInt(1, id);
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                return mappaRisultatoAIndirizzo(rs);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    public boolean aggiornaIndirizzo(Indirizzo indirizzo) {
-        String query = "UPDATE Indirizzo SET via = ?, cap = ?, citta = ?, provincia = ?, paese = ? " +
-                "WHERE id_indirizzo = ? AND id_utente = ?";
-
-        try (Connection conn = DBManager.getConnection(); PreparedStatement stmt = conn.prepareStatement(query)) {
-            stmt.setString(1, indirizzo.getVia());
-            stmt.setString(2, indirizzo.getCap());
-            stmt.setString(3, indirizzo.getCitta());
-            stmt.setString(4, indirizzo.getProvincia());
-            stmt.setString(5, indirizzo.getPaese());
-            stmt.setInt(6, indirizzo.getIdIndirizzo());
-            stmt.setInt(7, indirizzo.getIdUtente());
-            return stmt.executeUpdate() > 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
     }
 }

@@ -1,4 +1,4 @@
-package model;
+package model.bean;
 
 public enum StatoOrdine {
     IN_ATTESA("In attesa di pagamento"),

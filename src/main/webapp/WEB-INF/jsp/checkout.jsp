@@ -6,8 +6,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Completa il tuo acquisto in modo sicuro su Librorama">
-    <title>Checkout - Librorama</title>
+    <meta name="description" content="Completa il tuo acquisto in modo sicuro su Readify">
+    <title>Checkout - Readify</title>
     <link rel="stylesheet" href="<c:url value='/css/style.css'/>">
     <link rel="stylesheet" href="<c:url value='/css/checkout.css'/>">
 </head>
@@ -20,6 +20,12 @@
             <h2 class="checkout-title">Conferma Ordine</h2>
         </div>
 
+        <c:if test="${not empty errore}">
+            <div class="alert alert-warning alert-dynamic" role="alert">
+                    ${errore}
+            </div>
+        </c:if>
+
         <c:choose>
             <c:when test="${empty sessionScope.carrello or sessionScope.carrello.vuoto}">
                 <div class="alert alert-warning">
@@ -29,6 +35,7 @@
                     Torna al catalogo
                 </a>
             </c:when>
+
             <c:otherwise>
                 <h3>Riepilogo del tuo ordine:</h3>
 
@@ -48,12 +55,12 @@
                             <td class="text-end">
                                 <c:set var="prezzo" value="${articolo.libro.prezzo}" />
                                 <c:set var="quantita" value="${articolo.quantita}" />
-                                <fmt:formatNumber value="${prezzo * quantita}" 
-                                                type="currency" 
-                                                currencyCode="EUR" 
-                                                maxFractionDigits="2"
-                                                minFractionDigits="2"
-                                                groupingUsed="true"/>
+                                <fmt:formatNumber value="${prezzo * quantita}"
+                                                  type="currency"
+                                                  currencyCode="EUR"
+                                                  maxFractionDigits="2"
+                                                  minFractionDigits="2"
+                                                  groupingUsed="true"/>
                             </td>
                         </tr>
                     </c:forEach>
@@ -68,36 +75,55 @@
                     <div class="summary-row summary-total">
                         <span>Totale:</span>
                         <span>
-                                <fmt:formatNumber value="${sessionScope.carrello.totale}"
-                                                  type="currency" currencyCode="EUR" maxFractionDigits="2"/>
-                            </span>
+                            <fmt:formatNumber value="${sessionScope.carrello.totale}"
+                                              type="currency" currencyCode="EUR" maxFractionDigits="2"/>
+                        </span>
                     </div>
 
-                    <form method="post" action="${pageContext.request.contextPath}/checkout">
-                        <div class="form-group">
-                            <label for="indirizzo" class="form-label">Indirizzo di spedizione</label>
-                            <select class="form-select" id="indirizzo" name="idIndirizzo" required>
-                                <option value="1">Indirizzo predefinito</option>
-                            </select>
-                        </div>
+                    <c:choose>
+                        <c:when test="${empty indirizzi}">
+                            <div class="alert alert-warning" style="margin-top: 12px;">
+                                Non hai ancora inserito un indirizzo di spedizione.
+                            </div>
+                            <a class="btn btn-primary" href="${pageContext.request.contextPath}/gestione-indirizzo" style="margin-top: 10px;">
+                                Aggiungi un indirizzo
+                            </a>
+                        </c:when>
 
-                        <button type="submit" class="btn btn-success" id="submitBtn">
-                            <span class="btn-text">Conferma e paga</span>
-                        </button>
-                    </form>
+                        <c:otherwise>
+                            <form method="post" action="${pageContext.request.contextPath}/checkout">
+                                <div class="form-group">
+                                    <label for="indirizzoSpedizione" class="form-label">Indirizzo di spedizione</label>
+                                    <select class="form-select" id="indirizzoSpedizione" name="indirizzoSpedizione" required>
+                                        <option value="" disabled selected>Seleziona un indirizzo</option>
+                                        <c:forEach items="${indirizzi}" var="ind">
+                                            <option value="${ind.idIndirizzo}">
+                                                    ${ind.via}, ${ind.cap} ${ind.citta} (${ind.provincia}) - ${ind.paese}
+                                            </option>
+                                        </c:forEach>
+                                    </select>
+                                </div>
+
+                                <button type="submit" class="btn btn-success" id="submitBtn">
+                                    <span class="btn-text">Conferma e paga</span>
+                                </button>
+                            </form>
+                        </c:otherwise>
+                    </c:choose>
                 </div>
             </c:otherwise>
         </c:choose>
     </div>
 </div>
+
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const form = document.querySelector('form');
         if (form) {
             form.addEventListener('submit', function(e) {
-                const indirizzo = document.getElementById('indirizzo');
+                const indirizzo = document.getElementById('indirizzoSpedizione');
                 const submitBtn = form.querySelector('button[type="submit"]');
-                
+
                 if (!indirizzo || !indirizzo.value) {
                     e.preventDefault();
                     showAlert('Per favore, seleziona un indirizzo di spedizione', 'error');
@@ -108,16 +134,14 @@
                     submitBtn.disabled = true;
                     submitBtn.innerHTML = '<span class="loading"></span> Elaborazione...';
                 }
-                
+
                 return true;
             });
         }
-        
+
         function showAlert(message, type = 'info') {
             const existingAlert = document.querySelector('.alert-dynamic');
-            if (existingAlert) {
-                existingAlert.remove();
-            }
+            if (existingAlert) existingAlert.remove();
 
             const alertDiv = document.createElement('div');
             alertDiv.className = `alert alert-${type} alert-dynamic`;
@@ -136,5 +160,6 @@
         }
     });
 </script>
+
 </body>
 </html>

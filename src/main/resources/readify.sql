@@ -97,8 +97,8 @@ CREATE TABLE Contiene (
     CONSTRAINT chk_prezzo_unitario CHECK (prezzo_unitario >= 0)
 );
 
-CREATE TABLE Valutazione (
-    id_valutazione INT AUTO_INCREMENT PRIMARY KEY,
+CREATE TABLE Recensione (
+    id_recensione INT AUTO_INCREMENT PRIMARY KEY,
     id_utente INT NOT NULL,
     id_libro INT NOT NULL,
     voto INT,
@@ -152,7 +152,7 @@ INSERT INTO Contiene (id_ordine, id_libro, quantita, prezzo_unitario) VALUES
 (2, 2, 1, 45.50),
 (2, 5, 1, 9.90);
 
-INSERT INTO Valutazione (id_utente, id_libro, voto, commento) VALUES
+INSERT INTO Recensione (id_utente, id_libro, voto, commento) VALUES
 (2, 1, 5, 'Assolutamente fantastico! Un capolavoro senza tempo.'),
 (3, 2, 4, 'Molto utile per lo studio, spiegazioni chiare.'),
 (2, 3, 5, 'Un libro che tutti dovrebbero leggere almeno una volta nella vita.');

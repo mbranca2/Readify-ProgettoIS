@@ -1,4 +1,4 @@
-package model;
+package model.bean;
 
 import java.sql.Date;
 
@@ -14,20 +14,40 @@ public class Recensione {
     public Recensione() {
     }
 
+    public int getIdRecensione() {
+        return idRecensione;
+    }
+
     public void setIdRecensione(int idRecensione) {
         this.idRecensione = idRecensione;
+    }
+
+    public int getIdUtente() {
+        return idUtente;
     }
 
     public void setIdUtente(int idUtente) {
         this.idUtente = idUtente;
     }
 
+    public int getIdLibro() {
+        return idLibro;
+    }
+
     public void setIdLibro(int idLibro) {
         this.idLibro = idLibro;
     }
 
+    public int getVoto() {
+        return voto;
+    }
+
     public void setVoto(int voto) {
         this.voto = voto;
+    }
+
+    public String getCommento() {
+        return commento;
     }
 
     public void setCommento(String commento) {
@@ -40,14 +60,6 @@ public class Recensione {
 
     public void setDataRecensione(Date dataRecensione) {
         this.dataRecensione = dataRecensione;
-    }
-
-    public int getVoto() {
-        return voto;
-    }
-
-    public String getCommento() {
-        return commento;
     }
 
     public String getNomeUtente() {

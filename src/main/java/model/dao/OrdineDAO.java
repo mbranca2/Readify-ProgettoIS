@@ -1,8 +1,8 @@
 package model.dao;
 
-import model.DettaglioOrdine;
-import model.Ordine;
-import model.StatoOrdine;
+import model.bean.DettaglioOrdine;
+import model.bean.Ordine;
+import model.bean.StatoOrdine;
 import utils.DBManager;
 
 import java.math.BigDecimal;
@@ -15,140 +15,94 @@ import java.util.logging.Logger;
 public class OrdineDAO {
     private static final Logger logger = Logger.getLogger(OrdineDAO.class.getName());
 
-    public boolean salvaOrdine(Ordine ordine) {
+    public boolean salvaOrdine(Connection conn, Ordine ordine) throws SQLException {
         if (ordine == null) {
             return false;
         }
 
         if (ordine.getIdOrdine() > 0) {
-            return aggiornaOrdine(ordine);
+            return aggiornaOrdine(conn, ordine);
         } else {
-            return inserisciNuovoOrdine(ordine);
+            return inserisciNuovoOrdine(conn, ordine);
         }
     }
 
-    private boolean inserisciNuovoOrdine(Ordine ordine) {
+    private boolean inserisciNuovoOrdine(Connection conn, Ordine ordine) throws SQLException {
         String queryOrdine = "INSERT INTO Ordine (id_utente, id_indirizzo, stato, totale) VALUES (?, ?, ?, ?)";
 
-        Connection conn = null;
-        try {
-            conn = DBManager.getConnection();
-            conn.setAutoCommit(false);
+        try (PreparedStatement stmtOrdine = conn.prepareStatement(queryOrdine, Statement.RETURN_GENERATED_KEYS)) {
+            stmtOrdine.setInt(1, ordine.getIdUtente());
 
-            try (PreparedStatement stmtOrdine = conn.prepareStatement(queryOrdine, Statement.RETURN_GENERATED_KEYS)) {
-                stmtOrdine.setInt(1, ordine.getIdUtente());
+            if (ordine.getIdIndirizzo() > 0) {
+                stmtOrdine.setInt(2, ordine.getIdIndirizzo());
+            } else {
+                stmtOrdine.setNull(2, Types.INTEGER);
+            }
 
-                if (ordine.getIdIndirizzo() > 0) {
-                    stmtOrdine.setInt(2, ordine.getIdIndirizzo());
-                } else {
-                    stmtOrdine.setNull(2, Types.INTEGER);
-                }
+            String stato = ordine.getStato() != null
+                    ? ordine.getStato().name().toLowerCase()
+                    : StatoOrdine.IN_ELABORAZIONE.name().toLowerCase();
 
-                String stato = ordine.getStato() != null ? ordine.getStato().name().toLowerCase() : StatoOrdine.IN_ELABORAZIONE.name().toLowerCase();
-                stmtOrdine.setString(3, stato);
-                stmtOrdine.setBigDecimal(4, ordine.getTotale() != null ? ordine.getTotale() : BigDecimal.ZERO);
+            stmtOrdine.setString(3, stato);
+            stmtOrdine.setBigDecimal(4, ordine.getTotale() != null ? ordine.getTotale() : BigDecimal.ZERO);
 
-                int righeInserite = stmtOrdine.executeUpdate();
-                if (righeInserite > 0) {
-                    ResultSet rs = stmtOrdine.getGeneratedKeys();
-                    if (rs.next()) {
-                        int idOrdine = rs.getInt(1);
-                        ordine.setIdOrdine(idOrdine);
-
-                        if (ordine.getDettagli() != null && !ordine.getDettagli().isEmpty()) {
-                            if (!inserisciDettagliOrdine(conn, ordine)) {
-                                conn.rollback();
-                                return false;
-                            }
-                        }
-                        conn.commit();
-                        return true;
-                    }
-                }
-                conn.rollback();
+            int righeInserite = stmtOrdine.executeUpdate();
+            if (righeInserite <= 0) {
                 return false;
             }
-        } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Errore durante l'inserimento dell'ordine", e);
-            if (conn != null) {
-                try {
-                    conn.rollback();
-                } catch (SQLException ex) {
-                    logger.log(Level.SEVERE, "Errore durante il rollback", ex);
+
+            try (ResultSet rs = stmtOrdine.getGeneratedKeys()) {
+                if (!rs.next()) {
+                    return false;
                 }
-            }
-            return false;
-        } finally {
-            if (conn != null) {
-                try {
-                    conn.setAutoCommit(true);
-                    conn.close();
-                } catch (SQLException e) {
-                    logger.log(Level.SEVERE, "Errore durante la chiusura della connessione", e);
+
+                int idOrdine = rs.getInt(1);
+                ordine.setIdOrdine(idOrdine);
+
+                if (ordine.getDettagli() != null && !ordine.getDettagli().isEmpty()) {
+                    return inserisciDettagliOrdine(conn, ordine);
                 }
+
+                return true;
             }
         }
     }
 
-    private boolean aggiornaOrdine(Ordine ordine) {
-        String query = "UPDATE Ordine SET id_utente = ?, id_indirizzo = ?, " + "stato = ?, totale = ? WHERE id_ordine = ?";
+    private boolean aggiornaOrdine(Connection conn, Ordine ordine) throws SQLException {
+        String query = "UPDATE Ordine SET id_utente = ?, id_indirizzo = ?, stato = ?, totale = ? WHERE id_ordine = ?";
 
-        Connection conn = null;
-        try {
-            conn = DBManager.getConnection();
-            conn.setAutoCommit(false);
-            try (PreparedStatement stmt = conn.prepareStatement(query)) {
-                stmt.setInt(1, ordine.getIdUtente());
+        try (PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setInt(1, ordine.getIdUtente());
 
-                if (ordine.getIdIndirizzo() > 0) {
-                    stmt.setInt(2, ordine.getIdIndirizzo());
-                } else {
-                    stmt.setNull(2, Types.INTEGER);
-                }
+            if (ordine.getIdIndirizzo() > 0) {
+                stmt.setInt(2, ordine.getIdIndirizzo());
+            } else {
+                stmt.setNull(2, Types.INTEGER);
+            }
 
-                String stato = ordine.getStato() != null ? ordine.getStato().name().toLowerCase() : StatoOrdine.IN_ELABORAZIONE.name().toLowerCase();
-                stmt.setString(3, stato);
-                stmt.setBigDecimal(4, ordine.getTotale() != null ? ordine.getTotale() : BigDecimal.ZERO);
-                stmt.setInt(5, ordine.getIdOrdine());
+            String stato = ordine.getStato() != null
+                    ? ordine.getStato().name().toLowerCase()
+                    : StatoOrdine.IN_ELABORAZIONE.name().toLowerCase();
 
-                int rowsUpdated = stmt.executeUpdate();
-                if (rowsUpdated > 0) {
-                    if (ordine.getDettagli() != null && !ordine.getDettagli().isEmpty()) {
-                        String deleteQuery = "DELETE FROM Contiene WHERE id_ordine = ?";
-                        try (PreparedStatement deleteStmt = conn.prepareStatement(deleteQuery)) {
-                            deleteStmt.setInt(1, ordine.getIdOrdine());
-                            deleteStmt.executeUpdate();
-                        }
-                        if (!inserisciDettagliOrdine(conn, ordine)) {
-                            conn.rollback();
-                            return false;
-                        }
-                    }
-                    conn.commit();
-                    return true;
-                }
-                conn.rollback();
+            stmt.setString(3, stato);
+            stmt.setBigDecimal(4, ordine.getTotale() != null ? ordine.getTotale() : BigDecimal.ZERO);
+            stmt.setInt(5, ordine.getIdOrdine());
+
+            int rowsUpdated = stmt.executeUpdate();
+            if (rowsUpdated <= 0) {
                 return false;
             }
-        } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Errore durante l'aggiornamento dell'ordine", e);
-            if (conn != null) {
-                try {
-                    conn.rollback();
-                } catch (SQLException ex) {
-                    logger.log(Level.SEVERE, "Errore durante il rollback", ex);
+
+            if (ordine.getDettagli() != null && !ordine.getDettagli().isEmpty()) {
+                String deleteQuery = "DELETE FROM Contiene WHERE id_ordine = ?";
+                try (PreparedStatement deleteStmt = conn.prepareStatement(deleteQuery)) {
+                    deleteStmt.setInt(1, ordine.getIdOrdine());
+                    deleteStmt.executeUpdate();
                 }
+                return inserisciDettagliOrdine(conn, ordine);
             }
-            return false;
-        } finally {
-            if (conn != null) {
-                try {
-                    conn.setAutoCommit(true);
-                    conn.close();
-                } catch (SQLException e) {
-                    logger.log(Level.SEVERE, "Errore durante la chiusura della connessione", e);
-                }
-            }
+
+            return true;
         }
     }
 
@@ -163,6 +117,7 @@ public class OrdineDAO {
                 stmt.setBigDecimal(4, dettaglio.getPrezzoUnitario());
                 stmt.addBatch();
 
+                // Mantiene la tua logica: lock + update disponibilità durante inserimento dettagli
                 if (!aggiornaDisponibilitaLibro(conn, dettaglio.getIdLibro(), -dettaglio.getQuantita())) {
                     return false;
                 }
@@ -227,7 +182,7 @@ public class OrdineDAO {
 
     private DettaglioOrdine mappaRisultatoADettaglio(ResultSet rs) throws SQLException {
         DettaglioOrdine dettaglio = new DettaglioOrdine();
-        dettaglio.setId(rs.getInt("id_ordine") * 1000 + rs.getInt("id_libro")); //creoID univoco
+        dettaglio.setId(rs.getInt("id_ordine") * 1000 + rs.getInt("id_libro"));
         dettaglio.setIdOrdine(rs.getInt("id_ordine"));
         dettaglio.setIdLibro(rs.getInt("id_libro"));
         dettaglio.setQuantita(rs.getInt("quantita"));

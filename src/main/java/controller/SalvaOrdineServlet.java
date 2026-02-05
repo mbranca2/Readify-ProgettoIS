@@ -6,9 +6,12 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import model.*;
-import model.dao.IndirizzoDAO;
-import model.dao.OrdineDAO;
+import model.bean.Carrello;
+import model.bean.Ordine;
+import model.bean.Utente;
+import service.ServiceFactory;
+import service.order.OrderServiceException;
+import service.order.OrderService;
 
 import java.io.IOException;
 import java.util.logging.Level;
@@ -18,62 +21,59 @@ import java.util.logging.Logger;
 public class SalvaOrdineServlet extends HttpServlet {
     private static final Logger logger = Logger.getLogger(SalvaOrdineServlet.class.getName());
 
+    private final OrderService orderService = ServiceFactory.orderService();
+
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        HttpSession session = request.getSession();
-        Utente utente = (Utente) session.getAttribute("utente");
-        Carrello carrello = (Carrello) session.getAttribute("carrello");
+        HttpSession session = request.getSession(false);
+        Utente utente = (session != null) ? (Utente) session.getAttribute("utente") : null;
+        Carrello carrello = (session != null) ? (Carrello) session.getAttribute("carrello") : null;
+
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
 
         if (utente == null) {
-            response.sendRedirect(request.getContextPath() + "/login");
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().write("{\"success\": false, \"error\": \"Utente non autenticato\"}");
             return;
         }
 
-        if (carrello == null || carrello.getArticoli().isEmpty()) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Il carrello è vuoto");
+        if (carrello == null || carrello.isVuoto()) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().write("{\"success\": false, \"error\": \"Il carrello è vuoto\"}");
+            return;
+        }
+
+        int idIndirizzoSpedizione;
+        try {
+            idIndirizzoSpedizione = Integer.parseInt(request.getParameter("indirizzoSpedizione"));
+        } catch (Exception e) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().write("{\"success\": false, \"error\": \"Indirizzo di spedizione non valido\"}");
             return;
         }
 
         try {
-            Ordine ordine = new Ordine();
-            ordine.setIdUtente(utente.getIdUtente());
-            ordine.setStato(StatoOrdine.IN_ELABORAZIONE);
-            ordine.setTotale(carrello.getTotale());
+            Ordine ordine = orderService.placeOrder(utente.getIdUtente(), idIndirizzoSpedizione, carrello);
+            carrello.svuota();
+            session.setAttribute("carrello", carrello);
 
-            IndirizzoDAO indirizzoDAO = new IndirizzoDAO();
-            Indirizzo indirizzo = indirizzoDAO.trovaIndirizzoPerId(utente.getIdUtente());
-            if (indirizzo != null) {
-                ordine.setIdIndirizzo(indirizzo.getIdIndirizzo());
-            }
+            response.getWriter().write("{\"success\": true, \"orderId\": " + ordine.getIdOrdine() + "}");
 
-            for (Carrello.ArticoloCarrello articolo : carrello.getArticoli()) {
-                DettaglioOrdine dettaglio = new DettaglioOrdine();
-                dettaglio.setIdLibro(articolo.getLibro().getIdLibro());
-                dettaglio.setQuantita(articolo.getQuantita());
-                dettaglio.setPrezzoUnitario(articolo.getLibro().getPrezzo());
-                dettaglio.setTitoloLibro(articolo.getLibro().getTitolo());
-                dettaglio.setAutoreLibro(articolo.getLibro().getAutore());
-                dettaglio.setIsbnLibro(articolo.getLibro().getIsbn());
-                dettaglio.setImmagineCopertina(articolo.getLibro().getCopertina());
-                ordine.aggiungiDettaglio(dettaglio);
-            }
+        } catch (OrderServiceException e) {
+            logger.log(Level.WARNING, "Errore di dominio durante il salvataggio dell'ordine", e);
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().write("{\"success\": false, \"error\": \"" + escapeJson(e.getMessage()) + "\"}");
 
-            OrdineDAO ordineDAO = new OrdineDAO();
-            boolean successo = ordineDAO.salvaOrdine(ordine);
-            if (successo) {
-                carrello.svuota();
-                session.setAttribute("carrello", carrello);
-                response.setContentType("application/json");
-                response.setCharacterEncoding("UTF-8");
-                response.getWriter().write("{\"success\": true, \"orderId\": " + ordine.getIdOrdine() + "}");
-            } else {
-                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                response.getWriter().write("{\"success\": false, \"error\": \"Errore nel salvataggio dell'ordine\"}");
-            }
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Errore durante il salvataggio dell'ordine", e);
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             response.getWriter().write("{\"success\": false, \"error\": \"Errore di sistema\"}");
         }
+    }
+
+    private String escapeJson(String s) {
+        if (s == null) return "";
+        return s.replace("\\", "\\\\").replace("\"", "\\\"");
     }
 }

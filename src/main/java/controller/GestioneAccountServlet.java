@@ -6,8 +6,8 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import model.Indirizzo;
-import model.Utente;
+import model.bean.Indirizzo;
+import model.bean.Utente;
 import model.dao.IndirizzoDAO;
 import model.dao.UtenteDAO;
 
@@ -21,7 +21,7 @@ public class GestioneAccountServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         HttpSession session = req.getSession(false);
         if (session == null || session.getAttribute("utente") == null) {
-            resp.sendRedirect("jsp/login.jsp");
+            resp.sendRedirect(req.getContextPath() + "/login");
             return;
         }
 
@@ -32,16 +32,18 @@ public class GestioneAccountServlet extends HttpServlet {
                 session.setAttribute("indirizzo", indirizzo);
             }
         }
-        req.getRequestDispatcher("jsp/gestioneAccount.jsp").forward(req, resp);
+
+        req.getRequestDispatcher("/WEB-INF/jsp/gestioneAccount.jsp").forward(req, resp);
     }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         HttpSession session = req.getSession(false);
         if (session == null || session.getAttribute("utente") == null) {
-            resp.sendRedirect("jsp/login.jsp");
+            resp.sendRedirect(req.getContextPath() + "/login");
             return;
         }
+
         Utente utente = (Utente) session.getAttribute("utente");
         String nome = req.getParameter("nome");
         String cognome = req.getParameter("cognome");
@@ -52,13 +54,15 @@ public class GestioneAccountServlet extends HttpServlet {
                 cognome == null || cognome.trim().isEmpty() ||
                 email == null || email.trim().isEmpty()) {
             req.setAttribute("errore", "Tutti i campi obbligatori devono essere compilati");
-            req.getRequestDispatcher("jsp/gestioneAccount.jsp").forward(req, resp);
+            req.getRequestDispatcher("/WEB-INF/jsp/gestioneAccount.jsp").forward(req, resp);
             return;
         }
+
         utente.setNome(nome.trim());
         utente.setCognome(cognome.trim());
         utente.setEmail(email.trim().toLowerCase());
         utente.setTelefono(telefono != null ? telefono.trim() : null);
+
         UtenteDAO utenteDAO = new UtenteDAO();
 
         boolean aggiornato = utenteDAO.aggiornaUtente(utente);
@@ -68,6 +72,7 @@ public class GestioneAccountServlet extends HttpServlet {
         } else {
             req.setAttribute("errore", "Si è verificato un errore durante l'aggiornamento del profilo");
         }
-        req.getRequestDispatcher("jsp/gestioneAccount.jsp").forward(req, resp);
+
+        req.getRequestDispatcher("/WEB-INF/jsp/gestioneAccount.jsp").forward(req, resp);
     }
 }

@@ -6,8 +6,8 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import model.Ordine;
-import model.Utente;
+import model.bean.Ordine;
+import model.bean.Utente;
 import model.dao.OrdineDAO;
 
 import java.io.IOException;
