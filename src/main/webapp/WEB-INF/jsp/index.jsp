@@ -7,51 +7,57 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home - Readify</title>
+
+    <link rel="stylesheet" href="<c:url value='/css/main.css'/>">
     <link rel="stylesheet" href="<c:url value='/css/style.css'/>">
     <link rel="stylesheet" href="<c:url value='/css/homepage.css'/>">
+
+    <script src="<c:url value='/js/main.js'/>" defer></script>
 </head>
 <body>
-    <!-- Header -->
-    <%@ include file="/WEB-INF/jsp/header.jsp" %>
+<%@ include file="/WEB-INF/jsp/header.jsp" %>
 
-    <!-- Home Section -->
-    <section class="home">
-        <div class="container">
-            <h1 style="color: white">Benvenuto su Readify</h1>
-            <p>Scopri la nostra vasta selezione di libri e approfitta delle migliori offerte</p>
+<section class="home">
+    <div class="container">
+        <div class="home-content">
+            <span class="home-eyebrow">Pronto a scegliere il tuo prossimo libro?</span>
+            <h1>Benvenuto su Readify</h1>
+            <p>Scopri novità e classici, aggiungi al carrello in un attimo e tieni d'occhio i tuoi ordini quando vuoi.</p>
             <div class="home-buttons">
                 <a href="<c:url value='/libri'/>" class="button">
                     Esplora il catalogo
                 </a>
+                <a href="<c:url value='/profilo'/>" class="btn btn-outline">
+                    Vai al profilo
+                </a>
             </div>
         </div>
-    </section>
+    </div>
+</section>
 
-    <!-- Sezione Caratteristiche -->
-    <section class="features">
-        <div class="container">
-            <h2 class="section-title">Perché scegliere Readify?</h2>
-            <div class="features-grid">
-                <div class="feature">
-                    <div class="feature-icon">📚</div>
-                    <h3>Vasta selezione</h3>
-                    <p>Migliaia di titoli tra cui scegliere, dai classici alle ultime uscite.</p>
-                </div>
-                <div class="feature">
-                    <div class="feature-icon">🚚</div>
-                    <h3>Spedizione veloce</h3>
-                    <p>Consegna rapida in tutta Italia entro 2-3 giorni lavorativi.</p>
-                </div>
-                <div class="feature">
-                    <div class="feature-icon">🔒</div>
-                    <h3>Pagamento sicuro</h3>
-                    <p>Transazioni protette e pagamenti sicuri al 100%.</p>
-                </div>
+<section class="features">
+    <div class="container">
+        <h2 class="section-title">Perchè scegliere Readify</h2>
+        <div class="features-grid">
+            <div class="feature">
+                <div class="feature-icon">1</div>
+                <h3>Selezione che si fa trovare</h3>
+                <p>Novità, classici e titoli scelti per farti scoprire qualcosa di buono al volo.</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">2</div>
+                <h3>Carrello dinamico e veloce</h3>
+                <p>Aumenti o riduci la quantità in un clic e vedi subito il totale.</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">3</div>
+                <h3>Ordini sempre sotto controllo</h3>
+                <p>Profilo aggiornato e storico acquisti pronto quando ti serve.</p>
             </div>
         </div>
-    </section>
+    </div>
+</section>
 
-    <!-- Footer -->
-    <jsp:include page="/WEB-INF/jsp/footer.jsp" />
+<jsp:include page="/WEB-INF/jsp/footer.jsp" />
 </body>
 </html>

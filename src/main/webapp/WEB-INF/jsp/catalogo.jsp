@@ -1,15 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-<!--debug -->
-<c:if test="${empty libri or libri.size() == 0}">
-    <div class="debug-warning">
-        ATTENZIONE: La lista dei libri è vuota o non è stata caricata correttamente.
-        <c:if test="${not empty requestScope['jakarta.servlet.error.message']}">
-            <br/>Errore: ${requestScope['jakarta.servlet.error.message']}
-        </c:if>
-    </div>
-</c:if>
+
 <!DOCTYPE html>
 <html lang="it">
 <head>
@@ -19,166 +11,187 @@
     <link rel="stylesheet" href="<c:url value='/css/style.css' />">
     <link rel="stylesheet" href="<c:url value='/css/catalogo.css' />">
 </head>
-<body>
+<body class="page-catalogo-v2">
+
 <jsp:include page="header.jsp" />
 
-<main class="container">
-    <div class="catalogo-layout">
-        <aside class="sidebar">
-            <div class="sidebar-section">
-                <h3>Categorie</h3>
-                <div class="categorie-list" id="categorieGrid">
-                    <div class="categoria-item selezionata" data-categoria-id="0" onclick="filtraPerCategoria(0)">
-                        <span class="icon">📚</span>
-                        <span>Tutte le categorie</span>
-                    </div>
+<main class="catalogo-shell">
+    <section class="catalogo-topbar">
+        <div class="topbar-inner">
+            <div class="topbar-left">
+                <h1 class="catalogo-title">Catalogo</h1>
+                <p class="catalogo-subtitle">Trova il tuo prossimo libro in pochi secondi.</p>
+            </div>
 
+            <div class="topbar-actions">
+                <div class="searchbox">
+                    <span class="search-ico">🔎</span>
+                    <input id="searchInput" type="text" placeholder="Cerca per titolo o autore..." autocomplete="off">
+                    <button type="button" id="clearSearch" class="icon-btn" aria-label="Pulisci">✕</button>
+                </div>
+
+                <button type="button" id="openFilters" class="btn-soft">
+                    <span class="btn-ico">⚙️</span>
+                    Filtri
+                </button>
+
+                <div class="sortbox">
+                    <select id="sortSelect" aria-label="Ordinamento">
+                        <option value="rel">Rilevanza</option>
+                        <option value="priceAsc">Prezzo: crescente</option>
+                        <option value="priceDesc">Prezzo: decrescente</option>
+                        <option value="titleAsc">Titolo: A-Z</option>
+                        <option value="titleDesc">Titolo: Z-A</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="catalogo-body">
+        <aside class="filters-panel" id="filtersPanel" aria-label="Filtri catalogo">
+            <div class="filters-header">
+                <div class="filters-title">
+                    <span class="filters-ico">⚙️</span>
+                    <span>Filtri</span>
+                </div>
+                <button type="button" id="closeFilters" class="icon-btn" aria-label="Chiudi">✕</button>
+            </div>
+
+            <div class="filters-block">
+                <div class="filters-block-title">Categorie</div>
+                <div class="category-grid" id="categorieGrid">
+                    <button type="button" class="cat-chip active" data-categoria-id="0">Tutte</button>
                     <c:forEach items="${categorie}" var="categoria">
-                        <div class="categoria-item" data-categoria-id="${categoria.idCategoria}"
-                             onclick="filtraPerCategoria(${categoria.idCategoria})">
-                            <c:choose>
-                                <c:when test="${categoria.nomeCategoria.toLowerCase().contains('narrativa')}">
-                                    <span class="icon">📖</span>
-                                </c:when>
-                                <c:when test="${categoria.nomeCategoria.toLowerCase().contains('scolastica')}">
-                                    <span class="icon">🎓</span>
-                                </c:when>
-                                <c:when test="${categoria.nomeCategoria.toLowerCase().contains('scientific')}">
-                                    <span class="icon">🔬</span>
-                                </c:when>
-                                <c:when test="${categoria.nomeCategoria.toLowerCase().contains('bambini')}">
-                                    <span class="icon">👶</span>
-                                </c:when>
-                                <c:otherwise>
-                                    <span class="icon">📚</span>
-                                </c:otherwise>
-                            </c:choose>
-                            <span>${categoria.nomeCategoria}</span>
-                        </div>
+                        <button type="button" class="cat-chip" data-categoria-id="${categoria.idCategoria}">
+                                ${fn:escapeXml(categoria.nomeCategoria)}
+                        </button>
                     </c:forEach>
                 </div>
             </div>
 
-            <div class="search-bar">
-                <input type="text" placeholder="Cerca nel catalogo..." id="searchInput">
-                <button type="button" id="searchButton" aria-label="Cerca">
-                    <span class="icon">🔍</span>
-                    <span class="sr-only">Cerca</span>
-                </button>
-            </div>
-
-            <div class="sidebar-section">
-                <h3>Filtra per</h3>
-                <div class="filter-option">
-                    <h4>Prezzo</h4>
-                    <div>
-                        <input type="radio" id="price1" name="price" value="sotto10">
-                        <label for="price1">Sotto i 10€</label>
+            <div class="filters-block">
+                <div class="filters-block-title">Prezzo</div>
+                <div class="price-row">
+                    <div class="field">
+                        <label for="priceMin">Min</label>
+                        <input id="priceMin" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0">
                     </div>
-                    <div>
-                        <input type="radio" id="price2" name="price" value="10-20">
-                        <label for="price2">10€ - 20€</label>
-                    </div>
-                    <div>
-                        <input type="radio" id="price3" name="price" value="oltre20">
-                        <label for="price3">Oltre 20€</label>
-                    </div>
-                    <div>
-                        <input type="radio" id="priceAll" name="price" value="" checked>
-                        <label for="priceAll">Tutti i prezzi</label>
+                    <div class="field">
+                        <label for="priceMax">Max</label>
+                        <input id="priceMax" type="number" inputmode="decimal" min="0" step="0.01" placeholder="100">
                     </div>
                 </div>
+                <div class="hint">Lascia vuoto per ignorare.</div>
+            </div>
 
-                <div class="filter-option">
-                    <h4>Disponibilità</h4>
-                    <div>
-                        <input type="radio" id="avail1" name="availability" value="disponibile">
-                        <label for="avail1">Disponibile</label>
-                    </div>
-                    <div>
-                        <input type="radio" id="avail2" name="availability" value="in-arrivo">
-                        <label for="avail2">In arrivo</label>
-                    </div>
-                    <div>
-                        <input type="radio" id="availAll" name="availability" value="" checked>
-                        <label for="availAll">Tutti</label>
-                    </div>
+            <div class="filters-block">
+                <div class="filters-block-title">Disponibilità</div>
+                <div class="availability-grid">
+                    <button type="button" class="avail-chip active" data-availability="all">Tutti</button>
+                    <button type="button" class="avail-chip" data-availability="in">Disponibili</button>
+                    <button type="button" class="avail-chip" data-availability="out">Esauriti</button>
                 </div>
             </div>
 
-            <div class="sidebar-section">
-                <h3>Contatti</h3>
-                <p><span class="icon">📞</span> 123 456 7890</p>
-                <p><span class="icon">✉️</span> info@readify.it</p>
-                <p><span class="icon">📍</span> Via Roma 123, Milano</p>
+            <div class="filters-footer">
+                <button type="button" id="resetFilters" class="btn-ghost">Reset</button>
+                <button type="button" id="applyFilters" class="btn-primary">Applica</button>
             </div>
         </aside>
 
-        <div class="main-content">
-            <div class="libri-grid" id="booksGrid">
+        <section class="results-panel">
+            <div class="results-meta">
+                <div class="results-count">
+                    <span id="resultsCount">0</span> risultati
+                </div>
+                <div class="active-filters" id="activeFilters"></div>
+            </div>
+
+            <div class="books-grid" id="booksGrid">
                 <c:forEach items="${libri}" var="libro">
-                    <div class="libro-card"
-                         data-categorie="<c:forEach items="${libro.categorie}" var="cat" varStatus="loop">${cat}${!loop.last ? ',' : ''}</c:forEach>"
-                         data-prezzo="${libro.prezzo}"
-                         data-disponibile="${libro.disponibilita > 0}">
-                        <div class="img-container">
-                            <img src="${pageContext.request.contextPath}/img/libri/copertine/${not empty libro.copertina ? libro.copertina : 'default.jpg'}"
-                                 alt="${libro.titolo}"
+                    <article class="book-card"
+                             data-categorie="<c:forEach items='${libro.categorie}' var='cat' varStatus='loop'>${cat}${!loop.last ? ',' : ''}</c:forEach>"
+                             data-prezzo="${libro.prezzo}"
+                             data-disponibile="${libro.disponibilita > 0}"
+                             data-titolo="${fn:escapeXml(libro.titolo)}"
+                             data-autore="${fn:escapeXml(libro.autore)}">
+                        <a class="book-media" href="${pageContext.request.contextPath}/dettaglio-libro?id=${libro.idLibro}">
+                            <img class="book-cover"
+                                 src="${pageContext.request.contextPath}/img/libri/copertine/${not empty libro.copertina ? libro.copertina : 'default.jpg'}"
+                                 alt="${fn:escapeXml(libro.titolo)}"
                                  onerror="this.onerror=null; this.src='${pageContext.request.contextPath}/img/libri/copertine/default.jpg';">
-                        </div>
-                        <div class="libro-info">
-                            <h3>${libro.titolo}</h3>
-                            <p class="autore">${libro.autore}</p>
-                            <c:if test="${not empty libro.descrizione}">
-                                <p class="descrizione">
-                                        ${fn:length(libro.descrizione) > 150 ?
-                                                fn:substring(libro.descrizione, 0, 150).concat('...') :
-                                                libro.descrizione}
-                                </p>
-                            </c:if>
-                            <div class="prezzo-disponibilita">
-                                <p class="prezzo">
-                                    <span class="prezzo-label">Prezzo: </span>
-                                    <span class="prezzo-valore">
-                                        ${libro.prezzo} €
-                                    </span>
-                                </p>
-                                <p class="disponibilita">
+                            <c:choose>
+                                <c:when test="${libro.disponibilita > 0}">
+                                    <span class="badge badge-ok">Disponibile</span>
+                                </c:when>
+                                <c:otherwise>
+                                    <span class="badge badge-ko">Esaurito</span>
+                                </c:otherwise>
+                            </c:choose>
+                        </a>
+
+                        <div class="book-body">
+                            <div class="book-main">
+                                <a class="book-title-link" href="${pageContext.request.contextPath}/dettaglio-libro?id=${libro.idLibro}">
+                                    <h3 class="book-title">${fn:escapeXml(libro.titolo)}</h3>
+                                </a>
+                                <div class="book-author">${fn:escapeXml(libro.autore)}</div>
+
+                                <c:if test="${not empty libro.descrizione}">
+                                    <p class="book-desc">
+                                            ${fn:length(libro.descrizione) > 120 ? fn:substring(libro.descrizione, 0, 120).concat('...') : libro.descrizione}
+                                    </p>
+                                </c:if>
+                            </div>
+
+                            <div class="book-footer">
+                                <div class="price">
+                                    <span class="price-label">Prezzo</span>
+                                    <span class="price-value">${libro.prezzo} €</span>
+                                </div>
+
+                                <div class="cta">
+                                    <a class="btn-primary btn-sm" href="${pageContext.request.contextPath}/dettaglio-libro?id=${libro.idLibro}">
+                                        Dettagli
+                                    </a>
                                     <c:choose>
                                         <c:when test="${libro.disponibilita > 0}">
-                                            <span class="disponibile">Disponibile (${libro.disponibilita})</span>
+                                            <form method="post" action="${pageContext.request.contextPath}/carrello" class="inline-form">
+                                                <input type="hidden" name="azione" value="aggiungi">
+                                                <input type="hidden" name="idLibro" value="${libro.idLibro}">
+                                                <input type="hidden" name="quantita" value="1">
+                                                <button type="submit" class="btn-soft btn-sm">Aggiungi al carrello</button>
+                                            </form>
                                         </c:when>
                                         <c:otherwise>
-                                            <span class="non-disponibile">Non disponibile</span>
+                                            <button type="button" class="btn-ghost btn-sm" disabled>Non disponibile</button>
                                         </c:otherwise>
                                     </c:choose>
-                                </p>
-                            </div>
-                            <div class="libro-azioni">
-                                <c:choose>
-                                    <c:when test="${libro.disponibilita > 0}">
-                                        <a href="${pageContext.request.contextPath}/dettaglio-libro?id=${libro.idLibro}" class="btn btn-primary">Dettagli</a>
-                                    </c:when>
-                                    <c:otherwise>
-                                        <div class="tooltip-container">
-                                            <button class="btn btn-secondary" disabled>Avvisami</button>
-                                            <span class="tooltip-text">WIP</span>
-                                        </div>
-                                    </c:otherwise>
-                                </c:choose>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    </article>
                 </c:forEach>
 
                 <c:if test="${empty libri}">
-                    <div class="nessun-risultato">
-                        <p>Nessun libro disponibile con i filtri selezionati.</p>
+                    <div class="empty-state">
+                        <div class="empty-ico">📚</div>
+                        <div class="empty-title">Nessun libro disponibile</div>
+                        <div class="empty-sub">Prova a cambiare filtri o controlla più tardi.</div>
                     </div>
                 </c:if>
             </div>
-        </div>
-    </div>
+
+            <div class="no-results" id="noResults" style="display:none;">
+                <div class="empty-state">
+                    <div class="empty-ico">🔎</div>
+                    <div class="empty-title">Nessun risultato</div>
+                    <div class="empty-sub">Prova a modificare ricerca o filtri.</div>
+                </div>
+            </div>
+        </section>
+    </section>
 </main>
 
 <jsp:include page="footer.jsp" />

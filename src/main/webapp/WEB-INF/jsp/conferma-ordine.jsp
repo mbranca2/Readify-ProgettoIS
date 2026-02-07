@@ -20,7 +20,7 @@
 
         <div class="order-actions">
             <a href="${pageContext.request.contextPath}/" class="btn btn-primary">Torna alla Home</a>
-            <a href="${pageContext.request.contextPath}/profilo/ordini" class="btn btn-outline">I Miei Ordini</a>
+            <a href="${pageContext.request.contextPath}/profilo?tab=orders" class="btn btn-outline">I Miei Ordini</a>
         </div>
     </div>
 </div>

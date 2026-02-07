@@ -37,10 +37,8 @@ public class RegisterServlet extends HttpServlet {
         String cap = ValidatoreForm.pulisciInput(request.getParameter("cap"));
         String provincia = ValidatoreForm.pulisciInput(request.getParameter("provincia"));
         String paese = ValidatoreForm.pulisciInput(request.getParameter("paese"));
-        boolean privacyAccettata = request.getParameter("privacy") != null;
-
         Map<String, String> errori = ValidatoreForm.validaRegistrazione(
-                nome, cognome, email, password, confermaPassword, telefono, privacyAccettata, via, citta, cap, provincia, paese);
+                nome, cognome, email, password, confermaPassword, telefono, via, citta, cap, provincia, paese);
 
         if (!errori.isEmpty()) {
             request.setAttribute("nome", nome);

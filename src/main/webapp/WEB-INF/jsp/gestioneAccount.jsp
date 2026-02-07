@@ -39,10 +39,10 @@
             <div class="account-content">
                 <!-- Menu laterale -->
                 <div class="account-menu">
-                    <button class="tab-button active" data-target="profile">Profilo</button>
+                    <button class="tab-button active" data-target="profile">Dati personali</button>
                     <button class="tab-button" data-target="address">Indirizzo</button>
                     <button class="tab-button" data-target="password">Password</button>
-                    <button class="tab-button" data-target="orders">I miei ordini</button>
+                    <button class="tab-button" data-target="orders">Ordini</button>
                 </div>
 
                 <!-- Contenuti -->

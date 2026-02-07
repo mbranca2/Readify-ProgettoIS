@@ -67,6 +67,10 @@ public class LoginServlet extends HttpServlet {
                 handleLoginError(request, response, ex.getMessage(), email);
                 return;
             }
+            if (utente == null) {
+                handleLoginError(request, response, "Email o password non corretti.", email);
+                return;
+            }
 
             HttpSession oldSession = request.getSession(false);
             Carrello carrelloTemporaneo = null;

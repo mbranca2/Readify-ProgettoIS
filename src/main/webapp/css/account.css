@@ -21,12 +21,11 @@
 
 /* Base  */
 .account-container {
-    max-width: 1000px;
-    margin: 2rem auto;
-    padding: 2rem;
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: var(--box-shadow);
+    max-width: none;
+    width: min(1320px, calc(100% - 80px));
+    margin: 2.5rem auto;
+    padding: 0;
+    background: transparent;
 }
 
 /*  Header */
@@ -71,48 +70,65 @@
 
 /* Account layout */
 .account-content {
-    display: flex;
-    gap: 2rem;
+    display: grid;
+    grid-template-columns: 320px minmax(0, 1fr);
+    gap: 28px;
+    align-items: start;
 }
 
 /* Account menù */
 .account-menu {
-    width: 200px;
-    flex-shrink: 0;
+    width: 100%;
+    background: #ffffff;
+    border: 1px solid #e6e2dd;
+    border-radius: 14px;
+    padding: 14px;
+    box-shadow: 0 12px 24px rgba(17, 24, 39, 0.08);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 }
 
 .tab-button {
-    padding: 10px 20px;
-    background-color: #f8f9fa;
-    border: 1px solid #ddd;
-    border-bottom: none;
+    width: 100%;
+    padding: 10px 14px;
+    background-color: #f7f3ee;
+    border: 1px solid #ece7e2;
     cursor: pointer;
-    margin-right: 5px;
-    border-radius: 4px 4px 0 0;
+    border-radius: 10px;
+    text-align: left;
+    font-weight: 600;
+    color: var(--primary-color);
+    transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
 }
 
 .tab-button:hover {
-    background-color: var(--light-color);
+    background-color: #fff6ec;
+    border-color: #e6d9ce;
+    transform: translateX(2px);
 }
 
 .tab-button.active {
-    background-color: #fff;
-    border-bottom: 1px solid #fff;
-    margin-bottom: -1px;
-    font-weight: bold;
+    background-color: #ffffff;
+    border-color: #cfe2dc;
+    box-shadow: 0 8px 16px rgba(17, 24, 39, 0.08);
 }
 
 /* Tab */
 .tab-section {
     flex: 1;
+    background: #ffffff;
+    border: 1px solid #e6e2dd;
+    border-radius: 16px;
+    padding: 26px;
+    box-shadow: 0 14px 30px rgba(17, 24, 39, 0.12);
 }
 
 .tab-panel {
     display: none;
-    padding: 20px;
-    border: 1px solid #ddd;
-    border-radius: 0 0 4px 4px;
-    margin-top: -1px;
+    padding: 0;
+    border: none;
+    margin: 0;
 }
 
 .tab-panel.active {
@@ -130,7 +146,7 @@
     margin-bottom: 1.5rem;
     color: var(--primary-color);
     padding-bottom: 0.5rem;
-    border-bottom: 1px solid var(--border-color);
+    border-bottom: 1px solid #e6e2dd;
 }
 
 /* stili form */
@@ -239,7 +255,7 @@
 /* Responsive */
 @media (max-width: 768px) {
     .account-content {
-        flex-direction: column;
+        grid-template-columns: 1fr;
     }
     
     .account-menu {

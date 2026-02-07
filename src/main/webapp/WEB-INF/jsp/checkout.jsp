@@ -15,10 +15,9 @@
 <jsp:include page="header.jsp" />
 
 <div class="checkout-container">
-    <div class="checkout-card">
-        <div class="checkout-header">
-            <h2 class="checkout-title">Conferma Ordine</h2>
-        </div>
+    <div class="checkout-header">
+        <h2 class="checkout-title">Conferma Ordine</h2>
+    </div>
 
         <c:if test="${not empty errore}">
             <div class="alert alert-warning alert-dynamic" role="alert">
@@ -39,20 +38,27 @@
             <c:otherwise>
                 <h3>Riepilogo del tuo ordine:</h3>
 
-                <table class="order-table">
-                    <thead>
-                    <tr>
-                        <th>Prodotto</th>
-                        <th class="text-center">Quantità</th>
-                        <th class="text-end">Prezzo</th>
-                    </tr>
-                    </thead>
-                    <tbody>
+                <div class="checkout-items">
                     <c:forEach items="${sessionScope.carrello.articoli}" var="articolo">
-                        <tr>
-                            <td>${articolo.libro.titolo}</td>
-                            <td class="text-center">${articolo.quantita}</td>
-                            <td class="text-end">
+                        <div class="checkout-item">
+                            <div class="checkout-item-details">
+                                <span class="checkout-item-title">${articolo.libro.titolo}</span>
+                                <div class="checkout-item-meta">
+                                    <span>Quantità: ${articolo.quantita}</span>
+                                    <span class="checkout-item-sep">|</span>
+                                    <span>
+                                        Prezzo unitario:
+                                        <fmt:formatNumber value="${articolo.libro.prezzo}"
+                                                          type="currency"
+                                                          currencyCode="EUR"
+                                                          maxFractionDigits="2"
+                                                          minFractionDigits="2"
+                                                          groupingUsed="true"/>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="checkout-item-price">
+                                <span class="checkout-item-price-label">Totale riga</span>
                                 <c:set var="prezzo" value="${articolo.libro.prezzo}" />
                                 <c:set var="quantita" value="${articolo.quantita}" />
                                 <fmt:formatNumber value="${prezzo * quantita}"
@@ -61,20 +67,20 @@
                                                   maxFractionDigits="2"
                                                   minFractionDigits="2"
                                                   groupingUsed="true"/>
-                            </td>
-                        </tr>
+                            </div>
+                        </div>
                     </c:forEach>
-                    </tbody>
-                </table>
+                </div>
 
                 <div class="order-summary">
+                    <h4 class="summary-title">Riepilogo</h4>
                     <div class="summary-row">
-                        <span>Totale articoli:</span>
-                        <span>${sessionScope.carrello.totaleArticoli}</span>
+                        <span class="summary-label">Totale articoli</span>
+                        <span class="summary-value">${sessionScope.carrello.totaleArticoli}</span>
                     </div>
                     <div class="summary-row summary-total">
-                        <span>Totale:</span>
-                        <span>
+                        <span class="summary-label">Totale ordine</span>
+                        <span class="summary-value">
                             <fmt:formatNumber value="${sessionScope.carrello.totale}"
                                               type="currency" currencyCode="EUR" maxFractionDigits="2"/>
                         </span>
@@ -113,7 +119,6 @@
                 </div>
             </c:otherwise>
         </c:choose>
-    </div>
 </div>
 
 <script>
@@ -163,3 +168,6 @@
 
 </body>
 </html>
+
+
+

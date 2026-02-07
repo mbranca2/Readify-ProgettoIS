@@ -50,9 +50,18 @@ public class CambiaPasswordServlet extends HttpServlet {
             return;
         }
 
-        String oldPassword = trim(request.getParameter("oldPassword"));
-        String newPassword = trim(request.getParameter("newPassword"));
-        String confirmPassword = trim(request.getParameter("confirmPassword"));
+        String oldPassword = firstNonEmpty(
+                request.getParameter("oldPassword"),
+                request.getParameter("vecchiaPassword")
+        );
+        String newPassword = firstNonEmpty(
+                request.getParameter("newPassword"),
+                request.getParameter("nuovaPassword")
+        );
+        String confirmPassword = firstNonEmpty(
+                request.getParameter("confirmPassword"),
+                request.getParameter("confermaPassword")
+        );
 
         if (oldPassword.isEmpty() || newPassword.isEmpty() || confirmPassword.isEmpty()) {
             request.setAttribute("errore", "Compila tutti i campi.");
@@ -76,7 +85,8 @@ public class CambiaPasswordServlet extends HttpServlet {
         }
 
         if (ok) {
-            request.setAttribute("successo", "Password aggiornata con successo.");
+            request.setAttribute("messaggio", "Password aggiornata con successo.");
+            request.setAttribute("tipoMessaggio", "success");
         } else {
             request.setAttribute("errore", "Impossibile aggiornare la password. Verifica la password attuale.");
         }
@@ -84,7 +94,12 @@ public class CambiaPasswordServlet extends HttpServlet {
         request.getRequestDispatcher("/WEB-INF/jsp/gestioneAccount.jsp").forward(request, response);
     }
 
-    private String trim(String s) {
-        return (s == null) ? "" : s.trim();
+    private String firstNonEmpty(String... values) {
+        if (values == null) return "";
+        for (String value : values) {
+            String trimmed = (value == null) ? "" : value.trim();
+            if (!trimmed.isEmpty()) return trimmed;
+        }
+        return "";
     }
 }

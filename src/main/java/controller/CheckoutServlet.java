@@ -79,6 +79,7 @@ public class CheckoutServlet extends HttpServlet {
             return;
         }
 
+        request.setAttribute("indirizzi", addressService.listByUser(utente.getIdUtente()));
         request.setAttribute("indirizzoSpedizione", idIndirizzoSpedizione);
         request.getRequestDispatcher("/WEB-INF/jsp/pagamento.jsp").forward(request, response);
     }

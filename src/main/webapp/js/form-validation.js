@@ -7,7 +7,6 @@ function validateRegistrationForm() {
     const telefono = document.getElementById('telefono')?.value.trim() || '';
     const password = document.getElementById('password').value;
     const confermaPassword = document.getElementById('confermaPassword').value;
-    const privacyCheckbox = document.querySelector('input[name="privacy"]');
 
     resetErrorMessages();
     
@@ -68,12 +67,6 @@ function validateRegistrationForm() {
         isValid = false;
     }
     
-    // Validazione privacy
-    if (!privacyCheckbox.checked) {
-        showError('privacy', 'Devi accettare la privacy policy');
-        isValid = false;
-    }
-
     const submitButton = form.querySelector('button[type="submit"]');
     if (isValid && submitButton) {
         submitButton.disabled = true;
@@ -84,44 +77,27 @@ function validateRegistrationForm() {
 }
 
 function showError(fieldId, message) {
-    let field, errorDiv;
+    let errorDiv;
+    const field = document.getElementById(fieldId);
+    const formGroup = field.closest('.form-group') || field.parentNode;
 
-    if (fieldId === 'privacy') {
-        field = document.querySelector('input[name="privacy"]');
-        const formGroup = field.closest('.form-group');
-
-        let existingError = formGroup.querySelector('.invalid-feedback');
-        if (!existingError) {
-            errorDiv = document.createElement('div');
-            errorDiv.className = 'invalid-feedback d-block';
-            formGroup.appendChild(errorDiv);
-        } else {
-            errorDiv = existingError;
-        }
-        
-        errorDiv.textContent = message;
-        field.classList.add('is-invalid');
+    let existingError = formGroup.querySelector('.invalid-feedback');
+    if (!existingError) {
+        errorDiv = document.createElement('div');
+        errorDiv.className = 'invalid-feedback';
+        errorDiv.dataset.generated = 'true';
+        formGroup.appendChild(errorDiv);
     } else {
-        field = document.getElementById(fieldId);
-        const formGroup = field.closest('.form-group') || field.parentNode;
-
-        let existingError = formGroup.querySelector('.invalid-feedback');
-        if (!existingError) {
-            errorDiv = document.createElement('div');
-            errorDiv.className = 'invalid-feedback';
-            formGroup.appendChild(errorDiv);
-        } else {
-            errorDiv = existingError;
-        }
-        
-        errorDiv.textContent = message;
-        field.classList.add('is-invalid');
+        errorDiv = existingError;
     }
+    
+    errorDiv.textContent = message;
+    field.classList.add('is-invalid');
     
     // Aggiungo un listener per rimuovere l'errore quando l'utente inizia a scrivere
     const clearError = () => {
         field.classList.remove('is-invalid');
-        if (errorDiv) {
+        if (errorDiv && errorDiv.dataset.generated === 'true') {
             errorDiv.remove();
         }
         field.removeEventListener('input', clearError);
@@ -137,8 +113,7 @@ function showError(fieldId, message) {
 }
 
 function resetErrorMessages() {
-    document.querySelectorAll('.invalid-feedback').forEach(el => el.remove());
-
+    document.querySelectorAll('.invalid-feedback[data-generated="true"]').forEach(el => el.remove());
     document.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
 }
 
@@ -149,6 +124,51 @@ document.addEventListener('DOMContentLoaded', function() {
         registrationForm.addEventListener('submit', function(event) {
             if (!validateRegistrationForm()) {
                 event.preventDefault();
+            }
+        });
+
+        registrationForm.addEventListener('focusin', (event) => {
+            const target = event.target;
+            if (!(target instanceof HTMLElement) || !target.matches('input, textarea, select')) {
+                return;
+            }
+            const formGroup = target.closest('.form-group');
+            if (!formGroup) {
+                return;
+            }
+            const hint = formGroup.querySelector('.format-hint');
+            if (hint) {
+                hint.classList.remove('is-visible');
+            }
+        });
+
+        registrationForm.addEventListener('focusout', (event) => {
+            const target = event.target;
+            if (!(target instanceof HTMLElement) || !target.matches('input, textarea, select')) {
+                return;
+            }
+            const formGroup = target.closest('.form-group');
+            if (!formGroup) {
+                return;
+            }
+            const hint = formGroup.querySelector('.format-hint');
+            if (hint && target.value.trim() !== '') {
+                hint.classList.add('is-visible');
+            }
+        });
+
+        registrationForm.addEventListener('input', (event) => {
+            const target = event.target;
+            if (!(target instanceof HTMLElement) || !target.matches('input, textarea, select')) {
+                return;
+            }
+            const formGroup = target.closest('.form-group');
+            if (!formGroup) {
+                return;
+            }
+            const hint = formGroup.querySelector('.format-hint');
+            if (hint && target.value.trim() === '') {
+                hint.classList.remove('is-visible');
             }
         });
     }

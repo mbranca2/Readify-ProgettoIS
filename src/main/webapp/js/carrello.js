@@ -1,243 +1,260 @@
+document.addEventListener('DOMContentLoaded', () => {
+    initCartHandlers();
+});
 
-let eventiInizializzati = false;
-
-//inizializzo gli eventi del carrello
-function inizializzaEventiCarrello() {
-    console.log("Inizializzazione eventi carrello...");
-    if (eventiInizializzati) return;
-    eventiInizializzati = true;
-
-    // Gestisco pulsanti di modifica quantità
-    document.querySelectorAll(".quantity-btn").forEach(btn => {
-        btn.addEventListener("click", async event => {
-            const isPlus = btn.classList.contains("plus");
-            const isMinus = btn.classList.contains("minus");
-            const productId = btn.dataset.productId;
-            const input = document.querySelector(`input.quantity-input[data-product-id="${productId}"]`);
-
-            if (!input) return;
-
-            let quantity = parseInt(input.value);
-
-            if (isPlus) {
-                quantity++;
-            } else if (isMinus && quantity > 1) {
-                quantity--;
-            }
-
-            input.value = quantity;
-
-            try {
-                const res = await fetch(`${contextPath}/carrello`, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/x-www-form-urlencoded",
-                        "X-Requested-With": "XMLHttpRequest"
-                    },
-                    body: `azione=aggiorna&idLibro=${productId}&quantita=${quantity}`
-                });
-
-                const data = await res.json();
-
-                if (data.success) {
-                    const item = data.articoli.find(i => i.idLibro == productId);
-                    if (item) {
-                        const prezzoTotale = document.querySelector(`#totale-${productId}`);
-                        if (prezzoTotale) {
-                            prezzoTotale.textContent = `€${item.totale.toFixed(2)}`;
-                        }
-                    }
-
-                    document.getElementById("cart-total").textContent = `€${data.totale.toFixed(2)}`;
-                }
-            } catch (err) {
-                console.error("Errore nell'aggiornamento:", err);
-            }
-        });
+function initCartHandlers() {
+    document.querySelectorAll('.quantity-btn').forEach(btn => {
+        btn.addEventListener('click', onQuantityButtonClick);
     });
-    
-    // Gestisco l'input
+
     document.querySelectorAll('.quantity-input').forEach(input => {
-        input.addEventListener('change', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            
-            const productId = this.dataset.productId;
-            let newQuantity = parseInt(this.value) || 1;
-            
-            if (newQuantity < 1) {
-                newQuantity = 1;
-                this.value = 1;
+        input.addEventListener('change', onQuantityInputChange);
+        input.addEventListener('blur', onQuantityInputChange);
+        input.addEventListener('keydown', e => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                input.blur();
             }
-            
-            aggiornaQuantitaProdotto(productId, newQuantity);
         });
     });
 
-    // Gestisco rimozione di un libro
-    document.querySelectorAll('.remove-btn').forEach(button => {
-        button.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            
-            const productId = this.dataset.productId;
-            rimuoviProdotto(productId);
-        });
+    document.querySelectorAll('.remove-item, .remove-btn').forEach(btn => {
+        btn.addEventListener('click', onRemoveClick);
     });
 }
 
-// Inizializzo gli eventi quando il DOM è caricato
-document.addEventListener('DOMContentLoaded', inizializzaEventiCarrello);
+async function onQuantityButtonClick(e) {
+    e.preventDefault();
 
-function aggiornaQuantitaProdotto(idProdotto, nuovaQuantita) {
-    //disabilito i controlli durante l'aggiornamento
-    const controls = document.querySelectorAll(`.quantity-input[data-product-id="${idProdotto}"],.quantity-btn[data-product-id="${idProdotto}"]`);
-    controls.forEach(control => control.disabled = true);
+    const btn = e.currentTarget;
+    const productId = btn.dataset.productId;
+    const input = document.querySelector(`.quantity-input[data-product-id="${productId}"]`);
+    if (!input) return;
 
-    const formData = new URLSearchParams();
-    formData.append('azione', 'aggiorna');
-    formData.append('idLibro', idProdotto);
-    formData.append('quantita', nuovaQuantita);
+    const max = parseInt(input.getAttribute('max') || '999999', 10);
+    const min = parseInt(input.getAttribute('min') || '1', 10);
+    const current = parseInt(input.value || '1', 10);
 
-    fetch(`${contextPath}/carrello`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-Requested-With': 'XMLHttpRequest' },
-        body: formData.toString()
-    })
+    let next = current;
+    if (btn.classList.contains('plus')) next = current + 1;
+    if (btn.classList.contains('minus')) next = current - 1;
 
-        .then(response => {
-            if (!response.ok) {
-                return response.json()
-                    .then(err => { throw new Error(err.message || 'Errore durante l\'aggiornamento del carrello'); })
-                    .catch(() => { throw new Error('Errore durante l\'aggiornamento del carrello'); });
-            }
-            return response.json();
-        })
-        .then(data => {
-            console.log(data)
-            aggiornaUIcarrello(data);
-        })
-        .catch(error => {
-            console.error('Errore:', error);
-            mostraMessaggio(error.message || 'Si è verificato un errore durante l\'aggiornamento del carrello', 'danger');
-            window.location.reload();
-        })
-        .finally(() => {
-            controls.forEach(control => control.disabled = false);
-        });
+    if (Number.isNaN(next)) next = min;
+    next = clamp(next, min, max);
+
+    if (next === current) return;
+
+    await updateQuantity(productId, next, { previous: current, input });
 }
 
-function rimuoviProdotto(idProdotto) {
+async function onQuantityInputChange(e) {
+    const input = e.currentTarget;
+    const productId = input.dataset.productId;
+
+    const max = parseInt(input.getAttribute('max') || '999999', 10);
+    const min = parseInt(input.getAttribute('min') || '1', 10);
+
+    const prev = parseInt(input.value || String(min), 10);
+
+    let next = parseInt(input.value || String(min), 10);
+    if (Number.isNaN(next)) next = min;
+    next = clamp(next, min, max);
+
+    input.value = next;
+
+    await updateQuantity(productId, next, { previous: prev, input });
+}
+
+async function onRemoveClick(e) {
+    e.preventDefault();
+
+    const btn = e.currentTarget;
+    const productId = btn.dataset.productId;
+    if (!productId) return;
+
     const conferma = window.confirm('Sei sicuro di voler rimuovere questo prodotto dal carrello?');
     if (!conferma) return;
 
-    const removeButtons = document.querySelectorAll(`.remove-btn[data-product-id="${idProdotto}"]`);
-    removeButtons.forEach(btn => btn.disabled = true);
+    setRowDisabled(productId, true);
 
-    fetch(`${contextPath}/carrello`, {
+    try {
+        const data = await postCartAction('rimuovi', productId);
+
+        if (!data.success) {
+            toast(data.message || 'Errore durante la rimozione del prodotto', 'danger');
+            setRowDisabled(productId, false);
+            return;
+        }
+
+        const row = document.querySelector(`.cart-item[data-product-id="${productId}"]`);
+        if (row) {
+            row.style.opacity = '0';
+            row.style.transition = 'opacity 0.2s ease';
+            setTimeout(() => row.remove(), 220);
+        }
+
+        applyCartUpdate(data);
+        toast('Prodotto rimosso dal carrello', 'success');
+    } catch (err) {
+        toast(err.message || 'Si \u00e8 verificato un errore durante la rimozione del prodotto', 'danger');
+        setRowDisabled(productId, false);
+    }
+}
+
+async function updateQuantity(productId, quantity, ctx) {
+    if (!productId) return;
+
+    const input = ctx?.input || document.querySelector(`.quantity-input[data-product-id="${productId}"]`);
+    if (!input) return;
+
+    const prev = typeof ctx?.previous === 'number' && !Number.isNaN(ctx.previous)
+        ? ctx.previous
+        : parseInt(input.value || '1', 10);
+
+    setRowDisabled(productId, true);
+
+    try {
+        const data = await postCartAction('aggiorna', productId, quantity);
+
+        if (!data.success) {
+            input.value = prev;
+            toast(data.message || 'Errore durante l\u2019aggiornamento della quantit\u00e0', 'danger');
+            return;
+        }
+
+        const serverItem = Array.isArray(data.articoli)
+            ? data.articoli.find(a => String(a.idLibro) === String(productId))
+            : null;
+
+        if (serverItem && typeof serverItem.quantita === 'number') input.value = String(serverItem.quantita);
+
+        applyCartUpdate(data);
+    } catch (err) {
+        input.value = prev;
+        toast(err.message || 'Si \u00e8 verificato un errore durante l\u2019aggiornamento del carrello', 'danger');
+    } finally {
+        setRowDisabled(productId, false);
+    }
+}
+
+async function postCartAction(azione, idLibro, quantita) {
+    if (typeof contextPath === 'undefined') throw new Error('contextPath non definito');
+
+    const params = new URLSearchParams();
+    params.append('azione', azione);
+    params.append('idLibro', idLibro);
+    if (typeof quantita !== 'undefined') params.append('quantita', String(quantita));
+
+    const res = await fetch(`${contextPath}/carrello`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
             'X-Requested-With': 'XMLHttpRequest'
         },
-        body: `azione=rimuovi&idLibro=${idProdotto}`
-    })
-        .then(response => {
-            if (!response.ok) {
-                return response.json().then(err => {
-                    throw new Error(err.message || 'Errore durante la rimozione del prodotto');
-                });
-            }
-            return response.json();
-        })
-        .then(data => {
-            const item = document.querySelector(`.cart-item[data-product-id="${idProdotto}"]`);
-            if (item) {
-                item.style.transition = 'opacity 0.3s ease';
-                item.style.opacity = '0';
-                setTimeout(() => {
-                    item.remove();
-                    aggiornaUIcarrello(data);
-                    mostraMessaggio('Prodotto rimosso dal carrello', 'success');
-                }, 300);
-            } else {
-                window.location.reload();
-            }
-        })
-        .catch(error => {
-            console.error('Errore:', error);
-            mostraMessaggio(error.message || 'Si è verificato un errore durante la rimozione del prodotto', 'danger');
-        })
-        .finally(() => {
-            removeButtons.forEach(btn => btn.disabled = false);
-        });
-}
-
-function aggiornaUIcarrello(data) {
-    const cartBadge = document.querySelector('.cart-badge');
-    if (cartBadge) {
-        cartBadge.textContent = data.totaleArticoli || '0';
-    }
-    
-    // Aggiorno il totale nella pagina del carrello
-    const cartTotalSpan = document.querySelector('#cart-total');
-    if (cartTotalSpan) {
-        cartTotalSpan.textContent = (data.totalePrezzo || 0).toFixed(2);
-    }
-    
-    // Aggiorno i totali parziali per ogni riga del carrello
-    document.querySelectorAll('.cart-item').forEach(row => {
-        const productId = row.dataset.productId;
-        const item = data.articoli.find(item => item.idLibro == productId);
-        if (item) {
-            document.querySelector(`#totale-${productId}`).textContent = item.totale.toFixed(2);
-        }
-        document.getElementById("totale-articoli").textContent = data.totaleArticoli;
-        document.getElementById("totale-prezzo").textContent = data.totale.toFixed(2);
+        body: params.toString()
     });
-    
-    //se il carrello è vuoto
-    const cartContainer = document.querySelector('.cart-container');
-    const emptyCartMessage = document.querySelector('.empty-cart-message');
-    const cartTable = document.querySelector('.cart-table');
 
-    if (data.totaleArticoli === 0 && cartContainer) {
-        if (!emptyCartMessage) {
-            const message = document.createElement('div');
-            message.className = 'alert alert-info empty-cart-message';
-            message.textContent = 'Il tuo carrello è vuoto.';
-            if (cartTable) cartTable.style.display = 'none';
-            cartContainer.prepend(message);
-        }
+    const data = await res.json().catch(() => null);
 
-        const cartSummary = document.querySelector('.cart-summary');
-        if (cartSummary) {
-            cartSummary.style.display = 'none';
-        }
+    if (!res.ok) {
+        const msg = data && data.message ? data.message : `Errore HTTP (${res.status})`;
+        throw new Error(msg);
+    }
 
-    } else if (emptyCartMessage) {
-        emptyCartMessage.remove();
-        if (cartTable) cartTable.style.display = 'table';
+    return data || { success: false, message: 'Risposta non valida' };
+}
 
-        const cartSummary = document.querySelector('.cart-summary');
-        if (cartSummary) {
-            cartSummary.style.display = '';
-        }
+function applyCartUpdate(data) {
+    const totaleArticoli = toInt(data?.totaleArticoli);
+    const totale = toNumber(data?.totale);
+
+    const badge = document.querySelector('.cart-badge');
+    if (badge) badge.textContent = String(totaleArticoli);
+
+    const totaleArticoliEl = document.getElementById('totale-articoli');
+    if (totaleArticoliEl) totaleArticoliEl.textContent = String(totaleArticoli);
+
+    const totalePrezzoEl = document.getElementById('totale-prezzo');
+    if (totalePrezzoEl) totalePrezzoEl.textContent = formatEuro(totale);
+
+    if (Array.isArray(data?.articoli)) {
+        data.articoli.forEach(item => {
+            const id = item?.idLibro;
+            if (typeof id === 'undefined' || id === null) return;
+
+            const rowTotal = document.getElementById(`totale-${id}`);
+            if (rowTotal && typeof item?.totale !== 'undefined') rowTotal.textContent = formatEuro(toNumber(item.totale));
+
+            const input = document.querySelector(`.quantity-input[data-product-id="${id}"]`);
+            if (input && typeof item?.quantita !== 'undefined') input.value = String(item.quantita);
+
+            syncQuantityButtonsState(String(id));
+        });
+    }
+
+    if (totaleArticoli === 0) {
+        window.location.reload();
     }
 }
 
-function mostraMessaggio(testo, tipo = 'info') {
-    const vecchiMessaggi = document.querySelectorAll('.alert-message');
-    vecchiMessaggi.forEach(msg => msg.remove());
+function syncQuantityButtonsState(productId) {
+    const input = document.querySelector(`.quantity-input[data-product-id="${productId}"]`);
+    if (!input) return;
 
-    const message = document.createElement('div');
-    message.className = `alert-message ${tipo}`;
-    message.textContent = testo;
+    const max = parseInt(input.getAttribute('max') || '999999', 10);
+    const min = parseInt(input.getAttribute('min') || '1', 10);
+    const q = parseInt(input.value || String(min), 10);
 
-    const container = document.querySelector('.container') || document.body;
-    container.prepend(message);
+    const minus = document.querySelector(`.quantity-btn.minus[data-product-id="${productId}"]`);
+    const plus = document.querySelector(`.quantity-btn.plus[data-product-id="${productId}"]`);
 
-    setTimeout(() => {
-        message.remove();
-    }, 5000);
+    if (minus) minus.disabled = !(q > min);
+    if (plus) plus.disabled = !(q < max);
 }
+
+function setRowDisabled(productId, disabled) {
+    const row = document.querySelector(`.cart-item[data-product-id="${productId}"]`);
+    if (!row) return;
+
+    row.setAttribute('aria-disabled', disabled ? 'true' : 'false');
+
+    row.querySelectorAll(
+        `.quantity-btn[data-product-id="${productId}"], 
+         .quantity-input[data-product-id="${productId}"], 
+         .remove-item[data-product-id="${productId}"], 
+         .remove-btn[data-product-id="${productId}"]`
+    ).forEach(el => {
+        el.disabled = !!disabled;
+        el.setAttribute('aria-disabled', disabled ? 'true' : 'false');
+    });
+}
+
+function toast(message, type = 'info') {
+    if (typeof showAlert === 'function') {
+        showAlert(message, type);
+        return;
+    }
+    alert(message);
+}
+
+function clamp(n, min, max) {
+    return Math.max(min, Math.min(max, n));
+}
+
+function toInt(v) {
+    const n = parseInt(String(v ?? '0'), 10);
+    return Number.isNaN(n) ? 0 : n;
+}
+
+function toNumber(v) {
+    if (typeof v === 'number') return v;
+    const n = parseFloat(String(v ?? '0').replace(',', '.'));
+    return Number.isNaN(n) ? 0 : n;
+}
+
+function formatEuro(value) {
+    const n = toNumber(value);
+    return `\u20ac${n.toFixed(2)}`;
+}
+
+

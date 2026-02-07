@@ -18,14 +18,14 @@ public class GestioneIndirizzoServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        resp.sendRedirect("profilo");
+        resp.sendRedirect(req.getContextPath() + "/profilo");
     }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         HttpSession session = req.getSession(false);
         if (session == null || session.getAttribute("utente") == null) {
-            resp.sendRedirect("jsp/login.jsp");
+            resp.sendRedirect(req.getContextPath() + "/login");
             return;
         }
 
@@ -41,7 +41,7 @@ public class GestioneIndirizzoServlet extends HttpServlet {
                 provincia == null || provincia.trim().length() != 2) {
 
             req.setAttribute("errore", "Compilare correttamente tutti i campi obbligatori");
-            req.getRequestDispatcher("jsp/gestioneAccount.jsp").forward(req, resp);
+            req.getRequestDispatcher("/WEB-INF/jsp/gestioneAccount.jsp").forward(req, resp);
             return;
         }
 
@@ -69,6 +69,6 @@ public class GestioneIndirizzoServlet extends HttpServlet {
         } else {
             req.setAttribute("errore", "Si è verificato un errore durante il salvataggio dell'indirizzo");
         }
-        req.getRequestDispatcher("jsp/gestioneAccount.jsp").forward(req, resp);
+        req.getRequestDispatcher("/WEB-INF/jsp/gestioneAccount.jsp").forward(req, resp);
     }
 }

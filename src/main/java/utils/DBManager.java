@@ -5,9 +5,20 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class DBManager {
-    private static final String URL = "jdbc:mysql://localhost:3306/readify?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true";
-    private static final String USER = "root";
-    private static final String PASSWORD = "Mario.luigi23!?";
+
+    private static final String HOST = "readify.mysql.database.azure.com";
+    private static final int PORT = 3306;
+    private static final String DB = "readify";
+
+    private static final String URL =
+            "jdbc:mysql://" + HOST + ":" + PORT + "/" + DB +
+                    "?useSSL=true" +
+                    "&requireSSL=true" +
+                    "&sslMode=REQUIRED" +
+                    "&serverTimezone=UTC";
+
+    private static final String USER = "MarioBranca";
+    private static final String PASSWORD = "ProgettoReadify26";
 
     static {
         try {

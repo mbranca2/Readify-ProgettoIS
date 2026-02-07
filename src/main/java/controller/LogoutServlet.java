@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import model.bean.Carrello;
 
 import java.io.IOException;
 
@@ -18,6 +19,9 @@ public class LogoutServlet extends HttpServlet {
         HttpSession session = request.getSession(false);
         if (session != null) {
             session.removeAttribute("utente");
+            session.removeAttribute("carrello");
+            session.removeAttribute("carrello.userId");
+            session.setAttribute("carrello", new Carrello());
         }
 
         String contextPath = request.getContextPath();

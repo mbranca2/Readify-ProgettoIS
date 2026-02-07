@@ -7,10 +7,10 @@ import java.util.regex.Pattern;
 public class ValidatoreForm {
 
     private static final Pattern EMAIL_PATTERN =
-            Pattern.compile("^[A-Za-z0-9+_.-]+@(.+)$");
+            Pattern.compile("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$");
 
     private static final Pattern PASSWORD_PATTERN =
-            Pattern.compile("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{8,}$");
+            Pattern.compile("^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$");
 
     private static final Pattern TELEFONO_PATTERN =
             Pattern.compile("^\\+?[0-9\\s-]{6,}$");
@@ -19,16 +19,14 @@ public class ValidatoreForm {
 
     private static final Pattern PROVINCIA_PATTERN = Pattern.compile("^[A-Za-z]{2}$");
 
-    public static Map<String, String> validaRegistrazione(
-            String nome, String cognome, String email,
-            String password, String confermaPassword,
-            String telefono, boolean privacyAccettata,
-            String via, String citta, String cap,
-            String provincia, String paese) {
+    public static Map<String, String> validaRegistrazione(String nome, String cognome, String email,
+                                                          String password, String confermaPassword,
+                                                          String telefono, String via, String citta, String cap,
+                                                          String provincia, String paese) {
 
         Map<String, String> errori = validaDatiPersonali(
                 nome, cognome, email, password,
-                confermaPassword, telefono, privacyAccettata
+                confermaPassword, telefono
         );
 
         Map<String, String> erroriIndirizzo = validaIndirizzo(
@@ -50,7 +48,7 @@ public class ValidatoreForm {
             errori.put("via", "L'indirizzo è obbligatorio");
         } else if (via.trim().length() < 5) {
             errori.put("via", "L'indirizzo è troppo corto");
-        } else if (via.length() > 100) {
+        } else if (via.trim().length() > 100) {
             errori.put("via", "L'indirizzo non può superare i 100 caratteri");
         }
 
@@ -58,19 +56,21 @@ public class ValidatoreForm {
             errori.put("citta", "La città è obbligatoria");
         } else if (citta.trim().length() < 2) {
             errori.put("citta", "La città deve contenere almeno 2 caratteri");
-        } else if (citta.length() > 50) {
+        } else if (citta.trim().length() > 50) {
             errori.put("citta", "La città non può superare i 50 caratteri");
         }
 
-        if (cap == null || cap.trim().isEmpty()) {
+        String capTrim = cap == null ? null : cap.trim();
+        if (capTrim == null || capTrim.isEmpty()) {
             errori.put("cap", "Il CAP è obbligatorio");
-        } else if (!CAP_PATTERN.matcher(cap).matches()) {
+        } else if (!CAP_PATTERN.matcher(capTrim).matches()) {
             errori.put("cap", "Inserisci un CAP valido (5 cifre)");
         }
 
-        if (provincia == null || provincia.trim().isEmpty()) {
+        String provinciaTrim = provincia == null ? null : provincia.trim().toUpperCase();
+        if (provinciaTrim == null || provinciaTrim.isEmpty()) {
             errori.put("provincia", "La provincia è obbligatoria");
-        } else if (!PROVINCIA_PATTERN.matcher(provincia).matches()) {
+        } else if (!PROVINCIA_PATTERN.matcher(provinciaTrim).matches()) {
             errori.put("provincia", "Inserisci una sigla di provincia valida (es: RM, MI, TO)");
         }
 
@@ -85,7 +85,8 @@ public class ValidatoreForm {
             return null;
         }
         String pulito = input.trim();
-        pulito = pulito.replace("<", "&lt;")
+        pulito = pulito.replace("&", "&amp;")
+                .replace("<", "&lt;")
                 .replace(">", "&gt;")
                 .replace("\"", "&quot;")
                 .replace("'", "&#x27;")
@@ -96,7 +97,7 @@ public class ValidatoreForm {
     private static Map<String, String> validaDatiPersonali(
             String nome, String cognome, String email,
             String password, String confermaPassword,
-            String telefono, boolean privacyAccettata) {
+            String telefono) {
 
         Map<String, String> errori = new HashMap<>();
 
@@ -104,7 +105,7 @@ public class ValidatoreForm {
             errori.put("nome", "Il nome è obbligatorio");
         } else if (nome.trim().length() < 2) {
             errori.put("nome", "Il nome deve contenere almeno 2 caratteri");
-        } else if (nome.length() > 50) {
+        } else if (nome.trim().length() > 50) {
             errori.put("nome", "Il nome non può superare i 50 caratteri");
         }
 
@@ -112,15 +113,16 @@ public class ValidatoreForm {
             errori.put("cognome", "Il cognome è obbligatorio");
         } else if (cognome.trim().length() < 2) {
             errori.put("cognome", "Il cognome deve contenere almeno 2 caratteri");
-        } else if (cognome.length() > 50) {
+        } else if (cognome.trim().length() > 50) {
             errori.put("cognome", "Il cognome non può superare i 50 caratteri");
         }
 
-        if (email == null || email.trim().isEmpty()) {
+        String emailTrim = email == null ? null : email.trim();
+        if (emailTrim == null || emailTrim.isEmpty()) {
             errori.put("email", "L'email è obbligatoria");
-        } else if (!EMAIL_PATTERN.matcher(email).matches()) {
+        } else if (!EMAIL_PATTERN.matcher(emailTrim).matches()) {
             errori.put("email", "Inserisci un indirizzo email valido");
-        } else if (email.length() > 100) {
+        } else if (emailTrim.length() > 100) {
             errori.put("email", "L'email non può superare i 100 caratteri");
         }
 
@@ -132,19 +134,15 @@ public class ValidatoreForm {
                             "una lettera maiuscola, una minuscola e un numero");
         }
 
-        if (!password.equals(confermaPassword)) {
+        if (confermaPassword == null || !password.equals(confermaPassword)) {
             errori.put("confermaPassword", "Le password non coincidono");
         }
 
-        if (telefono != null && !telefono.trim().isEmpty() &&
-                !TELEFONO_PATTERN.matcher(telefono).matches()) {
+        String telTrim = telefono == null ? null : telefono.trim();
+        if (telTrim != null && !telTrim.isEmpty() &&
+                !TELEFONO_PATTERN.matcher(telTrim).matches()) {
             errori.put("telefono", "Inserisci un numero di telefono valido");
         }
-
-        if (!privacyAccettata) {
-            errori.put("privacy", "È necessario accettare l'informativa sulla privacy");
-        }
-
         return errori;
     }
 }
