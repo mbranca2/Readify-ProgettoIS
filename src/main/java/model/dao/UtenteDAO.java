@@ -240,4 +240,23 @@ public class UtenteDAO {
             return false;
         }
     }
+
+    public Utente trovaUtentePerEmail(String email) {
+        String query = "SELECT * FROM Utente WHERE email = ?";
+
+        try (Connection conn = DBManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setString(1, email);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                return mappaRisultatoAUtente(rs);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }
