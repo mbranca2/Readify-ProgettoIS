@@ -22,11 +22,11 @@ Il progetto è stato sviluppato nell’ambito del corso di **Ingegneria del Soft
 
 - **Backend:** Java, Servlet, JSP  
 - **Database:** MySQL  
-- **Architettura:** Three-tier logica (Presentation, Application, Data)  
+- **Architettura:** Three-tier (Presentation, Application, Data)  
 
 ## Architettura del sistema
 
-Il sistema adotta un’architettura **three-tier logica**:
+Il sistema adotta un’architettura **three-tier**:
 
 - **Presentation Layer:** Servlet, Filter e JSP (in `WEB-INF`)  
 - **Application Layer:** Service per la gestione dei casi d’uso  
@@ -34,24 +34,12 @@ Il sistema adotta un’architettura **three-tier logica**:
 
 Dipendenze unidirezionali: `Controller → Service → DAO → Database`
 
-## Documentazione del progetto
-
-La documentazione completa è disponibile nella cartella dedicata e include:
-
-- Statement of Work (SOW)  
-- Requirement Analysis Document (RAD)  
-- System Design Document (SDD)  
-- Object Design Document (ODD)  
-- Test Documentation:
-  - Test Plan (TP)
-  - Test Case Scenarios (TCS)
-
 ## Installazione ed esecuzione
 
 ### Prerequisiti
 - IntelliJ IDEA  
-- Java Development Kit (JDK)  
-- Apache Tomcat  
+- Java Development Kit 21+ (JDK)  
+- Apache Tomcat 11+ 
 - MySQL  
 
 ### Avvio del progetto
@@ -62,16 +50,15 @@ La documentazione completa è disponibile nella cartella dedicata e include:
    - `File > Open` e selezionare la cartella del progetto clonata
    - attendere l’indicizzazione e la risoluzione delle dipendenze
 
-3. Configurare il **database MySQL**:
-   - creare uno schema (es. `readify`)
-   - eseguire lo script `readify.sql` presente in `src/main/resources/`
+3. Database
+   - Il db è contenuto all'interno del progetto e hostato in cloud tramite Microsoft Azure, per cui non necessita di configurazione o installazione.
 
-4. Configurare **Apache Tomcat** in IntelliJ:
+5. Configurare **Apache Tomcat** in IntelliJ:
    - `Run > Edit Configurations... > + > Tomcat Server (Local)`
    - selezionare l’installazione di Tomcat
    - nella sezione **Deployment** aggiungere l’artefatto dell’applicazione (WAR/Exploded)
 
-5. Avviare il server e accedere all’applicazione:
+6. Avviare il server e accedere all’applicazione:
    - avviare la configurazione Tomcat (`Run`)
    - aprire il browser all’URL locale mostrato da IntelliJ (tipicamente `http://localhost:8080/`)
 
