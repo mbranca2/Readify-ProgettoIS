@@ -3,15 +3,11 @@
 **Readify** è una piattaforma web per l’acquisto di libri online che consente agli utenti di navigare il catalogo, gestire un carrello, effettuare ordini e amministrare i contenuti del sistema.  
 Il progetto è stato sviluppato nell’ambito del corso di **Ingegneria del Software** presso l’**Università degli Studi di Salerno**.
 
----
-
 ## Membri Partecipanti
 - Mario Branca
 - Paolo Visconti
 - Simone Sammartano
 - Gabriele De Luca
-
----
 
 ## Funzionalità principali
 
@@ -22,15 +18,11 @@ Il progetto è stato sviluppato nell’ambito del corso di **Ingegneria del Soft
 - Sistema di **recensioni**  
 - Area **amministratore** per la gestione del catalogo  
 
----
-
 ## Tecnologie utilizzate
 
 - **Backend:** Java, Servlet, JSP  
 - **Database:** MySQL  
 - **Architettura:** Three-tier logica (Presentation, Application, Data)  
-
----
 
 ## Architettura del sistema
 
@@ -41,8 +33,6 @@ Il sistema adotta un’architettura **three-tier logica**:
 - **Data Layer:** DAO e Model per l’accesso ai dati persistenti  
 
 Dipendenze unidirezionali: `Controller → Service → DAO → Database`
-
----
 
 ## Documentazione del progetto
 
@@ -55,8 +45,6 @@ La documentazione completa è disponibile nella cartella dedicata e include:
 - Test Documentation:
   - Test Plan (TP)
   - Test Case Scenarios (TCS)
-
----
 
 ## Installazione ed esecuzione
 
@@ -87,8 +75,6 @@ La documentazione completa è disponibile nella cartella dedicata e include:
    - avviare la configurazione Tomcat (`Run`)
    - aprire il browser all’URL locale mostrato da IntelliJ (tipicamente `http://localhost:8080/`)
 
----
-
 ## Sviluppo
 
 Il progetto segue una chiara separazione dei ruoli:
@@ -98,15 +84,11 @@ Il progetto segue una chiara separazione dei ruoli:
 
 Le JSP sono collocate in `WEB-INF` e non sono direttamente accessibili.
 
----
-
 ## Sviluppi futuri
 
 - Miglioramento del sistema di recensioni  
 - Gestione avanzata degli ordini per l’amministratore  
 - Estensione delle funzionalità di ricerca e filtraggio  
-
----
 
 ## Contributi
 
