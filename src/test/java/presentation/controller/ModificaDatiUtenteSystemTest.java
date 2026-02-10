@@ -13,7 +13,7 @@ import testUtil.ReflectionTestUtils;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
-class ModificaDatiUtenteFunctionalTest {
+class ModificaDatiUtenteSystemTest {
 
     @Test
     @DisplayName("TCS Modifica Password: password attuale errata -> forward gestioneAccount.jsp con errore")

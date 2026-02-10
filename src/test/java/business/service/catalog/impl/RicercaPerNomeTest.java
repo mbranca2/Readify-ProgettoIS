@@ -11,7 +11,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
-// Classe per ricerca per nome.
 class RicercaPerNomeTest {
 
     @Test

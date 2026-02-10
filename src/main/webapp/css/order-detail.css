@@ -1,0 +1,147 @@
+.order-detail-page {
+    padding: 24px 20px 60px;
+}
+
+.order-detail-container {
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.order-detail-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.order-detail-title {
+    font-family: var(--font-display);
+    font-size: clamp(1.8rem, 3vw, 2.4rem);
+    margin: 0;
+}
+
+.order-detail-subtitle {
+    margin: 6px 0 0;
+    color: var(--text-muted);
+}
+
+.order-detail-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+    gap: 20px;
+    align-items: start;
+    margin-bottom: 20px;
+}
+
+.order-detail-card {
+    background: linear-gradient(160deg, #ffffff 0%, #f7f3ee 100%);
+    border: 1px solid var(--border-soft);
+    border-radius: 20px;
+    box-shadow: var(--shadow-soft);
+    padding: 20px 22px;
+}
+
+.order-detail-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.order-detail-row:last-child {
+    border-bottom: 0;
+}
+
+.order-status {
+    font-weight: 700;
+    color: var(--text-strong);
+}
+
+.address-block {
+    color: var(--text-strong);
+    line-height: 1.6;
+}
+
+.muted {
+    color: var(--text-muted);
+}
+
+.order-items-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 12px;
+}
+
+.order-items-table th {
+    text-align: left;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+    padding: 0.75rem 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.order-items-table td {
+    padding: 0.85rem 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    vertical-align: top;
+}
+
+.item-row {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+}
+
+.item-cover {
+    width: 56px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 8px;
+    box-shadow: 0 8px 16px rgba(17, 24, 39, 0.15);
+}
+
+.item-title {
+    font-weight: 700;
+    color: var(--text-strong);
+}
+
+.item-meta {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.text-right {
+    text-align: right;
+    white-space: nowrap;
+}
+
+@media (max-width: 900px) {
+    .order-detail-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 600px) {
+    .order-detail-page {
+        padding: 18px 14px 40px;
+    }
+
+    .order-detail-card {
+        padding: 18px;
+    }
+
+    .item-row {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .item-cover {
+        width: 72px;
+        height: 100px;
+    }
+}

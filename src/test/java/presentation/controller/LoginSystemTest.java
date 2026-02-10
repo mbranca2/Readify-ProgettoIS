@@ -15,7 +15,6 @@ import testUtil.ReflectionTestUtils;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
-// Classe per login.
 class LoginSystemTest {
 
     @Test
