@@ -138,6 +138,18 @@
                                 </a>
                                 <div class="book-author">${fn:escapeXml(libro.autore)}</div>
 
+                                <c:if test="${not empty libro.categorie}">
+                                    <div class="book-categories">
+                                        <c:forEach items="${libro.categorie}" var="catId">
+                                            <c:forEach items="${categorie}" var="categoria">
+                                                <c:if test="${categoria.idCategoria == catId}">
+                                                    <span class="category-pill">${fn:escapeXml(categoria.nomeCategoria)}</span>
+                                                </c:if>
+                                            </c:forEach>
+                                        </c:forEach>
+                                    </div>
+                                </c:if>
+
                                 <c:if test="${not empty libro.descrizione}">
                                     <p class="book-desc">
                                             ${fn:length(libro.descrizione) > 120 ? fn:substring(libro.descrizione, 0, 120).concat('...') : libro.descrizione}

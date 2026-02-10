@@ -136,11 +136,12 @@
                 console.error('Errore:', error);
                 deleteBtn.innerHTML = originalText;
                 deleteBtn.disabled = false;
-                alert(error.message || 'Si Ã¨ verificato un errore durante l\'eliminazione. Riprova piÃ¹ tardi.');
+                alert(error.message || 'Si è verificato un errore durante l\'eliminazione. Riprova più tardi.');
             });
         }
     }
 </script>
 </body>
 </html>
+
 

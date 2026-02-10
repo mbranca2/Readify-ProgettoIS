@@ -117,7 +117,6 @@ function resetErrorMessages() {
     document.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
 }
 
-// Aggiungi la validazione al form di registrazione quando il DOM è caricato
 document.addEventListener('DOMContentLoaded', function() {
     const registrationForm = document.getElementById('registrationForm');
     if (registrationForm) {

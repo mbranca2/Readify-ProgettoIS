@@ -10,16 +10,18 @@ import business.model.Indirizzo;
 import business.model.Utente;
 import business.service.ServiceFactory;
 import business.service.account.AccountService;
+import business.service.address.AddressService;
 
 import java.io.IOException;
 
 @WebServlet("/gestione-indirizzo")
 public class GestioneIndirizzoServlet extends HttpServlet {
     private final AccountService accountService = ServiceFactory.accountService();
+    private final AddressService addressService = ServiceFactory.addressService();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        resp.sendRedirect(req.getContextPath() + "/profilo");
+        resp.sendRedirect(req.getContextPath() + "/profilo?tab=address");
     }
 
     @Override
@@ -31,6 +33,22 @@ public class GestioneIndirizzoServlet extends HttpServlet {
         }
 
         Utente utente = (Utente) session.getAttribute("utente");
+        String azione = req.getParameter("azione");
+        if ("seleziona".equalsIgnoreCase(azione)) {
+            handleSelect(req, resp, session, utente);
+            return;
+        }
+        if ("nuovo".equalsIgnoreCase(azione)) {
+            session.removeAttribute("indirizzo");
+            session.setAttribute("indirizzoNuovo", true);
+            resp.sendRedirect(req.getContextPath() + "/profilo?tab=address");
+            return;
+        }
+        if ("elimina".equalsIgnoreCase(azione)) {
+            handleDelete(req, resp, session, utente);
+            return;
+        }
+
         String via = req.getParameter("via");
         String cap = req.getParameter("cap");
         String citta = req.getParameter("citta");
@@ -41,16 +59,18 @@ public class GestioneIndirizzoServlet extends HttpServlet {
                 citta == null || citta.trim().isEmpty() ||
                 provincia == null || provincia.trim().length() != 2) {
 
-            req.setAttribute("errore", "Compilare correttamente tutti i campi obbligatori");
-            req.getRequestDispatcher("/WEB-INF/jsp/gestioneAccount.jsp").forward(req, resp);
+            session.setAttribute("flashError", "Compilare correttamente tutti i campi obbligatori");
+            resp.sendRedirect(req.getContextPath() + "/profilo?tab=address");
             return;
         }
 
-        Indirizzo indirizzo = (Indirizzo) session.getAttribute("indirizzo");
-        if (indirizzo == null) {
-            indirizzo = new Indirizzo();
-            indirizzo.setIdUtente(utente.getIdUtente());
+        String idParam = req.getParameter("idIndirizzo");
+        int idIndirizzo = parseIntSafe(idParam);
+        Indirizzo indirizzo = new Indirizzo();
+        if (idIndirizzo > 0) {
+            indirizzo.setIdIndirizzo(idIndirizzo);
         }
+        indirizzo.setIdUtente(utente.getIdUtente());
         indirizzo.setVia(via.trim());
         indirizzo.setCap(cap.trim());
         indirizzo.setCitta(citta.trim());
@@ -66,10 +86,65 @@ public class GestioneIndirizzoServlet extends HttpServlet {
 
         if (successo) {
             session.setAttribute("indirizzo", indirizzo);
-            req.setAttribute("messaggio", "Indirizzo aggiornato con successo!");
+            session.removeAttribute("indirizzoNuovo");
+            session.setAttribute("flashMessage", "Indirizzo aggiornato con successo!");
+            session.setAttribute("flashMessageType", "success");
         } else {
-            req.setAttribute("errore", "Si è verificato un errore durante il salvataggio dell'indirizzo");
+            session.setAttribute("flashError", "Si e' verificato un errore durante il salvataggio dell'indirizzo");
         }
-        req.getRequestDispatcher("/WEB-INF/jsp/gestioneAccount.jsp").forward(req, resp);
+        resp.sendRedirect(req.getContextPath() + "/profilo?tab=address");
+    }
+
+    private void handleSelect(HttpServletRequest req, HttpServletResponse resp, HttpSession session, Utente utente)
+            throws IOException {
+        int idIndirizzo = parseIntSafe(req.getParameter("idIndirizzo"));
+        if (idIndirizzo <= 0 || !addressService.isOwnedByUser(idIndirizzo, utente.getIdUtente())) {
+            session.setAttribute("flashError", "Indirizzo non valido");
+            resp.sendRedirect(req.getContextPath() + "/profilo?tab=address");
+            return;
+        }
+
+        Indirizzo indirizzo = addressService.getById(idIndirizzo);
+        if (indirizzo == null) {
+            session.setAttribute("flashError", "Indirizzo non trovato");
+        } else {
+            session.setAttribute("indirizzo", indirizzo);
+            session.removeAttribute("indirizzoNuovo");
+            session.setAttribute("flashMessage", "Indirizzo selezionato per la modifica");
+            session.setAttribute("flashMessageType", "success");
+        }
+        resp.sendRedirect(req.getContextPath() + "/profilo?tab=address");
+    }
+
+    private void handleDelete(HttpServletRequest req, HttpServletResponse resp, HttpSession session, Utente utente)
+            throws IOException {
+        int idIndirizzo = parseIntSafe(req.getParameter("idIndirizzo"));
+        if (idIndirizzo <= 0 || !addressService.isOwnedByUser(idIndirizzo, utente.getIdUtente())) {
+            session.setAttribute("flashError", "Indirizzo non valido");
+            resp.sendRedirect(req.getContextPath() + "/profilo?tab=address");
+            return;
+        }
+
+        boolean eliminato = accountService.deleteAddress(utente.getIdUtente(), idIndirizzo);
+        if (eliminato) {
+            Indirizzo selezionato = (Indirizzo) session.getAttribute("indirizzo");
+            if (selezionato != null && selezionato.getIdIndirizzo() == idIndirizzo) {
+                session.removeAttribute("indirizzo");
+            }
+            session.setAttribute("flashMessage", "Indirizzo eliminato con successo");
+            session.setAttribute("flashMessageType", "success");
+        } else {
+            session.setAttribute("flashError", "Impossibile eliminare l'indirizzo");
+        }
+
+        resp.sendRedirect(req.getContextPath() + "/profilo?tab=address");
+    }
+
+    private int parseIntSafe(String value) {
+        try {
+            return Integer.parseInt(value);
+        } catch (Exception e) {
+            return -1;
+        }
     }
 }

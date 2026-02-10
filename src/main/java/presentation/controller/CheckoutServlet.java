@@ -42,7 +42,7 @@ public class CheckoutServlet extends HttpServlet {
         }
 
         req.setAttribute("indirizzi", addressService.listByUser(utente.getIdUtente()));
-        req.getRequestDispatcher("/WEB-INF/jsp/checkout.jsp").forward(req, resp);
+        req.getRequestDispatcher("/WEB-INF/jsp/pagamento.jsp").forward(req, resp);
     }
 
     @Override
@@ -62,25 +62,7 @@ public class CheckoutServlet extends HttpServlet {
             return;
         }
 
-        int idIndirizzoSpedizione;
-        try {
-            idIndirizzoSpedizione = Integer.parseInt(request.getParameter("indirizzoSpedizione"));
-        } catch (Exception e) {
-            request.setAttribute("indirizzi", addressService.listByUser(utente.getIdUtente()));
-            request.setAttribute("errore", "Seleziona un indirizzo di spedizione valido.");
-            request.getRequestDispatcher("/WEB-INF/jsp/checkout.jsp").forward(request, response);
-            return;
-        }
-
-        if (!addressService.isOwnedByUser(idIndirizzoSpedizione, utente.getIdUtente())) {
-            request.setAttribute("indirizzi", addressService.listByUser(utente.getIdUtente()));
-            request.setAttribute("errore", "Indirizzo di spedizione non valido.");
-            request.getRequestDispatcher("/WEB-INF/jsp/checkout.jsp").forward(request, response);
-            return;
-        }
-
         request.setAttribute("indirizzi", addressService.listByUser(utente.getIdUtente()));
-        request.setAttribute("indirizzoSpedizione", idIndirizzoSpedizione);
         request.getRequestDispatcher("/WEB-INF/jsp/pagamento.jsp").forward(request, response);
     }
 }

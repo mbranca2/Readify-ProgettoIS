@@ -1,4 +1,4 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+﻿<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
@@ -14,15 +14,13 @@
             display: inline-block;
             width: 1em;
             height: 1em;
-            margin-right: 0.5em;
+            margin-right: 0;
             vertical-align: middle;
         }
-        .icon-users::before { content: '👥'; }
-        .icon-book::before { content: '📚'; }
-        .icon-orders::before { content: '🧾'; }
-        .icon-user-shield::before { content: '🛡️'; }
-        .icon-arrow-right::before { content: '→'; }
-        .icon-home::before { content: '🏠'; }
+        .icon-users::before { content: "\1F465"; }
+        .icon-book::before { content: "\1F4DA"; }
+        .icon-orders::before { content: "\1F9FE"; }
+        .icon-arrow-right::before { content: "\2192"; }
     </style>
 </head>
 <body>
@@ -30,14 +28,7 @@
     <div class="dashboard-header">
         <div class="dashboard-title">
             <h1>Dashboard</h1>
-            <nav class="breadcrumb">
-                <a href="${pageContext.request.contextPath}" class="breadcrumb-item">
-                    <span class="icon icon-home"></span>Home
-                </a>
-            </nav>
-        </div>
-        <div class="admin-badge">
-            <span class="icon icon-user-shield"></span> Admin Panel
+            <p class="dashboard-subtitle">Panoramica amministrativa</p>
         </div>
     </div>
 

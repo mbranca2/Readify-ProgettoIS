@@ -71,6 +71,14 @@ public class ConfermaOrdineServlet extends HttpServlet {
             carrello.svuota();
             session.setAttribute("carrello", carrello);
 
+            Indirizzo indirizzoOrdine = null;
+            if (idIndirizzoSpedizione != null && idIndirizzoSpedizione > 0
+                    && addressService.isOwnedByUser(idIndirizzoSpedizione, utente.getIdUtente())) {
+                indirizzoOrdine = addressService.getById(idIndirizzoSpedizione);
+            }
+
+            request.setAttribute("ordine", ordine);
+            request.setAttribute("indirizzoOrdine", indirizzoOrdine);
             request.setAttribute("idOrdine", ordine.getIdOrdine());
             request.getRequestDispatcher("/WEB-INF/jsp/conferma-ordine.jsp").forward(request, response);
 

@@ -624,6 +624,23 @@
     font-weight: 800;
 }
 
+.page-catalogo-v2 .book-categories {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 6px;
+}
+
+.page-catalogo-v2 .category-pill {
+    background: rgba(31, 138, 99, 0.12);
+    border: 1px solid rgba(31, 138, 99, 0.25);
+    color: var(--cat-primary-2);
+    font-size: 11px;
+    font-weight: 900;
+    padding: 4px 8px;
+    border-radius: 999px;
+}
+
 .page-catalogo-v2 .book-desc {
     margin: 0;
     color: #475569;

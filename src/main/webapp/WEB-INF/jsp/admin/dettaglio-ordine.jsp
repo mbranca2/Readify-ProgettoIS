@@ -85,9 +85,6 @@
                     </select>
                     <button type="submit">Salva</button>
                 </div>
-                <div class="muted" style="margin-top:6px;">
-                    Nota: la validazione delle transizioni (state machine) la aggiungiamo dopo, se serve.
-                </div>
             </form>
         </div>
 

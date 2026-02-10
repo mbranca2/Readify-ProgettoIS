@@ -9,6 +9,8 @@ import jakarta.servlet.http.HttpSession;
 import business.model.Utente;
 import business.service.ServiceFactory;
 import business.service.account.AccountService;
+import business.service.address.AddressService;
+import business.service.order.OrderService;
 
 import java.io.IOException;
 
@@ -16,10 +18,14 @@ import java.io.IOException;
 public class CambiaPasswordServlet extends HttpServlet {
 
     private AccountService accountService;
+    private AddressService addressService;
+    private OrderService orderService;
 
     @Override
     public void init() throws ServletException {
         this.accountService = ServiceFactory.accountService();
+        this.addressService = ServiceFactory.addressService();
+        this.orderService = ServiceFactory.orderService();
     }
 
     @Override
@@ -34,7 +40,9 @@ public class CambiaPasswordServlet extends HttpServlet {
             return;
         }
 
-        // Nel progetto non esiste "profilo.jsp": la pagina profilo è "gestioneAccount.jsp"
+        // Nel progetto non esiste "profilo.jsp": la pagina profilo e' "gestioneAccount.jsp"
+        request.setAttribute("indirizzi", addressService.listByUser(utente.getIdUtente()));
+        request.setAttribute("ordini", orderService.listByUser(utente.getIdUtente()));
         request.getRequestDispatcher("/WEB-INF/jsp/gestioneAccount.jsp").forward(request, response);
     }
 
@@ -65,12 +73,16 @@ public class CambiaPasswordServlet extends HttpServlet {
 
         if (oldPassword.isEmpty() || newPassword.isEmpty() || confirmPassword.isEmpty()) {
             request.setAttribute("errore", "Compila tutti i campi.");
+            request.setAttribute("indirizzi", addressService.listByUser(utente.getIdUtente()));
+            request.setAttribute("ordini", orderService.listByUser(utente.getIdUtente()));
             request.getRequestDispatcher("/WEB-INF/jsp/gestioneAccount.jsp").forward(request, response);
             return;
         }
 
         if (!newPassword.equals(confirmPassword)) {
             request.setAttribute("errore", "Le nuove password non coincidono.");
+            request.setAttribute("indirizzi", addressService.listByUser(utente.getIdUtente()));
+            request.setAttribute("ordini", orderService.listByUser(utente.getIdUtente()));
             request.getRequestDispatcher("/WEB-INF/jsp/gestioneAccount.jsp").forward(request, response);
             return;
         }
@@ -80,6 +92,8 @@ public class CambiaPasswordServlet extends HttpServlet {
             ok = accountService.changePassword(utente.getIdUtente(), oldPassword, newPassword);
         } catch (Exception e) {
             request.setAttribute("errore", "Errore interno durante l'aggiornamento della password.");
+            request.setAttribute("indirizzi", addressService.listByUser(utente.getIdUtente()));
+            request.setAttribute("ordini", orderService.listByUser(utente.getIdUtente()));
             request.getRequestDispatcher("/WEB-INF/jsp/gestioneAccount.jsp").forward(request, response);
             return;
         }
@@ -91,6 +105,8 @@ public class CambiaPasswordServlet extends HttpServlet {
             request.setAttribute("errore", "Impossibile aggiornare la password. Verifica la password attuale.");
         }
 
+        request.setAttribute("indirizzi", addressService.listByUser(utente.getIdUtente()));
+        request.setAttribute("ordini", orderService.listByUser(utente.getIdUtente()));
         request.getRequestDispatcher("/WEB-INF/jsp/gestioneAccount.jsp").forward(request, response);
     }
 

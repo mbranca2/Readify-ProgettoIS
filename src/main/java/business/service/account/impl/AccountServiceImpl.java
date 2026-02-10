@@ -155,8 +155,12 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public boolean deleteAddress(int idUtente, int idIndirizzo) {
-        // Non presente nel DAO attuale: lo implementiamo quando vuoi
-        return false;
+        if (idUtente <= 0 || idIndirizzo <= 0) return false;
+        try {
+            return indirizzoDAO.eliminaIndirizzo(idIndirizzo, idUtente);
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     @Override

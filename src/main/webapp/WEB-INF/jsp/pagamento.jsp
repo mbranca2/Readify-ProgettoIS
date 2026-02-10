@@ -162,7 +162,7 @@
                     </div>
 
                     <div class="form-actions">
-                        <a href="${pageContext.request.contextPath}/checkout" class="btn btn-outline">Torna indietro</a>
+                        <a href="${pageContext.request.contextPath}/carrello" class="btn btn-outline">Torna indietro</a>
                         <button type="submit" class="btn btn-primary">
                             Paga ora EUR <fmt:formatNumber value="${totale}" minFractionDigits="2" maxFractionDigits="2"/>
                         </button>

@@ -75,8 +75,53 @@
                     </div>
 
                     <div id="address" class="tab-panel">
-                        <h3 class="section-title">Indirizzo di spedizione</h3>
+                        <h3 class="section-title">Indirizzi salvati</h3>
+                        <c:choose>
+                            <c:when test="${not empty indirizzi}">
+                                <div class="address-list">
+                                    <c:forEach items="${indirizzi}" var="ind">
+                                        <div class="address-card${sessionScope.indirizzo != null && sessionScope.indirizzo.idIndirizzo == ind.idIndirizzo ? ' selected' : ''}">
+                                            <div class="address-info">
+                                                <div class="address-line">${ind.via}</div>
+                                                <div class="address-line">
+                                                    ${ind.cap} ${ind.citta} (${ind.provincia}) - ${ind.paese}
+                                                </div>
+                                            </div>
+                                            <div class="address-actions">
+                                                <form method="post" action="${pageContext.request.contextPath}/gestione-indirizzo">
+                                                    <input type="hidden" name="azione" value="seleziona">
+                                                    <input type="hidden" name="idIndirizzo" value="${ind.idIndirizzo}">
+                                                    <button type="submit" class="btn btn-outline btn-sm btn-action">Modifica</button>
+                                                </form>
+                                                <form method="post" action="${pageContext.request.contextPath}/gestione-indirizzo"
+                                                      onsubmit="return confirm('Vuoi eliminare questo indirizzo?');">
+                                                    <input type="hidden" name="azione" value="elimina">
+                                                    <input type="hidden" name="idIndirizzo" value="${ind.idIndirizzo}">
+                                                    <button type="submit" class="btn btn-outline btn-sm btn-danger">Elimina</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </c:forEach>
+                                </div>
+                            </c:when>
+                            <c:otherwise>
+                                <div class="empty-orders">
+                                    <p>Nessun indirizzo salvato</p>
+                                </div>
+                            </c:otherwise>
+                        </c:choose>
+
+                        <div class="address-toolbar">
+                            <form method="post" action="${pageContext.request.contextPath}/gestione-indirizzo">
+                                <input type="hidden" name="azione" value="nuovo">
+                                <button type="submit" class="btn btn-outline btn-add">Nuovo indirizzo</button>
+                            </form>
+                        </div>
+
+                        <h3 class="section-title">Indirizzo selezionato</h3>
                         <form method="post" action="${pageContext.request.contextPath}/gestione-indirizzo" class="account-form">
+                            <input type="hidden" name="idIndirizzo"
+                                   value="${sessionScope.indirizzo != null ? sessionScope.indirizzo.idIndirizzo : ''}">
                             <div class="form-group">
                                 <label for="via" class="form-label">Via e numero civico*</label>
                                 <input type="text" id="via" name="via" class="form-input"

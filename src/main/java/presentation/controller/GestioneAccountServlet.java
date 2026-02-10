@@ -31,15 +31,47 @@ public class GestioneAccountServlet extends HttpServlet {
         }
 
         Utente utente = (Utente) session.getAttribute("utente");
+        List<Indirizzo> indirizzi = addressService.listByUser(utente.getIdUtente());
+        req.setAttribute("indirizzi", indirizzi);
 
-        if (session.getAttribute("indirizzo") == null) {
-            List<Indirizzo> indirizzi = addressService.listByUser(utente.getIdUtente());
-            if (!indirizzi.isEmpty()) {
-                session.setAttribute("indirizzo", indirizzi.get(0));
+        if (indirizzi.isEmpty()) {
+            session.removeAttribute("indirizzo");
+        } else {
+            Boolean nuovo = (Boolean) session.getAttribute("indirizzoNuovo");
+            if (Boolean.TRUE.equals(nuovo)) {
+                session.removeAttribute("indirizzo");
+                session.removeAttribute("indirizzoNuovo");
+            } else {
+                Indirizzo selezionato = (Indirizzo) session.getAttribute("indirizzo");
+                boolean valido = false;
+                if (selezionato != null) {
+                    for (Indirizzo ind : indirizzi) {
+                        if (ind.getIdIndirizzo() == selezionato.getIdIndirizzo()) {
+                            valido = true;
+                            break;
+                        }
+                    }
+                }
+                if (!valido) {
+                    session.setAttribute("indirizzo", indirizzi.get(0));
+                }
             }
         }
 
-        req.setAttribute("ordini", orderService.listByUser(utente.getIdUtente()));
+        Object flashMessage = session.getAttribute("flashMessage");
+        Object flashType = session.getAttribute("flashMessageType");
+        Object flashError = session.getAttribute("flashError");
+        if (flashMessage != null) {
+            req.setAttribute("messaggio", flashMessage);
+            req.setAttribute("tipoMessaggio", flashType != null ? flashType : "success");
+            session.removeAttribute("flashMessage");
+            session.removeAttribute("flashMessageType");
+        }
+        if (flashError != null) {
+            req.setAttribute("errore", flashError);
+            session.removeAttribute("flashError");
+        }
+
         req.setAttribute("ordini", orderService.listByUser(utente.getIdUtente()));
         req.getRequestDispatcher("/WEB-INF/jsp/gestioneAccount.jsp").forward(req, resp);
     }
@@ -62,6 +94,8 @@ public class GestioneAccountServlet extends HttpServlet {
                 cognome == null || cognome.trim().isEmpty() ||
                 email == null || email.trim().isEmpty()) {
             req.setAttribute("errore", "Tutti i campi obbligatori devono essere compilati");
+            req.setAttribute("indirizzi", addressService.listByUser(utente.getIdUtente()));
+            req.setAttribute("ordini", orderService.listByUser(utente.getIdUtente()));
             req.getRequestDispatcher("/WEB-INF/jsp/gestioneAccount.jsp").forward(req, resp);
             return;
         }
@@ -74,11 +108,14 @@ public class GestioneAccountServlet extends HttpServlet {
         boolean aggiornato = accountService.updateProfile(utente);
         if (aggiornato) {
             session.setAttribute("utente", utente);
-            req.setAttribute("successo", "Profilo aggiornato con successo");
+            req.setAttribute("messaggio", "Profilo aggiornato con successo");
+            req.setAttribute("tipoMessaggio", "success");
         } else {
             req.setAttribute("errore", "Si è verificato un errore durante l'aggiornamento del profilo");
         }
 
+        req.setAttribute("indirizzi", addressService.listByUser(utente.getIdUtente()));
+        req.setAttribute("ordini", orderService.listByUser(utente.getIdUtente()));
         req.getRequestDispatcher("/WEB-INF/jsp/gestioneAccount.jsp").forward(req, resp);
     }
 }

@@ -146,6 +146,25 @@ public class IndirizzoDAO {
         }
     }
 
+    public boolean eliminaIndirizzo(int idIndirizzo, int idUtente) {
+        if (idIndirizzo <= 0 || idUtente <= 0) return false;
+
+        String query = "DELETE FROM Indirizzo WHERE id_indirizzo = ? AND id_utente = ?";
+
+        try (Connection conn = DBManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setInt(1, idIndirizzo);
+            stmt.setInt(2, idUtente);
+
+            return stmt.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     private Indirizzo mappaRisultatoAIndirizzo(ResultSet rs) throws SQLException {
         Indirizzo indirizzo = new Indirizzo();
         indirizzo.setIdIndirizzo(rs.getInt("id_indirizzo"));
