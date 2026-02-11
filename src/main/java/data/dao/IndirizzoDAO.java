@@ -82,25 +82,6 @@ public class IndirizzoDAO {
         return null;
     }
 
-    public Indirizzo trovaIndirizzoPerIdUtente(int idUtente) {
-        String query = "SELECT * FROM Indirizzo WHERE id_utente = ? ORDER BY id_indirizzo ASC";
-
-        try (Connection conn = DBManager.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query)) {
-
-            stmt.setInt(1, idUtente);
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    return mappaRisultatoAIndirizzo(rs);
-                }
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
     public List<Indirizzo> trovaIndirizziPerUtente(int idUtente) {
         List<Indirizzo> indirizzi = new ArrayList<>();
         String query = "SELECT * FROM Indirizzo WHERE id_utente = ? ORDER BY id_indirizzo ASC";

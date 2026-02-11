@@ -9,46 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class LibroDAO {
-    public boolean inserisciLibro(Libro libro) {
-        String query = "INSERT INTO Libro (titolo, autore, prezzo, isbn, descrizione, disponibilita, copertina) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?)";
-
-        Connection conn = null;
-        try {
-            conn = DBManager.getConnection();
-            conn.setAutoCommit(false);
-
-            boolean ok = inserisciLibro(conn, libro);
-            if (!ok) {
-                conn.rollback();
-                return false;
-            }
-
-            conn.commit();
-            return true;
-
-        } catch (SQLException e) {
-            if (conn != null) {
-                try {
-                    conn.rollback();
-                } catch (SQLException ignored) {
-                }
-            }
-            e.printStackTrace();
-            return false;
-
-        } finally {
-            if (conn != null) {
-                try {
-                    conn.setAutoCommit(true);
-                    conn.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
-
     public boolean inserisciLibro(Connection conn, Libro libro) throws SQLException {
         String query = "INSERT INTO Libro (titolo, autore, prezzo, isbn, descrizione, disponibilita, copertina) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?)";
@@ -171,10 +131,6 @@ public class LibroDAO {
         inserisciCategorieLibro(conn, idLibro, nuoveCategorie);
     }
 
-    public List<Libro> trovaLibriConFiltro(String titolo, String autore, String categoriaId, int offset, int limit) {
-        return trovaLibriConFiltro(titolo, autore, categoriaId, null, null, offset, limit);
-    }
-
     public List<Libro> trovaLibriConFiltro(String titolo, String autore, String categoriaId, BigDecimal prezzoMin, BigDecimal prezzoMax, int offset, int limit) {
         List<Libro> libri = new ArrayList<>();
         String query = "SELECT DISTINCT l.* FROM Libro l ";
@@ -242,10 +198,6 @@ public class LibroDAO {
             e.printStackTrace();
         }
         return libri;
-    }
-
-    public int contaLibriConFiltro(String titolo, String autore, String categoriaId) {
-        return contaLibriConFiltro(titolo, autore, categoriaId, null, null);
     }
 
     public int contaLibriConFiltro(String titolo, String autore, String categoriaId, BigDecimal prezzoMin, BigDecimal prezzoMax) {
@@ -332,17 +284,5 @@ public class LibroDAO {
             e.printStackTrace();
         }
         return lista;
-    }
-
-    public boolean eliminaLibro(int idLibro) {
-        String query = "DELETE FROM Libro WHERE id_libro = ?";
-        try (Connection conn = DBManager.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query)) {
-            stmt.setInt(1, idLibro);
-            return stmt.executeUpdate() > 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
     }
 }

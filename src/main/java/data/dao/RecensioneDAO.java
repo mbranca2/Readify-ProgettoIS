@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RecensioneDAO {
-
     public List<Recensione> trovaRecensioniPerLibro(int idLibro) {
         List<Recensione> recensioni = new ArrayList<>();
 

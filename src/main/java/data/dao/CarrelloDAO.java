@@ -131,39 +131,6 @@ public class CarrelloDAO {
         }
     }
 
-    public void rimuoviArticolo(int idUtente, int idLibro) throws SQLException {
-        String query = "DELETE dc FROM DettaglioCarrello dc " +
-                "JOIN Carrello c ON dc.id_carrello = c.id_carrello " +
-                "WHERE c.id_utente = ? AND dc.id_libro = ?";
-
-        try (Connection conn = DBManager.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query)) {
-            stmt.setInt(1, idUtente);
-            stmt.setInt(2, idLibro);
-            stmt.executeUpdate();
-        }
-    }
-
-    public void aggiornaQuantita(int idUtente, int idLibro, int quantita) throws SQLException {
-        if (quantita <= 0) {
-            rimuoviArticolo(idUtente, idLibro);
-            return;
-        }
-
-        String query = "UPDATE DettaglioCarrello dc " +
-                "JOIN Carrello c ON dc.id_carrello = c.id_carrello " +
-                "SET dc.quantita = ? " +
-                "WHERE c.id_utente = ? AND dc.id_libro = ?";
-
-        try (Connection conn = DBManager.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query)) {
-            stmt.setInt(1, quantita);
-            stmt.setInt(2, idUtente);
-            stmt.setInt(3, idLibro);
-            stmt.executeUpdate();
-        }
-    }
-
     public void svuotaCarrelloUtente(Connection conn, int idUtente) throws SQLException {
         int idCarrello = getCarrelloIdByUtente(conn, idUtente);
         if (idCarrello != 0) {

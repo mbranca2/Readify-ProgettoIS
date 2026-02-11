@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UtenteDAO {
-
     public static Utente login(String email, String password) {
         Utente user = null;
         String sql = "SELECT * FROM Utente WHERE email = ?";

@@ -5,5 +5,4 @@ import business.model.Ordine;
 import business.model.Utente;
 
 public record AdminOrderDetail(Ordine ordine, Utente utente, Indirizzo indirizzo) {
-
 }
