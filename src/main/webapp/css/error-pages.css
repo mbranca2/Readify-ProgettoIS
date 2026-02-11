@@ -22,7 +22,7 @@
     text-align: center;
     background: white;
     border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .error-icon {
@@ -85,7 +85,7 @@ p {
 .btn-primary:hover {
     background-color: #0069d9;
     transform: translateY(-2px);
-    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 .btn-secondary {
@@ -96,7 +96,7 @@ p {
 .btn-secondary:hover {
     background-color: #cfd3d7;
     transform: translateY(-2px);
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 /* Responsive */
@@ -105,20 +105,20 @@ p {
         margin: 1.5rem auto;
         padding: 0.5rem;
     }
-    
+
     .error-container {
         padding: 1.5rem;
     }
-    
+
     .error-icon {
         font-size: 3rem;
     }
-    
+
     .button-group {
         flex-direction: column;
         align-items: center;
     }
-    
+
     .custom-button {
         width: 100%;
         max-width: 280px;
@@ -129,7 +129,7 @@ p {
     .button-group {
         display: none;
     }
-    
+
     .error-container {
         box-shadow: none;
         border: 1px solid #ddd;

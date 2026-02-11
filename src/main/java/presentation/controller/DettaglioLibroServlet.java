@@ -1,16 +1,16 @@
 package presentation.controller;
 
+import business.model.Libro;
+import business.model.Utente;
+import business.service.ServiceFactory;
+import business.service.catalog.CatalogService;
+import business.service.review.ReviewService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import business.model.Libro;
-import business.model.Utente;
-import business.service.ServiceFactory;
-import business.service.catalog.CatalogService;
-import business.service.review.ReviewService;
 
 import java.io.IOException;
 
@@ -39,7 +39,8 @@ public class DettaglioLibroServlet extends HttpServlet {
         Libro libro = null;
         try {
             libro = catalogService.getById(idLibro);
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
 
         if (libro == null) {
             response.sendRedirect(request.getContextPath() + "/home?error=book_not_found");

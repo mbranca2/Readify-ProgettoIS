@@ -24,10 +24,9 @@
     padding: var(--home-hero-padding-y) 0;
     text-align: left;
     color: #ffffff;
-    background:
-            radial-gradient(75% 65% at 18% 18%, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0) 60%),
-            linear-gradient(135deg, rgba(12, 32, 42, 0.92), rgba(42, 157, 143, 0.85)),
-            url("../img/home/home.jpg") center / cover no-repeat;
+    background: radial-gradient(75% 65% at 18% 18%, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0) 60%),
+    linear-gradient(135deg, rgba(12, 32, 42, 0.92), rgba(42, 157, 143, 0.85)),
+    url("../img/home/home.jpg") center / cover no-repeat;
 }
 
 .home .container {
@@ -115,10 +114,9 @@
 
 .features {
     padding: 64px 0;
-    background:
-        radial-gradient(80% 70% at 50% 0%, rgba(255, 255, 255, 0.9), rgba(247, 243, 238, 0)),
-        linear-gradient(180deg, rgba(247, 243, 238, 0.55), rgba(255, 255, 255, 0.9)),
-        #fbfaf8;
+    background: radial-gradient(80% 70% at 50% 0%, rgba(255, 255, 255, 0.9), rgba(247, 243, 238, 0)),
+    linear-gradient(180deg, rgba(247, 243, 238, 0.55), rgba(255, 255, 255, 0.9)),
+    #fbfaf8;
 }
 
 .section-title {

@@ -29,10 +29,9 @@ html {
 body {
     font-family: var(--font-body);
     font-size: 16px;
-    background:
-        radial-gradient(80% 60% at 12% 10%, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0) 60%),
-        radial-gradient(70% 55% at 90% 0%, rgba(227, 238, 252, 0.9), rgba(227, 238, 252, 0) 55%),
-        var(--bg-base);
+    background: radial-gradient(80% 60% at 12% 10%, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0) 60%),
+    radial-gradient(70% 55% at 90% 0%, rgba(227, 238, 252, 0.9), rgba(227, 238, 252, 0) 55%),
+    var(--bg-base);
     color: var(--text-strong);
     line-height: 1.6;
     min-height: 100%;
@@ -71,9 +70,8 @@ main {
 
 header {
     position: relative;
-    background:
-        radial-gradient(120% 80% at 10% 0%, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0) 60%),
-        linear-gradient(135deg, #0c3b2e 0%, #15664c 45%, #1d8b63 100%);
+    background: radial-gradient(120% 80% at 10% 0%, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0) 60%),
+    linear-gradient(135deg, #0c3b2e 0%, #15664c 45%, #1d8b63 100%);
     color: #fff;
     padding: 1.1rem 0;
     box-shadow: 0 16px 28px rgba(6, 38, 25, 0.25);
@@ -309,9 +307,8 @@ header nav {
 }
 
 footer {
-    background:
-        linear-gradient(120deg, rgba(255, 255, 255, 0.75), rgba(255, 255, 255, 0.4)),
-        #d9d2c8;
+    background: linear-gradient(120deg, rgba(255, 255, 255, 0.75), rgba(255, 255, 255, 0.4)),
+    #d9d2c8;
     text-align: center;
     padding: 15px 0;
     margin-top: 40px;

@@ -4,10 +4,10 @@ import business.model.Carrello;
 import business.model.DettaglioOrdine;
 import business.model.Ordine;
 import business.model.StatoOrdine;
-import data.dao.CarrelloDAO;
-import data.dao.OrdineDAO;
 import business.service.order.OrderService;
 import business.service.order.OrderServiceException;
+import data.dao.CarrelloDAO;
+import data.dao.OrdineDAO;
 import data.util.DBManager;
 
 import java.math.BigDecimal;
@@ -63,11 +63,17 @@ public class OrderServiceImpl implements OrderService {
             return ordine;
 
         } catch (OrderServiceException e) {
-            try { if (conn != null) conn.rollback(); } catch (Exception ignored) {}
+            try {
+                if (conn != null) conn.rollback();
+            } catch (Exception ignored) {
+            }
             throw e;
 
         } catch (Exception e) {
-            try { if (conn != null) conn.rollback(); } catch (Exception ignored) {}
+            try {
+                if (conn != null) conn.rollback();
+            } catch (Exception ignored) {
+            }
             throw new OrderServiceException("Errore durante l'elaborazione dell'ordine.", e);
 
         } finally {
@@ -76,7 +82,8 @@ public class OrderServiceImpl implements OrderService {
                     conn.setAutoCommit(true);
                     conn.close();
                 }
-            } catch (Exception ignored) {}
+            } catch (Exception ignored) {
+            }
         }
     }
 
@@ -108,7 +115,10 @@ public class OrderServiceImpl implements OrderService {
             return true;
 
         } catch (Exception e) {
-            try { if (conn != null) conn.rollback(); } catch (Exception ignored) {}
+            try {
+                if (conn != null) conn.rollback();
+            } catch (Exception ignored) {
+            }
             throw new OrderServiceException("Errore durante l'annullamento dell'ordine.", e);
 
         } finally {
@@ -117,7 +127,8 @@ public class OrderServiceImpl implements OrderService {
                     conn.setAutoCommit(true);
                     conn.close();
                 }
-            } catch (Exception ignored) {}
+            } catch (Exception ignored) {
+            }
         }
     }
 }

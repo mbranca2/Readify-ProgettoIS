@@ -7,14 +7,16 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class RicercaPerNomeTest {
 
     @Test
-    @DisplayName("CP Ricerca: titolo valido -> chiama DAO con offset/limit corretti e ritorna risultati")
+    @DisplayName("CP Ricerca: titolo valido")
     void searchTitoloValido_ok() {
         LibroDAO dao = mock(LibroDAO.class);
         CatalogServiceImpl service = new CatalogServiceImpl(dao);
@@ -32,7 +34,7 @@ class RicercaPerNomeTest {
     }
 
     @Test
-    @DisplayName("CP Ricerca: titolo con soli spazi -> normalizzato a null")
+    @DisplayName("CP Ricerca: titolo con soli spazi")
     void searchTitoloSpazi_normalizzatoNull() {
         LibroDAO dao = mock(LibroDAO.class);
         CatalogServiceImpl service = new CatalogServiceImpl(dao);
@@ -47,7 +49,7 @@ class RicercaPerNomeTest {
     }
 
     @Test
-    @DisplayName("CP Ricerca: page/pageSize non validi -> safePage=1 safePageSize=1 (offset 0, limit 1)")
+    @DisplayName("CP Ricerca: page/pageSize non valida")
     void searchPageNonValida_safeValues() {
         LibroDAO dao = mock(LibroDAO.class);
         CatalogServiceImpl service = new CatalogServiceImpl(dao);
@@ -62,7 +64,7 @@ class RicercaPerNomeTest {
     }
 
     @Test
-    @DisplayName("CP Ricerca: eccezione DAO -> ritorna lista vuota")
+    @DisplayName("CP Ricerca: eccezione nel DAO")
     void searchDaoException_emptyList() {
         LibroDAO dao = mock(LibroDAO.class);
         CatalogServiceImpl service = new CatalogServiceImpl(dao);

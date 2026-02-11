@@ -31,8 +31,7 @@
 }
 
 .page-catalogo-v2 .topbar-inner {
-    background:
-        linear-gradient(120deg, rgba(255, 255, 255, 0.95), rgba(247, 250, 248, 0.92));
+    background: linear-gradient(120deg, rgba(255, 255, 255, 0.95), rgba(247, 250, 248, 0.92));
     border: 1px solid rgba(15, 31, 22, 0.14);
     border-radius: 22px;
     box-shadow: var(--cat-shadow-2);

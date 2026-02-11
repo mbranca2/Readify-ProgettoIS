@@ -11,7 +11,8 @@ public class ValidatorePagamento {
     private static final Pattern SCADENZA = Pattern.compile("^(0[1-9]|1[0-2])\\/\\d{2}$");
     private static final Pattern CVV = Pattern.compile("^\\d{3}$");
 
-    private ValidatorePagamento() {}
+    private ValidatorePagamento() {
+    }
 
     public static Map<String, String> validaPagamento(String titolare, String numeroCarta, String scadenza, String cvv) {
         Map<String, String> err = new HashMap<>();

@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
 </head>
 <body>
-<jsp:include page="header.jsp" />
+<jsp:include page="header.jsp"/>
 
 <div class="container">
     <div class="order-confirmation">
@@ -29,13 +29,15 @@
                                 <span class="summary-item-title">${det.titoloLibro}</span>
                                 <span class="summary-item-qty">x${det.quantita}</span>
                                 <span class="summary-item-total">
-                                    EUR <fmt:formatNumber value="${det.subTotale}" minFractionDigits="2" maxFractionDigits="2"/>
+                                    EUR <fmt:formatNumber value="${det.subTotale}" minFractionDigits="2"
+                                                          maxFractionDigits="2"/>
                                 </span>
                             </li>
                         </c:forEach>
                     </ul>
                     <div class="summary-total">
-                        Totale: EUR <fmt:formatNumber value="${ordine.totale}" minFractionDigits="2" maxFractionDigits="2"/>
+                        Totale: EUR <fmt:formatNumber value="${ordine.totale}" minFractionDigits="2"
+                                                      maxFractionDigits="2"/>
                     </div>
                 </div>
 
@@ -43,7 +45,7 @@
                     <div class="summary-block">
                         <div class="summary-title">Indirizzo di spedizione</div>
                         <div class="summary-address">
-                            ${indirizzoOrdine.via}, ${indirizzoOrdine.cap} ${indirizzoOrdine.citta}
+                                ${indirizzoOrdine.via}, ${indirizzoOrdine.cap} ${indirizzoOrdine.citta}
                             (${indirizzoOrdine.provincia}) - ${indirizzoOrdine.paese}
                         </div>
                     </div>
@@ -58,6 +60,6 @@
     </div>
 </div>
 
-<jsp:include page="footer.jsp" />
+<jsp:include page="footer.jsp"/>
 </body>
 </html>

@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class ValidaIndirizzoTest {
 
     @Test
-    @DisplayName("CP Indirizzo: dati validi -> nessun errore")
+    @DisplayName("CP Indirizzo: dati validi")
     void indirizzoValido_ok() {
         Map<String, String> err = ValidatoreForm.validaIndirizzo(
                 "Via Roma 10",
@@ -25,7 +25,7 @@ class ValidaIndirizzoTest {
     }
 
     @Test
-    @DisplayName("CP Indirizzo: via vuota -> errore via")
+    @DisplayName("CP Indirizzo: via vuota")
     void viaVuota_fail() {
         Map<String, String> err = ValidatoreForm.validaIndirizzo(
                 "   ",
@@ -40,7 +40,7 @@ class ValidaIndirizzoTest {
     }
 
     @Test
-    @DisplayName("CP Indirizzo: città troppo corta -> errore citta")
+    @DisplayName("CP Indirizzo: città troppo corta")
     void cittaTroppoCorta_fail() {
         Map<String, String> err = ValidatoreForm.validaIndirizzo(
                 "Via Roma 10",
@@ -55,7 +55,7 @@ class ValidaIndirizzoTest {
     }
 
     @Test
-    @DisplayName("CP Indirizzo: CAP non valido -> errore cap")
+    @DisplayName("CP Indirizzo: CAP non valido")
     void capNonValido_fail() {
         Map<String, String> err = ValidatoreForm.validaIndirizzo(
                 "Via Roma 10",
@@ -70,7 +70,7 @@ class ValidaIndirizzoTest {
     }
 
     @Test
-    @DisplayName("CP Indirizzo: provincia non valida -> errore provincia")
+    @DisplayName("CP Indirizzo: provincia non valida")
     void provinciaNonValida_fail() {
         Map<String, String> err = ValidatoreForm.validaIndirizzo(
                 "Via Roma 10",

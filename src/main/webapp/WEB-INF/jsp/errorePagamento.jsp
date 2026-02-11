@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/error-pages.css">
 </head>
 <body class="error-page">
-<jsp:include page="header.jsp" />
+<jsp:include page="header.jsp"/>
 
 <main class="error-main-wrapper">
     <div class="error-container">
@@ -35,6 +35,6 @@
     </div>
 </main>
 
-<jsp:include page="footer.jsp" />
+<jsp:include page="footer.jsp"/>
 </body>
 </html>

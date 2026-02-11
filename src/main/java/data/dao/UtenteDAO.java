@@ -10,6 +10,42 @@ import java.util.List;
 
 public class UtenteDAO {
 
+    public static Utente login(String email, String password) {
+        Utente user = null;
+        String sql = "SELECT * FROM Utente WHERE email = ?";
+
+        try (Connection conn = DBManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, email);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    String storedHash = rs.getString("password_cifrata");
+                    String providedHash = HashUtil.sha1(password);
+
+                    if (storedHash != null && storedHash.equals(providedHash)) {
+                        user = new Utente(
+                                rs.getInt("id_utente"),
+                                rs.getString("email"),
+                                storedHash,
+                                rs.getString("nome"),
+                                rs.getString("cognome"),
+                                rs.getString("ruolo"),
+                                rs.getString("telefono")
+                        );
+                        user.setDataRegistrazione(rs.getTimestamp("data_registrazione"));
+                    }
+                }
+            }
+
+        } catch (Exception e) {
+            System.err.println("Errore durante il login:");
+            e.printStackTrace();
+        }
+        return user;
+    }
+
     public boolean inserisciUtente(Utente utente) {
         String query = "INSERT INTO Utente (email, password_cifrata, nome, cognome, ruolo, telefono) VALUES (?, ?, ?, ?, ?, ?)";
         try (Connection conn = DBManager.getConnection();
@@ -122,42 +158,6 @@ public class UtenteDAO {
             e.printStackTrace();
         }
         return utenti;
-    }
-
-    public static Utente login(String email, String password) {
-        Utente user = null;
-        String sql = "SELECT * FROM Utente WHERE email = ?";
-
-        try (Connection conn = DBManager.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setString(1, email);
-
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    String storedHash = rs.getString("password_cifrata");
-                    String providedHash = HashUtil.sha1(password);
-
-                    if (storedHash != null && storedHash.equals(providedHash)) {
-                        user = new Utente(
-                                rs.getInt("id_utente"),
-                                rs.getString("email"),
-                                storedHash,
-                                rs.getString("nome"),
-                                rs.getString("cognome"),
-                                rs.getString("ruolo"),
-                                rs.getString("telefono")
-                        );
-                        user.setDataRegistrazione(rs.getTimestamp("data_registrazione"));
-                    }
-                }
-            }
-
-        } catch (Exception e) {
-            System.err.println("Errore durante il login:");
-            e.printStackTrace();
-        }
-        return user;
     }
 
     public boolean aggiornaUtente(Utente utente) {

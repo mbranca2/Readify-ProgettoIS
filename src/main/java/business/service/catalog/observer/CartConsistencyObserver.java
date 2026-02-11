@@ -12,8 +12,8 @@ public class CartConsistencyObserver implements CatalogObserver {
 
     @Override
     public void onCatalogChanged(Connection conn, CatalogEvent event) throws Exception {
-        int bookId = event.getBookId();
-        CatalogEventType type = event.getType();
+        int bookId = event.bookId();
+        CatalogEventType type = event.type();
 
         if (type == CatalogEventType.BOOK_REMOVED) {
             removeBookFromAllCarts(conn, bookId);
@@ -31,10 +31,10 @@ public class CartConsistencyObserver implements CatalogObserver {
     }
 
     private void handleStockChange(Connection conn, CatalogEvent event) throws Exception {
-        if (event.getNewStock() == null) return;
+        if (event.newStock() == null) return;
 
-        int newStock = event.getNewStock();
-        int bookId = event.getBookId();
+        int newStock = event.newStock();
+        int bookId = event.bookId();
 
         if (newStock <= 0) {
             removeBookFromAllCarts(conn, bookId);
@@ -51,10 +51,10 @@ public class CartConsistencyObserver implements CatalogObserver {
     }
 
     private void handlePriceChange(Connection conn, CatalogEvent event) throws Exception {
-        BigDecimal newPrice = event.getNewPrice();
+        BigDecimal newPrice = event.newPrice();
         if (newPrice == null) return;
 
-        int bookId = event.getBookId();
+        int bookId = event.bookId();
 
         String updatePrice = "UPDATE DettaglioCarrello SET prezzo_unitario = ? WHERE id_libro = ?";
         try (PreparedStatement ps = conn.prepareStatement(updatePrice)) {

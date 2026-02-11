@@ -4,12 +4,12 @@ import business.model.Indirizzo;
 import business.model.Ordine;
 import business.model.StatoOrdine;
 import business.model.Utente;
-import data.dao.IndirizzoDAO;
-import data.dao.OrdineDAO;
-import data.dao.UtenteDAO;
 import business.service.order.AdminOrderService;
 import business.service.order.AdminOrderServiceException;
 import business.service.order.dto.AdminOrderDetail;
+import data.dao.IndirizzoDAO;
+import data.dao.OrdineDAO;
+import data.dao.UtenteDAO;
 
 import java.util.List;
 import java.util.Objects;
@@ -59,7 +59,8 @@ public class AdminOrderServiceImpl implements AdminOrderService {
 
         // opzionale: valida transizioni (se vuoi lo facciamo dopo).
         boolean ok = ordineDAO.aggiornaStatoOrdine(idOrdine, nuovoStato);
-        if (!ok) throw new AdminOrderServiceException("Impossibile aggiornare lo stato (ordine non trovato o update fallito).");
+        if (!ok)
+            throw new AdminOrderServiceException("Impossibile aggiornare lo stato (ordine non trovato o update fallito).");
         return true;
     }
 }

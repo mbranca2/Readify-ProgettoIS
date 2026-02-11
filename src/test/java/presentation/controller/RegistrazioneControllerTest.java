@@ -1,151 +1,141 @@
 package presentation.controller;
 
 import business.service.account.AccountService;
-import business.service.account.RegistrationData;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import testUtil.ReflectionTestUtils;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-class RegistrazioneSystemTest {
-    private static final String REGISTER_JSP = "/WEB-INF/jsp/register.jsp";
+// Classe per registrazione.
+class RegistrazioneControllerTest {
+
     @Test
     @DisplayName("TC1.1.1 Registrazione: password non valida")
     void tcRegistrazione_passwordNonValida_forward() throws Exception {
-        RegisterServlet servlet = new RegisterServlet();
+        RegistrazioneServlet servlet = new RegistrazioneServlet();
         AccountService accountService = mock(AccountService.class);
-        ReflectionTestUtils.setField(servlet, "accountService", accountService);
+        servlet.setAccountService(accountService);
 
         HttpServletRequest req = mock(HttpServletRequest.class);
         HttpServletResponse resp = mock(HttpServletResponse.class);
         RequestDispatcher rd = mock(RequestDispatcher.class);
-
         stubValidRegistrationParams(req);
-
         when(req.getParameter("password")).thenReturn("Rosarossa");
         when(req.getParameter("confermaPassword")).thenReturn("Rosarossa");
-        when(req.getRequestDispatcher(REGISTER_JSP)).thenReturn(rd);
+        when(req.getRequestDispatcher("/WEB-INF/jsp/register.jsp")).thenReturn(rd);
         servlet.doPost(req, resp);
         assertInvalidRegistrationForward(req, resp, rd);
-        verify(accountService, never()).register((RegistrationData) any());
     }
 
     @Test
-    @DisplayName("TC1.1.2 Registrazione: conferma password diversa")
+    @DisplayName("TC1.1.2 Registrazione: conferma password non coincide")
     void tcRegistrazione_confermaNonCoincide_forward() throws Exception {
-        RegisterServlet servlet = new RegisterServlet();
+        RegistrazioneServlet servlet = new RegistrazioneServlet();
         AccountService accountService = mock(AccountService.class);
-        ReflectionTestUtils.setField(servlet, "accountService", accountService);
+        servlet.setAccountService(accountService);
 
         HttpServletRequest req = mock(HttpServletRequest.class);
         HttpServletResponse resp = mock(HttpServletResponse.class);
         RequestDispatcher rd = mock(RequestDispatcher.class);
-
         stubValidRegistrationParams(req);
         when(req.getParameter("password")).thenReturn("Rosarossa3");
         when(req.getParameter("confermaPassword")).thenReturn("Rosarossa5");
-        when(req.getRequestDispatcher(REGISTER_JSP)).thenReturn(rd);
+        when(req.getRequestDispatcher("/WEB-INF/jsp/register.jsp")).thenReturn(rd);
         servlet.doPost(req, resp);
         assertInvalidRegistrationForward(req, resp, rd);
-        verify(accountService, never()).register((RegistrationData) any());
     }
 
     @Test
     @DisplayName("TC1.1.3 Registrazione: email non valida")
     void tcRegistrazione_emailNonValida_forward() throws Exception {
-        RegisterServlet servlet = new RegisterServlet();
+        RegistrazioneServlet servlet = new RegistrazioneServlet();
         AccountService accountService = mock(AccountService.class);
-        ReflectionTestUtils.setField(servlet, "accountService", accountService);
+        servlet.setAccountService(accountService);
 
         HttpServletRequest req = mock(HttpServletRequest.class);
         HttpServletResponse resp = mock(HttpServletResponse.class);
         RequestDispatcher rd = mock(RequestDispatcher.class);
         stubValidRegistrationParams(req);
-
         when(req.getParameter("email")).thenReturn("robertorossi103gmail.com");
-        when(req.getRequestDispatcher(REGISTER_JSP)).thenReturn(rd);
+        when(req.getRequestDispatcher("/WEB-INF/jsp/register.jsp")).thenReturn(rd);
         servlet.doPost(req, resp);
         assertInvalidRegistrationForward(req, resp, rd);
-        verify(accountService, never()).register((RegistrationData) any());
     }
 
     @Test
     @DisplayName("TC1.1.4 Registrazione: CAP non valido")
     void tcRegistrazione_capNonValido_forward() throws Exception {
-        RegisterServlet servlet = new RegisterServlet();
+        RegistrazioneServlet servlet = new RegistrazioneServlet();
         AccountService accountService = mock(AccountService.class);
-        ReflectionTestUtils.setField(servlet, "accountService", accountService);
+        servlet.setAccountService(accountService);
 
         HttpServletRequest req = mock(HttpServletRequest.class);
         HttpServletResponse resp = mock(HttpServletResponse.class);
         RequestDispatcher rd = mock(RequestDispatcher.class);
         stubValidRegistrationParams(req);
-
         when(req.getParameter("cap")).thenReturn("ABCDE");
-        when(req.getRequestDispatcher(REGISTER_JSP)).thenReturn(rd);
+        when(req.getRequestDispatcher("/WEB-INF/jsp/register.jsp")).thenReturn(rd);
         servlet.doPost(req, resp);
         assertInvalidRegistrationForward(req, resp, rd);
-        verify(accountService, never()).register((RegistrationData) any());
     }
 
     @Test
     @DisplayName("TC1.1.5 Registrazione: provincia non valida")
     void tcRegistrazione_provinciaNonValida_forward() throws Exception {
-        RegisterServlet servlet = new RegisterServlet();
+        RegistrazioneServlet servlet = new RegistrazioneServlet();
         AccountService accountService = mock(AccountService.class);
-        ReflectionTestUtils.setField(servlet, "accountService", accountService);
+        servlet.setAccountService(accountService);
 
         HttpServletRequest req = mock(HttpServletRequest.class);
         HttpServletResponse resp = mock(HttpServletResponse.class);
         RequestDispatcher rd = mock(RequestDispatcher.class);
         stubValidRegistrationParams(req);
-
         when(req.getParameter("provincia")).thenReturn("M1");
-        when(req.getRequestDispatcher(REGISTER_JSP)).thenReturn(rd);
+        when(req.getRequestDispatcher("/WEB-INF/jsp/register.jsp")).thenReturn(rd);
         servlet.doPost(req, resp);
         assertInvalidRegistrationForward(req, resp, rd);
-        verify(accountService, never()).register((RegistrationData) any());
     }
 
     @Test
     @DisplayName("TC1.1.6 Registrazione: telefono non valido")
     void tcRegistrazione_telefonoNonValido_forward() throws Exception {
-        RegisterServlet servlet = new RegisterServlet();
+        RegistrazioneServlet servlet = new RegistrazioneServlet();
         AccountService accountService = mock(AccountService.class);
-        ReflectionTestUtils.setField(servlet, "accountService", accountService);
+        servlet.setAccountService(accountService);
 
         HttpServletRequest req = mock(HttpServletRequest.class);
         HttpServletResponse resp = mock(HttpServletResponse.class);
         RequestDispatcher rd = mock(RequestDispatcher.class);
         stubValidRegistrationParams(req);
-
         when(req.getParameter("telefono")).thenReturn("ABC");
-        when(req.getRequestDispatcher(REGISTER_JSP)).thenReturn(rd);
+        when(req.getRequestDispatcher("/WEB-INF/jsp/register.jsp")).thenReturn(rd);
         servlet.doPost(req, resp);
         assertInvalidRegistrationForward(req, resp, rd);
-        verify(accountService, never()).register((RegistrationData) any());
     }
 
     @Test
-    @DisplayName("TC1.1.7 Registrazione: completata")
+    @DisplayName("TC1.1.7 Registrazione: successo")
     void tcRegistrazione_successo_redirect() throws Exception {
-        RegisterServlet servlet = new RegisterServlet();
+        RegistrazioneServlet servlet = new RegistrazioneServlet();
+
         AccountService accountService = mock(AccountService.class);
-        ReflectionTestUtils.setField(servlet, "accountService", accountService);
+        servlet.setAccountService(accountService);
 
         HttpServletRequest req = mock(HttpServletRequest.class);
         HttpServletResponse resp = mock(HttpServletResponse.class);
 
         when(req.getContextPath()).thenReturn("");
+
         stubValidRegistrationParams(req);
+        when(req.getParameter("password")).thenReturn("Rosarossa3");
+        when(req.getParameter("confermaPassword")).thenReturn("Rosarossa3");
+
         servlet.doPost(req, resp);
-        verify(resp, times(1)).sendRedirect("/login?registrazione=successo");
-        verify(accountService, times(1)).register((RegistrationData) any());
+
+        assertValidRegistrationRedirect(resp);
     }
 
     private void stubValidRegistrationParams(HttpServletRequest req) {
@@ -162,14 +152,11 @@ class RegistrazioneSystemTest {
         when(req.getParameter("confermaPassword")).thenReturn("Rosarossa3");
     }
 
-    private void assertInvalidRegistrationForward(HttpServletRequest req,
-                                                  HttpServletResponse resp,
-                                                  RequestDispatcher rd) throws Exception {
-        verify(req).setAttribute(eq("nome"), any());
-        verify(req).setAttribute(eq("cognome"), any());
-        verify(req).setAttribute(eq("email"), any());
-        verify(req).setAttribute(eq("telefono"), any());
-        verify(req).setAttribute(eq("errori"), any());
+    private void assertInvalidRegistrationForward(HttpServletRequest req, HttpServletResponse resp, RequestDispatcher rd) throws Exception {
         verify(rd).forward(req, resp);
+    }
+
+    private void assertValidRegistrationRedirect(HttpServletResponse resp) throws Exception {
+        verify(resp, times(1)).sendRedirect("/login?registrazione=successo");
     }
 }

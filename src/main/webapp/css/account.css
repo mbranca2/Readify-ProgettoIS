@@ -137,8 +137,14 @@
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .section-title {
@@ -357,17 +363,17 @@
     .account-content {
         grid-template-columns: 1fr;
     }
-    
+
     .account-menu {
         width: 100%;
         margin-bottom: 1.5rem;
     }
-    
+
     .form-row {
         grid-template-columns: 1fr;
         gap: 0;
     }
-    
+
     .order-table {
         display: block;
         overflow-x: auto;
@@ -390,7 +396,9 @@
 
 /* animazion */
 @keyframes spin {
-    to { transform: rotate(360deg); }
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 .loading {

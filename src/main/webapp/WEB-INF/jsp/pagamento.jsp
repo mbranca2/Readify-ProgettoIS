@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="<c:url value='/css/pagamento.css' />">
 </head>
 <body>
-<jsp:include page="header.jsp" />
+<jsp:include page="header.jsp"/>
 
 <main class="payment-page">
     <div class="payment-container">
@@ -41,56 +41,59 @@
                     <div class="panel-block">
                         <div class="panel-title">Indirizzo di spedizione</div>
 
-                <c:set var="indirizzoSpedizioneParam" value="${param.indirizzoSpedizione}"/>
-                <c:set var="indirizzoSpedizioneAttr" value="${indirizzoSpedizione}"/>
-                <c:choose>
-                    <c:when test="${not empty indirizzi}">
-                        <div class="form-group">
-                            <label for="indirizzoSpedizione" class="form-label">Seleziona un indirizzo</label>
-                            <select id="indirizzoSpedizione" name="indirizzoSpedizione" class="form-select" required>
-                                <c:choose>
-                                    <c:when test="${empty indirizzoSpedizioneParam and empty indirizzoSpedizioneAttr}">
-                                        <option value="" disabled selected>Seleziona un indirizzo</option>
-                                    </c:when>
-                                    <c:otherwise>
-                                        <option value="" disabled>Seleziona un indirizzo</option>
-                                    </c:otherwise>
-                                </c:choose>
-                                <c:forEach items="${indirizzi}" var="ind">
-                                    <c:set var="isSelected" value="false"/>
-                                    <c:choose>
-                                        <c:when test="${not empty indirizzoSpedizioneParam}">
-                                            <c:if test="${indirizzoSpedizioneParam ne 'new'}">
-                                                <c:if test="${indirizzoSpedizioneParam == ind.idIndirizzo}">
-                                                    <c:set var="isSelected" value="true"/>
-                                                </c:if>
-                                            </c:if>
-                                        </c:when>
-                                        <c:otherwise>
-                                            <c:if test="${not empty indirizzoSpedizioneAttr}">
-                                                <c:if test="${indirizzoSpedizioneAttr == ind.idIndirizzo}">
-                                                    <c:set var="isSelected" value="true"/>
-                                                </c:if>
-                                            </c:if>
-                                        </c:otherwise>
-                                    </c:choose>
-                                    <c:choose>
-                                        <c:when test="${isSelected}">
-                                            <option value="${ind.idIndirizzo}" selected>
-                                                ${ind.via}, ${ind.cap} ${ind.citta} (${ind.provincia}) - ${ind.paese}
-                                            </option>
-                                        </c:when>
-                                        <c:otherwise>
-                                            <option value="${ind.idIndirizzo}">
-                                                ${ind.via}, ${ind.cap} ${ind.citta} (${ind.provincia}) - ${ind.paese}
-                                            </option>
-                                        </c:otherwise>
-                                    </c:choose>
-                                </c:forEach>
-                                <c:choose>
-                                    <c:when test="${not empty indirizzoSpedizioneParam and indirizzoSpedizioneParam eq 'new'}">
-                                        <option value="new" selected>Aggiungi nuovo indirizzo</option>
-                                    </c:when>
+                        <c:set var="indirizzoSpedizioneParam" value="${param.indirizzoSpedizione}"/>
+                        <c:set var="indirizzoSpedizioneAttr" value="${indirizzoSpedizione}"/>
+                        <c:choose>
+                            <c:when test="${not empty indirizzi}">
+                                <div class="form-group">
+                                    <label for="indirizzoSpedizione" class="form-label">Seleziona un indirizzo</label>
+                                    <select id="indirizzoSpedizione" name="indirizzoSpedizione" class="form-select"
+                                            required>
+                                        <c:choose>
+                                            <c:when test="${empty indirizzoSpedizioneParam and empty indirizzoSpedizioneAttr}">
+                                                <option value="" disabled selected>Seleziona un indirizzo</option>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <option value="" disabled>Seleziona un indirizzo</option>
+                                            </c:otherwise>
+                                        </c:choose>
+                                        <c:forEach items="${indirizzi}" var="ind">
+                                            <c:set var="isSelected" value="false"/>
+                                            <c:choose>
+                                                <c:when test="${not empty indirizzoSpedizioneParam}">
+                                                    <c:if test="${indirizzoSpedizioneParam ne 'new'}">
+                                                        <c:if test="${indirizzoSpedizioneParam == ind.idIndirizzo}">
+                                                            <c:set var="isSelected" value="true"/>
+                                                        </c:if>
+                                                    </c:if>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <c:if test="${not empty indirizzoSpedizioneAttr}">
+                                                        <c:if test="${indirizzoSpedizioneAttr == ind.idIndirizzo}">
+                                                            <c:set var="isSelected" value="true"/>
+                                                        </c:if>
+                                                    </c:if>
+                                                </c:otherwise>
+                                            </c:choose>
+                                            <c:choose>
+                                                <c:when test="${isSelected}">
+                                                    <option value="${ind.idIndirizzo}" selected>
+                                                            ${ind.via}, ${ind.cap} ${ind.citta} (${ind.provincia})
+                                                        - ${ind.paese}
+                                                    </option>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <option value="${ind.idIndirizzo}">
+                                                            ${ind.via}, ${ind.cap} ${ind.citta} (${ind.provincia})
+                                                        - ${ind.paese}
+                                                    </option>
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </c:forEach>
+                                        <c:choose>
+                                            <c:when test="${not empty indirizzoSpedizioneParam and indirizzoSpedizioneParam eq 'new'}">
+                                                <option value="new" selected>Aggiungi nuovo indirizzo</option>
+                                            </c:when>
                                             <c:otherwise>
                                                 <option value="new">Aggiungi nuovo indirizzo</option>
                                             </c:otherwise>
@@ -99,7 +102,7 @@
                                 </div>
                             </c:when>
                             <c:otherwise>
-                                <input type="hidden" name="indirizzoSpedizione" value="new" />
+                                <input type="hidden" name="indirizzoSpedizione" value="new"/>
                             </c:otherwise>
                         </c:choose>
 
@@ -115,19 +118,21 @@
                                 </div>
                                 <div class="form-group">
                                     <label for="citta" class="form-label">Citta</label>
-                                    <input type="text" id="citta" name="citta" class="form-input" value="${param.citta}">
+                                    <input type="text" id="citta" name="citta" class="form-input"
+                                           value="${param.citta}">
                                 </div>
                             </div>
                             <div class="form-row">
                                 <div class="form-group">
                                     <label for="provincia" class="form-label">Provincia</label>
-                                    <input type="text" id="provincia" name="provincia" class="form-input" value="${param.provincia}" maxlength="2">
+                                    <input type="text" id="provincia" name="provincia" class="form-input"
+                                           value="${param.provincia}" maxlength="2">
                                 </div>
                                 <div class="form-group">
                                     <label for="paese" class="form-label">Paese</label>
-                                    <c:set var="paeseVal" value="${param.paese}" />
+                                    <c:set var="paeseVal" value="${param.paese}"/>
                                     <c:if test="${empty paeseVal}">
-                                        <c:set var="paeseVal" value="Italia" />
+                                        <c:set var="paeseVal" value="Italia"/>
                                     </c:if>
                                     <input type="text" id="paese" name="paese" class="form-input" value="${paeseVal}">
                                 </div>
@@ -145,13 +150,15 @@
 
                         <div class="form-group">
                             <label for="card-number" class="form-label">Numero carta</label>
-                            <input type="text" id="card-number" name="cardNumber" class="form-input" placeholder="1234 5678 9012 3456" required>
+                            <input type="text" id="card-number" name="cardNumber" class="form-input"
+                                   placeholder="1234 5678 9012 3456" required>
                         </div>
 
                         <div class="form-row">
                             <div class="form-group">
                                 <label for="expiry-date" class="form-label">Scadenza (MM/AA)</label>
-                                <input type="text" id="expiry-date" name="expiryDate" class="form-input" placeholder="MM/AA" required>
+                                <input type="text" id="expiry-date" name="expiryDate" class="form-input"
+                                       placeholder="MM/AA" required>
                             </div>
 
                             <div class="form-group">
@@ -164,7 +171,8 @@
                     <div class="form-actions">
                         <a href="${pageContext.request.contextPath}/carrello" class="btn btn-outline">Torna indietro</a>
                         <button type="submit" class="btn btn-primary">
-                            Paga ora EUR <fmt:formatNumber value="${totale}" minFractionDigits="2" maxFractionDigits="2"/>
+                            Paga ora EUR <fmt:formatNumber value="${totale}" minFractionDigits="2"
+                                                           maxFractionDigits="2"/>
                         </button>
                     </div>
                 </form>
@@ -180,9 +188,9 @@
                         <div class="order-items">
                             <c:forEach items="${sessionScope.carrello.articoli}" var="articolo">
                                 <div class="order-item">
-                                    <c:set var="copertinaNome" value="${articolo.libro.copertina}" />
+                                    <c:set var="copertinaNome" value="${articolo.libro.copertina}"/>
                                     <c:if test="${empty copertinaNome}">
-                                        <c:set var="copertinaNome" value="default.jpg" />
+                                        <c:set var="copertinaNome" value="default.jpg"/>
                                     </c:if>
                                     <img src="${pageContext.request.contextPath}/img/libri/copertine/${copertinaNome}"
                                          alt="${articolo.libro.titolo}">
@@ -191,7 +199,7 @@
                                         <div class="order-item-meta">Quantita: ${articolo.quantita}</div>
                                         <div class="order-item-price">
                                             EUR <fmt:formatNumber value="${articolo.totale}"
-                                                       minFractionDigits="2" maxFractionDigits="2"/>
+                                                                  minFractionDigits="2" maxFractionDigits="2"/>
                                         </div>
                                     </div>
                                 </div>
@@ -202,14 +210,14 @@
 
                 <div class="order-total">
                     Totale: EUR <fmt:formatNumber value="${totale}" minFractionDigits="2"
-                                               maxFractionDigits="2"/>
+                                                  maxFractionDigits="2"/>
                 </div>
             </aside>
         </div>
     </div>
 </main>
 
-<jsp:include page="footer.jsp" />
+<jsp:include page="footer.jsp"/>
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {

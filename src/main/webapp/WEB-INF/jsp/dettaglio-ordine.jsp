@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/order-detail.css">
 </head>
 <body>
-<jsp:include page="header.jsp" />
+<jsp:include page="header.jsp"/>
 
 <main class="order-detail-page">
     <div class="order-detail-container">
@@ -22,7 +22,7 @@
                 <p class="order-detail-subtitle">
                     <c:choose>
                         <c:when test="${not empty ordine.dataOrdine}">
-                            <fmt:formatDate value="${ordine.dataOrdine}" pattern="dd/MM/yyyy" />
+                            <fmt:formatDate value="${ordine.dataOrdine}" pattern="dd/MM/yyyy"/>
                         </c:when>
                         <c:otherwise>Data non disponibile</c:otherwise>
                     </c:choose>
@@ -42,7 +42,8 @@
                 </div>
                 <div class="order-detail-row">
                     <span>Totale</span>
-                    <span>EUR <fmt:formatNumber value="${ordine.totale}" minFractionDigits="2" maxFractionDigits="2"/></span>
+                    <span>EUR <fmt:formatNumber value="${ordine.totale}" minFractionDigits="2"
+                                                maxFractionDigits="2"/></span>
                 </div>
                 <div class="order-detail-row">
                     <span>Righe ordine</span>
@@ -55,9 +56,9 @@
                 <c:choose>
                     <c:when test="${not empty indirizzoOrdine}">
                         <div class="address-block">
-                            ${indirizzoOrdine.via}<br>
-                            ${indirizzoOrdine.cap} ${indirizzoOrdine.citta} (${indirizzoOrdine.provincia})<br>
-                            ${indirizzoOrdine.paese}
+                                ${indirizzoOrdine.via}<br>
+                                ${indirizzoOrdine.cap} ${indirizzoOrdine.citta} (${indirizzoOrdine.provincia})<br>
+                                ${indirizzoOrdine.paese}
                         </div>
                     </c:when>
                     <c:otherwise>
@@ -85,9 +86,9 @@
                         </thead>
                         <tbody>
                         <c:forEach items="${ordine.dettagli}" var="dettaglio">
-                            <c:set var="coverPath" value="${dettaglio.immagineCopertina}" />
+                            <c:set var="coverPath" value="${dettaglio.immagineCopertina}"/>
                             <c:if test="${empty coverPath}">
-                                <c:set var="coverPath" value="img/libri/copertine/default.jpg" />
+                                <c:set var="coverPath" value="img/libri/copertine/default.jpg"/>
                             </c:if>
                             <tr>
                                 <td>
@@ -102,10 +103,12 @@
                                 </td>
                                 <td class="text-right">${dettaglio.quantita}</td>
                                 <td class="text-right">
-                                    EUR <fmt:formatNumber value="${dettaglio.prezzoUnitario}" minFractionDigits="2" maxFractionDigits="2"/>
+                                    EUR <fmt:formatNumber value="${dettaglio.prezzoUnitario}" minFractionDigits="2"
+                                                          maxFractionDigits="2"/>
                                 </td>
                                 <td class="text-right">
-                                    EUR <fmt:formatNumber value="${dettaglio.subTotale}" minFractionDigits="2" maxFractionDigits="2"/>
+                                    EUR <fmt:formatNumber value="${dettaglio.subTotale}" minFractionDigits="2"
+                                                          maxFractionDigits="2"/>
                                 </td>
                             </tr>
                         </c:forEach>
@@ -117,6 +120,6 @@
     </div>
 </main>
 
-<jsp:include page="footer.jsp" />
+<jsp:include page="footer.jsp"/>
 </body>
 </html>

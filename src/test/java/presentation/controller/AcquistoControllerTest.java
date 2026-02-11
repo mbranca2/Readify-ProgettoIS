@@ -12,15 +12,13 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import testUtil.ReflectionTestUtils;
 
 import java.util.Collections;
 
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
-class AcquistoSystemTest {
-
+class AcquistoControllerTest {
     private static final String PAGAMENTO_JSP = "/WEB-INF/jsp/pagamento.jsp";
     private static final String CONFERMA_ORDINE_JSP = "/WEB-INF/jsp/conferma-ordine.jsp";
 
@@ -32,9 +30,9 @@ class AcquistoSystemTest {
         AddressService addressService = mock(AddressService.class);
         AccountService accountService = mock(AccountService.class);
 
-        ReflectionTestUtils.setField(servlet, "orderService", orderService);
-        ReflectionTestUtils.setField(servlet, "addressService", addressService);
-        ReflectionTestUtils.setField(servlet, "accountService", accountService);
+        servlet.setOrderService(orderService);
+        servlet.setAddressService(addressService);
+        servlet.setAccountService(accountService);
 
         HttpServletRequest req = mock(HttpServletRequest.class);
         HttpServletResponse resp = mock(HttpServletResponse.class);
@@ -49,11 +47,14 @@ class AcquistoSystemTest {
 
         stubSession(req, session, u, c);
         stubNewAddressParams(req, "0004223", "RM");
-        stubPaymentParams(req, "5767991234001156", "12/30", "344");
+        stubPaymentParams(req, "Roberto Rossi", "5767991234001156", "12/30", "344");
+
         when(addressService.listByUser(1)).thenReturn(Collections.emptyList());
         when(req.getRequestDispatcher(PAGAMENTO_JSP)).thenReturn(rdPagamento);
+
         servlet.doPost(req, resp);
-        assertErroreForwardPagamento(req, resp, rdPagamento);
+
+        assertErroreForwardPagamentoIndirizzo(req, resp, rdPagamento);
         verify(accountService, never()).addAddress(anyInt(), any());
         verify(orderService, never()).placeOrder(anyInt(), anyInt(), any());
     }
@@ -66,9 +67,9 @@ class AcquistoSystemTest {
         AddressService addressService = mock(AddressService.class);
         AccountService accountService = mock(AccountService.class);
 
-        ReflectionTestUtils.setField(servlet, "orderService", orderService);
-        ReflectionTestUtils.setField(servlet, "addressService", addressService);
-        ReflectionTestUtils.setField(servlet, "accountService", accountService);
+        servlet.setOrderService(orderService);
+        servlet.setAddressService(addressService);
+        servlet.setAccountService(accountService);
 
         HttpServletRequest req = mock(HttpServletRequest.class);
         HttpServletResponse resp = mock(HttpServletResponse.class);
@@ -83,26 +84,29 @@ class AcquistoSystemTest {
 
         stubSession(req, session, u, c);
         stubNewAddressParams(req, "00042", "RMA");
-        stubPaymentParams(req, "5767991234001156", "12/30", "344");
+        stubPaymentParams(req, "Roberto Rossi", "5767991234001156", "12/30", "344");
+
         when(addressService.listByUser(1)).thenReturn(Collections.emptyList());
         when(req.getRequestDispatcher(PAGAMENTO_JSP)).thenReturn(rdPagamento);
+
         servlet.doPost(req, resp);
-        assertErroreForwardPagamento(req, resp, rdPagamento);
+
+        assertErroreForwardPagamentoIndirizzo(req, resp, rdPagamento);
         verify(accountService, never()).addAddress(anyInt(), any());
         verify(orderService, never()).placeOrder(anyInt(), anyInt(), any());
     }
 
     @Test
-    @DisplayName("TC2.1.3 Checkout: indirizzo valido")
+    @DisplayName("TC2.1.3 Checkout: indirizzo valido ma pagamento non valido")
     void tcIndirizzo_valido() throws Exception {
         ConfermaOrdineServlet servlet = new ConfermaOrdineServlet();
         OrderService orderService = mock(OrderService.class);
         AddressService addressService = mock(AddressService.class);
         AccountService accountService = mock(AccountService.class);
 
-        ReflectionTestUtils.setField(servlet, "orderService", orderService);
-        ReflectionTestUtils.setField(servlet, "addressService", addressService);
-        ReflectionTestUtils.setField(servlet, "accountService", accountService);
+        servlet.setOrderService(orderService);
+        servlet.setAddressService(addressService);
+        servlet.setAccountService(accountService);
 
         HttpServletRequest req = mock(HttpServletRequest.class);
         HttpServletResponse resp = mock(HttpServletResponse.class);
@@ -117,13 +121,16 @@ class AcquistoSystemTest {
 
         stubSession(req, session, u, c);
         stubNewAddressParams(req, "00042", "RM");
-        stubPaymentParams(req, "5767991234001156669", "12/30", "344");
+        stubPaymentParams(req, "Roberto Rossi", "576799123400115", "12/30", "344");
+
         when(accountService.addAddress(eq(1), any())).thenReturn(true);
         when(addressService.listByUser(1)).thenReturn(Collections.emptyList());
         when(req.getRequestDispatcher(PAGAMENTO_JSP)).thenReturn(rdPagamento);
+
         servlet.doPost(req, resp);
-        assertAddressSaved(accountService);
-        verify(rdPagamento).forward(req, resp);
+
+        verify(accountService, times(1)).addAddress(eq(1), any());
+        assertErroreForwardPagamentoPagamento(req, resp, rdPagamento);
         verify(orderService, never()).placeOrder(anyInt(), anyInt(), any());
     }
 
@@ -135,9 +142,9 @@ class AcquistoSystemTest {
         AddressService addressService = mock(AddressService.class);
         AccountService accountService = mock(AccountService.class);
 
-        ReflectionTestUtils.setField(servlet, "orderService", orderService);
-        ReflectionTestUtils.setField(servlet, "addressService", addressService);
-        ReflectionTestUtils.setField(servlet, "accountService", accountService);
+        servlet.setOrderService(orderService);
+        servlet.setAddressService(addressService);
+        servlet.setAccountService(accountService);
 
         HttpServletRequest req = mock(HttpServletRequest.class);
         HttpServletResponse resp = mock(HttpServletResponse.class);
@@ -149,13 +156,17 @@ class AcquistoSystemTest {
 
         Carrello c = mock(Carrello.class);
         when(c.isVuoto()).thenReturn(false);
+
         stubSession(req, session, u, c);
         stubExistingAddress(req, addressService, 1);
-        stubPaymentParams(req, "5767991234001156669", "12/30", "344");
+        stubPaymentParams(req, "Roberto Rossi", "576799123400115", "12/30", "344");
+
         when(addressService.listByUser(1)).thenReturn(Collections.emptyList());
         when(req.getRequestDispatcher(PAGAMENTO_JSP)).thenReturn(rdPagamento);
+
         servlet.doPost(req, resp);
-        assertErroreForwardPagamento(req, resp, rdPagamento);
+
+        assertErroreForwardPagamentoPagamento(req, resp, rdPagamento);
         verify(orderService, never()).placeOrder(anyInt(), anyInt(), any());
     }
 
@@ -167,9 +178,9 @@ class AcquistoSystemTest {
         AddressService addressService = mock(AddressService.class);
         AccountService accountService = mock(AccountService.class);
 
-        ReflectionTestUtils.setField(servlet, "orderService", orderService);
-        ReflectionTestUtils.setField(servlet, "addressService", addressService);
-        ReflectionTestUtils.setField(servlet, "accountService", accountService);
+        servlet.setOrderService(orderService);
+        servlet.setAddressService(addressService);
+        servlet.setAccountService(accountService);
 
         HttpServletRequest req = mock(HttpServletRequest.class);
         HttpServletResponse resp = mock(HttpServletResponse.class);
@@ -184,11 +195,14 @@ class AcquistoSystemTest {
 
         stubSession(req, session, u, c);
         stubExistingAddress(req, addressService, 1);
-        stubPaymentParams(req, "5767991234001156", "15/30", "344");
+        stubPaymentParams(req, "Roberto Rossi", "5767991234001156", "15/30", "344");
+
         when(addressService.listByUser(1)).thenReturn(Collections.emptyList());
         when(req.getRequestDispatcher(PAGAMENTO_JSP)).thenReturn(rdPagamento);
+
         servlet.doPost(req, resp);
-        assertErroreForwardPagamento(req, resp, rdPagamento);
+
+        assertErroreForwardPagamentoPagamento(req, resp, rdPagamento);
         verify(orderService, never()).placeOrder(anyInt(), anyInt(), any());
     }
 
@@ -200,9 +214,9 @@ class AcquistoSystemTest {
         AddressService addressService = mock(AddressService.class);
         AccountService accountService = mock(AccountService.class);
 
-        ReflectionTestUtils.setField(servlet, "orderService", orderService);
-        ReflectionTestUtils.setField(servlet, "addressService", addressService);
-        ReflectionTestUtils.setField(servlet, "accountService", accountService);
+        servlet.setOrderService(orderService);
+        servlet.setAddressService(addressService);
+        servlet.setAccountService(accountService);
 
         HttpServletRequest req = mock(HttpServletRequest.class);
         HttpServletResponse resp = mock(HttpServletResponse.class);
@@ -214,13 +228,17 @@ class AcquistoSystemTest {
 
         Carrello c = mock(Carrello.class);
         when(c.isVuoto()).thenReturn(false);
+
         stubSession(req, session, u, c);
         stubExistingAddress(req, addressService, 1);
-        stubPaymentParams(req, "5767991234001156", "12/19", "344");
+        stubPaymentParams(req, "Roberto Rossi", "5767991234001156", "12/19", "344");
+
         when(addressService.listByUser(1)).thenReturn(Collections.emptyList());
         when(req.getRequestDispatcher(PAGAMENTO_JSP)).thenReturn(rdPagamento);
+
         servlet.doPost(req, resp);
-        assertErroreForwardPagamento(req, resp, rdPagamento);
+
+        assertErroreForwardPagamentoPagamento(req, resp, rdPagamento);
         verify(orderService, never()).placeOrder(anyInt(), anyInt(), any());
     }
 
@@ -232,9 +250,9 @@ class AcquistoSystemTest {
         AddressService addressService = mock(AddressService.class);
         AccountService accountService = mock(AccountService.class);
 
-        ReflectionTestUtils.setField(servlet, "orderService", orderService);
-        ReflectionTestUtils.setField(servlet, "addressService", addressService);
-        ReflectionTestUtils.setField(servlet, "accountService", accountService);
+        servlet.setOrderService(orderService);
+        servlet.setAddressService(addressService);
+        servlet.setAccountService(accountService);
 
         HttpServletRequest req = mock(HttpServletRequest.class);
         HttpServletResponse resp = mock(HttpServletResponse.class);
@@ -249,11 +267,14 @@ class AcquistoSystemTest {
 
         stubSession(req, session, u, c);
         stubExistingAddress(req, addressService, 1);
-        stubPaymentParams(req, "5767991234001156", "12/30", "3445");
+        stubPaymentParams(req, "Roberto Rossi", "5767991234001156", "12/30", "3445");
+
         when(addressService.listByUser(1)).thenReturn(Collections.emptyList());
         when(req.getRequestDispatcher(PAGAMENTO_JSP)).thenReturn(rdPagamento);
+
         servlet.doPost(req, resp);
-        assertErroreForwardPagamento(req, resp, rdPagamento);
+
+        assertErroreForwardPagamentoPagamento(req, resp, rdPagamento);
         verify(orderService, never()).placeOrder(anyInt(), anyInt(), any());
     }
 
@@ -265,14 +286,15 @@ class AcquistoSystemTest {
         AddressService addressService = mock(AddressService.class);
         AccountService accountService = mock(AccountService.class);
 
-        ReflectionTestUtils.setField(servlet, "orderService", orderService);
-        ReflectionTestUtils.setField(servlet, "addressService", addressService);
-        ReflectionTestUtils.setField(servlet, "accountService", accountService);
+        servlet.setOrderService(orderService);
+        servlet.setAddressService(addressService);
+        servlet.setAccountService(accountService);
 
         Ordine ordine = new Ordine();
         ordine.setIdOrdine(99);
 
         when(orderService.placeOrder(eq(1), eq(10), any())).thenReturn(ordine);
+
         HttpServletRequest req = mock(HttpServletRequest.class);
         HttpServletResponse resp = mock(HttpServletResponse.class);
         HttpSession session = mock(HttpSession.class);
@@ -286,9 +308,13 @@ class AcquistoSystemTest {
 
         stubSession(req, session, u, c);
         stubExistingAddress(req, addressService, 1);
-        stubPaymentParams(req, "5767991234001156", "12/30", "344");
+        stubPaymentParams(req, "Roberto Rossi", "5767991234001156", "12/30", "344");
+
         when(req.getRequestDispatcher(CONFERMA_ORDINE_JSP)).thenReturn(rdConferma);
+        when(addressService.isOwnedByUser(10, 1)).thenReturn(true);
+
         servlet.doPost(req, resp);
+
         verify(orderService, times(1)).placeOrder(eq(1), eq(10), any());
         verify(c, times(1)).svuota();
         verify(session).setAttribute(eq("carrello"), eq(c));
@@ -302,6 +328,7 @@ class AcquistoSystemTest {
         when(req.getSession(false)).thenReturn(session);
         when(session.getAttribute("utente")).thenReturn(u);
         when(session.getAttribute("carrello")).thenReturn(c);
+        when(req.getContextPath()).thenReturn("");
     }
 
     private void stubExistingAddress(HttpServletRequest req, AddressService addressService, int userId) {
@@ -318,22 +345,24 @@ class AcquistoSystemTest {
         when(req.getParameter("paese")).thenReturn("Italia");
     }
 
-    private void stubPaymentParams(HttpServletRequest req, String cardNumber, String expiryDate, String cvv) {
-        when(req.getParameter("cardName")).thenReturn("Roberto Rossi");
+    private void stubPaymentParams(HttpServletRequest req, String cardName, String cardNumber, String expiryDate, String cvv) {
+        when(req.getParameter("cardName")).thenReturn(cardName);
         when(req.getParameter("cardNumber")).thenReturn(cardNumber);
         when(req.getParameter("expiryDate")).thenReturn(expiryDate);
         when(req.getParameter("cvv")).thenReturn(cvv);
     }
 
-    private void assertErroreForwardPagamento(HttpServletRequest req,
-                                              HttpServletResponse resp,
-                                              RequestDispatcher rdPagamento) throws Exception {
+    private void assertErroreForwardPagamentoIndirizzo(HttpServletRequest req, HttpServletResponse resp, RequestDispatcher rdPagamento) throws Exception {
         verify(req).setAttribute(eq("errore"), anyString());
         verify(req).setAttribute(eq("indirizzi"), any());
         verify(rdPagamento).forward(req, resp);
+        verify(req, never()).setAttribute(eq("erroriPagamento"), any());
     }
 
-    private void assertAddressSaved(AccountService accountService) {
-        verify(accountService, times(1)).addAddress(eq(1), any());
+    private void assertErroreForwardPagamentoPagamento(HttpServletRequest req, HttpServletResponse resp, RequestDispatcher rdPagamento) throws Exception {
+        verify(req).setAttribute(eq("errore"), anyString());
+        verify(req).setAttribute(eq("erroriPagamento"), any());
+        verify(req).setAttribute(eq("indirizzi"), any());
+        verify(rdPagamento).forward(req, resp);
     }
 }

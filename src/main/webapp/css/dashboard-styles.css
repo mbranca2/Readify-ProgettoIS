@@ -22,10 +22,9 @@ body {
     font-family: "Manrope", "Segoe UI", Arial, sans-serif;
     line-height: 1.5;
     color: var(--text-primary);
-    background:
-        radial-gradient(900px 520px at 10% -10%, rgba(15, 118, 110, 0.16), transparent 60%),
-        radial-gradient(820px 420px at 90% -20%, rgba(245, 158, 11, 0.2), transparent 55%),
-        linear-gradient(180deg, #f8fafc 0%, #eef2f3 100%);
+    background: radial-gradient(900px 520px at 10% -10%, rgba(15, 118, 110, 0.16), transparent 60%),
+    radial-gradient(820px 420px at 90% -20%, rgba(245, 158, 11, 0.2), transparent 55%),
+    linear-gradient(180deg, #f8fafc 0%, #eef2f3 100%);
     margin: 0;
 }
 
@@ -189,29 +188,29 @@ body {
         align-items: flex-start;
         padding: 0 0 0.6rem;
     }
-    
+
     .dashboard-title h1 {
         font-size: 1.5rem;
     }
-    
+
     .stat-card {
         padding: 1rem;
     }
-    
+
     .stat-icon {
         width: 42px;
         height: 42px;
         font-size: 1.25rem;
     }
-    
+
     .stat-value {
         font-size: 1.4rem;
     }
-    
+
     .stat-label {
         font-size: 0.95rem;
     }
-    
+
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -226,7 +225,7 @@ body {
     .dashboard-header {
         display: none;
     }
-    
+
     .stat-card {
         break-inside: avoid;
         box-shadow: none;
@@ -293,7 +292,7 @@ body {
 .action-btn:hover {
     background: var(--surface-muted);
     transform: translateY(-1px);
-    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .action-btn i {
@@ -332,5 +331,10 @@ body {
     }
 }
 
-.stat-card:nth-child(2) { animation-delay: 0.08s; }
-.stat-card:nth-child(3) { animation-delay: 0.16s; }
+.stat-card:nth-child(2) {
+    animation-delay: 0.08s;
+}
+
+.stat-card:nth-child(3) {
+    animation-delay: 0.16s;
+}

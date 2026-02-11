@@ -134,7 +134,7 @@ public class ValidatoreForm {
                             "una lettera maiuscola, una minuscola e un numero");
         }
 
-        if (confermaPassword == null || !password.equals(confermaPassword)) {
+        if (!password.equals(confermaPassword)) {
             errori.put("confermaPassword", "Le password non coincidono");
         }
 

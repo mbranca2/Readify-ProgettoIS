@@ -1,6 +1,11 @@
 (function () {
-    function $(sel) { return document.querySelector(sel); }
-    function $all(sel) { return Array.from(document.querySelectorAll(sel)); }
+    function $(sel) {
+        return document.querySelector(sel);
+    }
+
+    function $all(sel) {
+        return Array.from(document.querySelectorAll(sel));
+    }
 
     function toNumber(v) {
         if (v == null) return NaN;
@@ -41,7 +46,7 @@
             .split(",")
             .map(x => x.trim())
             .filter(Boolean);
-        return { titolo, autore, prezzo, disponibile, cats };
+        return {titolo, autore, prezzo, disponibile, cats};
     }
 
     function matches(card) {
@@ -245,8 +250,10 @@
 
         const min = $("#priceMin");
         const max = $("#priceMax");
-        if (min) min.addEventListener("input", () => {});
-        if (max) max.addEventListener("input", () => {});
+        if (min) min.addEventListener("input", () => {
+        });
+        if (max) max.addEventListener("input", () => {
+        });
         const applyBtn = $("#applyFilters");
         if (applyBtn) applyBtn.addEventListener("click", () => setPrice(min?.value || "", max?.value || ""));
 

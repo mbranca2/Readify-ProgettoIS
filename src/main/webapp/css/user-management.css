@@ -497,13 +497,33 @@
     vertical-align: middle;
 }
 
-.user-management-container .icon-user-plus::before { content: "\1F464"; }
-.user-management-container .icon-eye::before { content: "\1F441\FE0F"; }
-.user-management-container .icon-edit::before { content: "\270F\FE0F"; }
-.user-management-container .icon-search::before { content: "\1F50D"; }
-.user-management-container .icon-chevron-left::before { content: "\276E"; }
-.user-management-container .icon-chevron-right::before { content: "\276F"; }
-.user-management-container .icon-users::before { content: "\1F465"; }
+.user-management-container .icon-user-plus::before {
+    content: "\1F464";
+}
+
+.user-management-container .icon-eye::before {
+    content: "\1F441\FE0F";
+}
+
+.user-management-container .icon-edit::before {
+    content: "\270F\FE0F";
+}
+
+.user-management-container .icon-search::before {
+    content: "\1F50D";
+}
+
+.user-management-container .icon-chevron-left::before {
+    content: "\276E";
+}
+
+.user-management-container .icon-chevron-right::before {
+    content: "\276F";
+}
+
+.user-management-container .icon-users::before {
+    content: "\1F465";
+}
 
 /* accessibilita */
 .user-management-container .sr-only {

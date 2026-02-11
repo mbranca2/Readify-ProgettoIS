@@ -22,7 +22,8 @@
         <div class="home-content">
             <span class="home-eyebrow">Pronto a scegliere il tuo prossimo libro?</span>
             <h1>Benvenuto su Readify</h1>
-            <p>Scopri novità e classici, aggiungi al carrello in un attimo e tieni d'occhio i tuoi ordini quando vuoi.</p>
+            <p>Scopri novità e classici, aggiungi al carrello in un attimo e tieni d'occhio i tuoi ordini quando
+                vuoi.</p>
             <div class="home-buttons">
                 <a href="<c:url value='/libri'/>" class="button">
                     Esplora il catalogo
@@ -58,6 +59,6 @@
     </div>
 </section>
 
-<jsp:include page="/WEB-INF/jsp/footer.jsp" />
+<jsp:include page="/WEB-INF/jsp/footer.jsp"/>
 </body>
 </html>

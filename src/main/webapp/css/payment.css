@@ -12,7 +12,9 @@
 }
 
 @keyframes spin {
-    to { transform: rotate(360deg); }
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 .loading {
@@ -70,7 +72,7 @@
     .form-actions {
         flex-direction: column;
     }
-    
+
     .btn {
         width: 100%;
     }
@@ -81,15 +83,16 @@
         grid-template-columns: 1fr;
         gap: 0;
     }
-    
+
     .form-group {
         margin-bottom: 1rem;
     }
-    
+
     .form-actions {
         gap: 0.75rem;
     }
 }
+
 :root {
     --primary-color: #2c3e50;
     --primary-light: #3d5a80;
@@ -426,7 +429,9 @@ body {
 
 /* caricamento */
 @keyframes spin {
-    to { transform: rotate(360deg); }
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 .loading {
@@ -446,16 +451,16 @@ body {
     .payment-methods {
         grid-template-columns: 1fr;
     }
-    
+
     .form-row {
         grid-template-columns: 1fr;
         gap: 0.5rem;
     }
-    
+
     .step {
         padding: 0 1.5rem;
     }
-    
+
     .step-label {
         font-size: 0.8rem;
     }

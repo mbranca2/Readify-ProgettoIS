@@ -1,8 +1,8 @@
 package business.service.address.impl;
 
 import business.model.Indirizzo;
-import data.dao.IndirizzoDAO;
 import business.service.address.AddressService;
+import data.dao.IndirizzoDAO;
 
 import java.util.Collections;
 import java.util.List;

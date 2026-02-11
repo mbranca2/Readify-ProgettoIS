@@ -1,14 +1,14 @@
 package presentation.controller;
 
+import business.model.Utente;
+import business.service.ServiceFactory;
+import business.service.review.ReviewService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import business.model.Utente;
-import business.service.ServiceFactory;
-import business.service.review.ReviewService;
 
 import java.io.IOException;
 
@@ -52,6 +52,10 @@ public class EliminaRecensioneServlet extends HttpServlet {
     }
 
     private int parseIntSafe(String s) {
-        try { return Integer.parseInt(s); } catch (Exception e) { return -1; }
+        try {
+            return Integer.parseInt(s);
+        } catch (Exception e) {
+            return -1;
+        }
     }
 }

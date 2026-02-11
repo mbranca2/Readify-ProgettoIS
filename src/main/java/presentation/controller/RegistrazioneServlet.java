@@ -1,22 +1,31 @@
 package presentation.controller;
 
+import business.service.ServiceFactory;
+import business.service.account.AccountService;
+import business.service.account.AccountServiceException;
+import business.service.account.RegistrationData;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import presentation.util.ValidatoreForm;
-import business.service.ServiceFactory;
-import business.service.account.AccountService;
-import business.service.account.AccountServiceException;
-import business.service.account.RegistrationData;
 
 import java.io.IOException;
 import java.util.Map;
 
 @WebServlet("/registrazione")
-public class RegisterServlet extends HttpServlet {
-    private final AccountService accountService = ServiceFactory.accountService();
+public class RegistrazioneServlet extends HttpServlet {
+    private AccountService accountService;
+
+    @Override
+    public void init() throws ServletException {
+        this.accountService = ServiceFactory.accountService();
+    }
+
+    void setAccountService(AccountService accountService) {
+        this.accountService = accountService;
+    }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)

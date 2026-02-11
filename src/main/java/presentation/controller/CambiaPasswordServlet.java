@@ -1,16 +1,16 @@
 package presentation.controller;
 
+import business.model.Utente;
+import business.service.ServiceFactory;
+import business.service.account.AccountService;
+import business.service.address.AddressService;
+import business.service.order.OrderService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import business.model.Utente;
-import business.service.ServiceFactory;
-import business.service.account.AccountService;
-import business.service.address.AddressService;
-import business.service.order.OrderService;
 
 import java.io.IOException;
 
@@ -20,6 +20,18 @@ public class CambiaPasswordServlet extends HttpServlet {
     private AccountService accountService;
     private AddressService addressService;
     private OrderService orderService;
+
+    void setAccountService(AccountService accountService) {
+        this.accountService = accountService;
+    }
+
+    void setAddressService(AddressService addressService) {
+        this.addressService = addressService;
+    }
+
+    void setOrderService(OrderService orderService) {
+        this.orderService = orderService;
+    }
 
     @Override
     public void init() throws ServletException {
@@ -40,7 +52,6 @@ public class CambiaPasswordServlet extends HttpServlet {
             return;
         }
 
-        // Nel progetto non esiste "profilo.jsp": la pagina profilo e' "gestioneAccount.jsp"
         request.setAttribute("indirizzi", addressService.listByUser(utente.getIdUtente()));
         request.setAttribute("ordini", orderService.listByUser(utente.getIdUtente()));
         request.getRequestDispatcher("/WEB-INF/jsp/gestioneAccount.jsp").forward(request, response);

@@ -12,15 +12,15 @@
 </head>
 <body>
 
-<jsp:include page="header.jsp" />
+<jsp:include page="header.jsp"/>
 
 <div class="account-container">
     <c:if test="${not empty requestScope.messaggio}">
         <div class="alert alert-${requestScope.tipoMessaggio}">
-            ${requestScope.messaggio}
+                ${requestScope.messaggio}
         </div>
     </c:if>
-    
+
     <c:choose>
         <c:when test="${not empty sessionScope.utente}">
             <div class="profile-header">
@@ -84,20 +84,26 @@
                                             <div class="address-info">
                                                 <div class="address-line">${ind.via}</div>
                                                 <div class="address-line">
-                                                    ${ind.cap} ${ind.citta} (${ind.provincia}) - ${ind.paese}
+                                                        ${ind.cap} ${ind.citta} (${ind.provincia}) - ${ind.paese}
                                                 </div>
                                             </div>
                                             <div class="address-actions">
-                                                <form method="post" action="${pageContext.request.contextPath}/gestione-indirizzo">
+                                                <form method="post"
+                                                      action="${pageContext.request.contextPath}/gestione-indirizzo">
                                                     <input type="hidden" name="azione" value="seleziona">
                                                     <input type="hidden" name="idIndirizzo" value="${ind.idIndirizzo}">
-                                                    <button type="submit" class="btn btn-outline btn-sm btn-action">Modifica</button>
+                                                    <button type="submit" class="btn btn-outline btn-sm btn-action">
+                                                        Modifica
+                                                    </button>
                                                 </form>
-                                                <form method="post" action="${pageContext.request.contextPath}/gestione-indirizzo"
+                                                <form method="post"
+                                                      action="${pageContext.request.contextPath}/gestione-indirizzo"
                                                       onsubmit="return confirm('Vuoi eliminare questo indirizzo?');">
                                                     <input type="hidden" name="azione" value="elimina">
                                                     <input type="hidden" name="idIndirizzo" value="${ind.idIndirizzo}">
-                                                    <button type="submit" class="btn btn-outline btn-sm btn-danger">Elimina</button>
+                                                    <button type="submit" class="btn btn-outline btn-sm btn-danger">
+                                                        Elimina
+                                                    </button>
                                                 </form>
                                             </div>
                                         </div>
@@ -119,25 +125,29 @@
                         </div>
 
                         <h3 class="section-title">Indirizzo selezionato</h3>
-                        <form method="post" action="${pageContext.request.contextPath}/gestione-indirizzo" class="account-form">
+                        <form method="post" action="${pageContext.request.contextPath}/gestione-indirizzo"
+                              class="account-form">
                             <input type="hidden" name="idIndirizzo"
                                    value="${sessionScope.indirizzo != null ? sessionScope.indirizzo.idIndirizzo : ''}">
                             <div class="form-group">
                                 <label for="via" class="form-label">Via e numero civico*</label>
                                 <input type="text" id="via" name="via" class="form-input"
-                                       value="${sessionScope.indirizzo != null ? sessionScope.indirizzo.via : ''}" required>
+                                       value="${sessionScope.indirizzo != null ? sessionScope.indirizzo.via : ''}"
+                                       required>
                             </div>
                             <div class="form-row">
                                 <div class="form-group">
                                     <label for="cap" class="form-label">CAP*</label>
                                     <input type="text" id="cap" name="cap" class="form-input"
                                            pattern="[0-9]{5}" title="Inserisci un CAP valido (5 cifre)"
-                                           value="${sessionScope.indirizzo != null ? sessionScope.indirizzo.cap : ''}" required>
+                                           value="${sessionScope.indirizzo != null ? sessionScope.indirizzo.cap : ''}"
+                                           required>
                                 </div>
                                 <div class="form-group">
                                     <label for="citta" class="form-label">Città*</label>
                                     <input type="text" id="citta" name="citta" class="form-input"
-                                           value="${sessionScope.indirizzo != null ? sessionScope.indirizzo.citta : ''}" required>
+                                           value="${sessionScope.indirizzo != null ? sessionScope.indirizzo.citta : ''}"
+                                           required>
                                 </div>
                             </div>
                             <div class="form-row">
@@ -145,12 +155,14 @@
                                     <label for="provincia" class="form-label">Provincia*</label>
                                     <input type="text" id="provincia" name="provincia" class="form-input"
                                            maxlength="2" style="text-transform: uppercase;"
-                                           value="${sessionScope.indirizzo != null ? sessionScope.indirizzo.provincia : ''}" required>
+                                           value="${sessionScope.indirizzo != null ? sessionScope.indirizzo.provincia : ''}"
+                                           required>
                                 </div>
                                 <div class="form-group">
                                     <label for="paese" class="form-label">Paese*</label>
                                     <input type="text" id="paese" name="paese" class="form-input"
-                                           value="${sessionScope.indirizzo != null && sessionScope.indirizzo.paese != null ? sessionScope.indirizzo.paese : 'Italia'}" required>
+                                           value="${sessionScope.indirizzo != null && sessionScope.indirizzo.paese != null ? sessionScope.indirizzo.paese : 'Italia'}"
+                                           required>
                                 </div>
                             </div>
                             <button type="submit" class="btn">Salva indirizzo</button>
@@ -159,7 +171,8 @@
 
                     <div id="password" class="tab-panel">
                         <h3 class="section-title">Cambia password</h3>
-                        <form method="post" action="${pageContext.request.contextPath}/cambia-password" class="account-form" id="passwordChangeForm" onsubmit="return validatePasswordChange()">
+                        <form method="post" action="${pageContext.request.contextPath}/cambia-password"
+                              class="account-form" id="passwordChangeForm" onsubmit="return validatePasswordChange()">
                             <div class="form-group">
                                 <label for="vecchiaPassword" class="form-label">Password attuale</label>
                                 <input type="password" id="vecchiaPassword" name="vecchiaPassword"
@@ -202,9 +215,12 @@
                                         <tr>
                                             <td>#${ordine.idOrdine}</td>
                                             <td><fmt:formatDate value="${ordine.dataOrdine}" pattern="dd/MM/yyyy"/></td>
-                                            <td><fmt:formatNumber value="${ordine.totale}" type="currency" currencyCode="EUR"/></td>
+                                            <td><fmt:formatNumber value="${ordine.totale}" type="currency"
+                                                                  currencyCode="EUR"/></td>
                                             <td><span class="order-badge">${ordine.stato}</span></td>
-                                            <td><a href="${pageContext.request.contextPath}/dettaglio-ordine?id=${ordine.idOrdine}">Dettagli</a></td>
+                                            <td>
+                                                <a href="${pageContext.request.contextPath}/dettaglio-ordine?id=${ordine.idOrdine}">Dettagli</a>
+                                            </td>
                                         </tr>
                                     </c:forEach>
                                     </tbody>
@@ -213,7 +229,8 @@
                             <c:otherwise>
                                 <div class="empty-orders">
                                     <p>Nessun ordine effettuato</p>
-                                    <a href="${pageContext.request.contextPath}/libri" class="btn">Inizia a fare acquisti</a>
+                                    <a href="${pageContext.request.contextPath}/libri" class="btn">Inizia a fare
+                                        acquisti</a>
                                 </div>
                             </c:otherwise>
                         </c:choose>
@@ -224,16 +241,19 @@
         <c:otherwise>
             <div class="empty-orders">
                 <h3>Accesso richiesto</h3>
-                <p>Per accedere a questa pagina, effettua il <a href="${pageContext.request.contextPath}/login" class="btn btn-outline">Login</a> o <a href="${pageContext.request.contextPath}/registrazione" class="btn btn-primary">Registrati</a></p>
+                <p>Per accedere a questa pagina, effettua il <a href="${pageContext.request.contextPath}/login"
+                                                                class="btn btn-outline">Login</a> o <a
+                        href="${pageContext.request.contextPath}/registrazione" class="btn btn-primary">Registrati</a>
+                </p>
             </div>
         </c:otherwise>
     </c:choose>
 </div>
 
-<jsp:include page="footer.jsp" />
+<jsp:include page="footer.jsp"/>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         const tabButtons = document.querySelectorAll('.tab-button');
 
         // Funzione per attivare un tab
@@ -269,7 +289,7 @@
         });
 
         // Gestisci il popstate per il tasto indietro/avanti del browser
-        window.addEventListener('popstate', function() {
+        window.addEventListener('popstate', function () {
             const urlParams = new URLSearchParams(window.location.search);
             const tab = urlParams.get('tab') || 'profile';
             activateTab(tab);

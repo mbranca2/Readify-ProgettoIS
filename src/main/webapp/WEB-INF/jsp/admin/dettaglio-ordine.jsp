@@ -1,4 +1,4 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
@@ -10,27 +10,116 @@
     <title>Dettaglio Ordine - Admin</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/main.css">
     <style>
-        .icon { display:inline-block; width:1em; height:1em; margin-right:.5em; vertical-align:middle; }
-        .icon-orders::before { content:'🧾'; }
-        .icon-back::before { content:'←'; }
-        .grid { display:grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-        .card { border:1px solid #eee; border-radius:14px; padding:16px; background:#fff; }
-        .muted { color:#666; }
-        .badge { padding: 4px 8px; border-radius: 10px; background: #eee; font-size: 0.9em; }
-        table { width:100%; border-collapse: collapse; margin-top:10px; }
-        th, td { padding: 10px; border-bottom: 1px solid #ddd; text-align:left; vertical-align:top; }
-        th { background: #f7f7f7; }
-        .book { display:flex; gap:12px; align-items:flex-start; }
-        .cover { width:52px; height:78px; object-fit:cover; border-radius:8px; border:1px solid #ddd; background:#fafafa; }
-        .btn-link { text-decoration:none; padding:6px 10px; border:1px solid #ddd; border-radius:8px; display:inline-block; }
-        .form-row { display:flex; gap:10px; align-items:center; margin-top:10px; }
-        select { padding:8px; border-radius:10px; border:1px solid #ddd; }
-        button { padding:8px 12px; border-radius:10px; border:1px solid #ddd; background:#f7f7f7; cursor:pointer; }
-        @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+        .icon {
+            display: inline-block;
+            width: 1em;
+            height: 1em;
+            margin-right: .5em;
+            vertical-align: middle;
+        }
+
+        .icon-orders::before {
+            content: '🧾';
+        }
+
+        .icon-back::before {
+            content: '←';
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .card {
+            border: 1px solid #eee;
+            border-radius: 14px;
+            padding: 16px;
+            background: #fff;
+        }
+
+        .muted {
+            color: #666;
+        }
+
+        .badge {
+            padding: 4px 8px;
+            border-radius: 10px;
+            background: #eee;
+            font-size: 0.9em;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th, td {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        th {
+            background: #f7f7f7;
+        }
+
+        .book {
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+        }
+
+        .cover {
+            width: 52px;
+            height: 78px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            background: #fafafa;
+        }
+
+        .btn-link {
+            text-decoration: none;
+            padding: 6px 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            display: inline-block;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        select {
+            padding: 8px;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+        }
+
+        button {
+            padding: 8px 12px;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+            background: #f7f7f7;
+            cursor: pointer;
+        }
+
+        @media (max-width: 900px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 <body>
-<jsp:include page="../header.jsp" />
+<jsp:include page="../header.jsp"/>
 
 <div class="container" style="margin-top:20px;">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
@@ -59,14 +148,14 @@
             <p><strong>Data:</strong>
                 <c:choose>
                     <c:when test="${not empty ordine.dataOrdine}">
-                        <fmt:formatDate value="${ordine.dataOrdine}" pattern="dd/MM/yyyy" />
+                        <fmt:formatDate value="${ordine.dataOrdine}" pattern="dd/MM/yyyy"/>
                     </c:when>
                     <c:otherwise>-</c:otherwise>
                 </c:choose>
             </p>
             <p><strong>Stato attuale:</strong> <span class="badge">${ordine.stato}</span></p>
             <p><strong>Totale:</strong>
-                € <fmt:formatNumber value="${ordine.totale}" minFractionDigits="2" maxFractionDigits="2" />
+                € <fmt:formatNumber value="${ordine.totale}" minFractionDigits="2" maxFractionDigits="2"/>
             </p>
 
             <hr style="border:none;border-top:1px solid #eee; margin:12px 0;">
@@ -78,7 +167,9 @@
                     <select name="nuovoStato" required>
                         <option value="IN_ATTESA" ${ordine.stato == 'IN_ATTESA' ? 'selected' : ''}>IN_ATTESA</option>
                         <option value="PAGATO" ${ordine.stato == 'PAGATO' ? 'selected' : ''}>PAGATO</option>
-                        <option value="IN_ELABORAZIONE" ${ordine.stato == 'IN_ELABORAZIONE' ? 'selected' : ''}>IN_ELABORAZIONE</option>
+                        <option value="IN_ELABORAZIONE" ${ordine.stato == 'IN_ELABORAZIONE' ? 'selected' : ''}>
+                            IN_ELABORAZIONE
+                        </option>
                         <option value="SPEDITO" ${ordine.stato == 'SPEDITO' ? 'selected' : ''}>SPEDITO</option>
                         <option value="CONSEGNATO" ${ordine.stato == 'CONSEGNATO' ? 'selected' : ''}>CONSEGNATO</option>
                         <option value="ANNULLATO" ${ordine.stato == 'ANNULLATO' ? 'selected' : ''}>ANNULLATO</option>
@@ -133,7 +224,9 @@
             <tbody>
             <c:choose>
                 <c:when test="${empty ordine.dettagli}">
-                    <tr><td colspan="4" class="muted">Nessun dettaglio presente.</td></tr>
+                    <tr>
+                        <td colspan="4" class="muted">Nessun dettaglio presente.</td>
+                    </tr>
                 </c:when>
                 <c:otherwise>
                     <c:forEach items="${ordine.dettagli}" var="d">
@@ -142,7 +235,9 @@
                                 <div class="book">
                                     <c:choose>
                                         <c:when test="${not empty d.immagineCopertina}">
-                                            <img class="cover" src="${pageContext.request.contextPath}/${d.immagineCopertina}" alt="Copertina">
+                                            <img class="cover"
+                                                 src="${pageContext.request.contextPath}/${d.immagineCopertina}"
+                                                 alt="Copertina">
                                         </c:when>
                                         <c:otherwise>
                                             <div class="cover"></div>
@@ -160,8 +255,10 @@
                                 </div>
                             </td>
                             <td>${d.quantita}</td>
-                            <td>€ <fmt:formatNumber value="${d.prezzoUnitario}" minFractionDigits="2" maxFractionDigits="2" /></td>
-                            <td>€ <fmt:formatNumber value="${d.subTotale}" minFractionDigits="2" maxFractionDigits="2" /></td>
+                            <td>€ <fmt:formatNumber value="${d.prezzoUnitario}" minFractionDigits="2"
+                                                    maxFractionDigits="2"/></td>
+                            <td>€ <fmt:formatNumber value="${d.subTotale}" minFractionDigits="2"
+                                                    maxFractionDigits="2"/></td>
                         </tr>
                     </c:forEach>
                 </c:otherwise>
@@ -171,6 +268,6 @@
     </div>
 </div>
 
-<jsp:include page="../footer.jsp" />
+<jsp:include page="../footer.jsp"/>
 </body>
 </html>

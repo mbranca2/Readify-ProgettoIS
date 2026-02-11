@@ -17,14 +17,6 @@ public enum StatoOrdine {
         this.dbValue = dbValue;
     }
 
-    public String getDescrizione() {
-        return descrizione;
-    }
-
-    public String toDbValue() {
-        return dbValue;
-    }
-
     public static StatoOrdine fromDbValue(String dbValue) {
         if (dbValue == null) return IN_ATTESA;
         String v = dbValue.trim().toLowerCase();
@@ -32,6 +24,14 @@ public enum StatoOrdine {
             if (s.dbValue.equals(v)) return s;
         }
         return IN_ATTESA;
+    }
+
+    public String getDescrizione() {
+        return descrizione;
+    }
+
+    public String toDbValue() {
+        return dbValue;
     }
 
     @Override

@@ -505,24 +505,24 @@
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
     }
-    
+
     .table {
         width: 100%;
         margin-bottom: 1rem;
         background-color: transparent;
     }
-    
+
     .table thead {
         display: none;
     }
-    
+
     .table tbody tr {
         display: block;
         margin-bottom: 1rem;
         border: 1px solid #dee2e6;
         border-radius: 0.25rem;
     }
-    
+
     .table tbody tr td {
         display: flex;
         justify-content: space-between;
@@ -530,18 +530,18 @@
         padding: 0.75rem;
         border-bottom: 1px solid #dee2e6;
     }
-    
+
     .table tbody tr td:last-child {
         border-bottom: none;
     }
-    
+
     .table tbody tr td::before {
         content: attr(data-label);
         font-weight: 600;
         margin-right: 1rem;
         color: var(--text-muted);
     }
-    
+
     .table tbody tr td .btn-group {
         margin-left: auto;
     }
@@ -552,22 +552,22 @@
     .btn {
         display: none !important;
     }
-    
+
     .order-management-container {
         flex-direction: column;
     }
-    
+
     .table {
         width: 100%;
         border-collapse: collapse;
     }
-    
+
     .table th,
     .table td {
         padding: 0.5rem;
         border: 1px solid #dee2e6;
     }
-    
+
     .badge {
         border: 1px solid currentColor;
         background-color: transparent !important;

@@ -1,11 +1,5 @@
 package presentation.controller.admin;
 
-import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import business.model.Categoria;
 import business.model.Libro;
 import business.model.Utente;
@@ -13,6 +7,12 @@ import business.service.ServiceFactory;
 import business.service.catalog.AdminCatalogService;
 import business.service.catalog.CatalogService;
 import business.service.catalog.CategoryService;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -203,7 +203,8 @@ public class GestioneLibriServlet extends HttpServlet {
             prezzoStr = prezzoStr.replace(",", ".");
             try {
                 libro.setPrezzo(new BigDecimal(prezzoStr));
-            } catch (Exception ignored) {}
+            } catch (Exception ignored) {
+            }
         }
 
         String disp = trimToNull(request.getParameter("disponibilita"));

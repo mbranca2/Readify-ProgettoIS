@@ -9,9 +9,9 @@ function validateRegistrationForm() {
     const confermaPassword = document.getElementById('confermaPassword').value;
 
     resetErrorMessages();
-    
+
     let isValid = true;
-    
+
     // Validazione nome
     if (nome === '') {
         showError('nome', 'Il nome è obbligatorio');
@@ -20,7 +20,7 @@ function validateRegistrationForm() {
         showError('nome', 'Il nome deve contenere almeno 2 caratteri');
         isValid = false;
     }
-    
+
     // Validazione cognome
     if (cognome === '') {
         showError('cognome', 'Il cognome è obbligatorio');
@@ -29,7 +29,7 @@ function validateRegistrationForm() {
         showError('cognome', 'Il cognome deve contenere almeno 2 caratteri');
         isValid = false;
     }
-    
+
     // Validazione email
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (email === '') {
@@ -39,7 +39,7 @@ function validateRegistrationForm() {
         showError('email', 'Inserisci un indirizzo email valido');
         isValid = false;
     }
-    
+
     // Validazione password
     if (password === '') {
         showError('password', 'La password è obbligatoria');
@@ -51,7 +51,7 @@ function validateRegistrationForm() {
         showError('password', 'La password deve contenere almeno una lettera maiuscola, una minuscola e un numero');
         isValid = false;
     }
-    
+
     // Validazione conferma password
     if (confermaPassword === '') {
         showError('confermaPassword', 'Conferma la password');
@@ -60,19 +60,19 @@ function validateRegistrationForm() {
         showError('confermaPassword', 'Le password non coincidono');
         isValid = false;
     }
-    
+
     // Validazione telefono (opzionale)
     if (telefono && !/^[0-9\-\+\(\)\s]{8,15}$/.test(telefono)) {
         showError('telefono', 'Inserisci un numero di telefono valido');
         isValid = false;
     }
-    
+
     const submitButton = form.querySelector('button[type="submit"]');
     if (isValid && submitButton) {
         submitButton.disabled = true;
         submitButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Registrazione in corso...';
     }
-    
+
     return isValid;
 }
 
@@ -90,10 +90,10 @@ function showError(fieldId, message) {
     } else {
         errorDiv = existingError;
     }
-    
+
     errorDiv.textContent = message;
     field.classList.add('is-invalid');
-    
+
     // Aggiungo un listener per rimuovere l'errore quando l'utente inizia a scrivere
     const clearError = () => {
         field.classList.remove('is-invalid');
@@ -103,12 +103,12 @@ function showError(fieldId, message) {
         field.removeEventListener('input', clearError);
         field.removeEventListener('change', clearError);
     };
-    
+
     field.addEventListener('input', clearError);
     field.addEventListener('change', clearError);
 
     if (isValid) {
-        field.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        field.scrollIntoView({behavior: 'smooth', block: 'center'});
     }
 }
 
@@ -117,10 +117,10 @@ function resetErrorMessages() {
     document.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
 }
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     const registrationForm = document.getElementById('registrationForm');
     if (registrationForm) {
-        registrationForm.addEventListener('submit', function(event) {
+        registrationForm.addEventListener('submit', function (event) {
             if (!validateRegistrationForm()) {
                 event.preventDefault();
             }

@@ -1,5 +1,9 @@
 package presentation.controller;
 
+import business.model.Carrello;
+import business.model.Utente;
+import business.service.ServiceFactory;
+import business.service.cart.CartFacade;
 import com.google.gson.Gson;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -7,10 +11,6 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import business.model.Carrello;
-import business.model.Utente;
-import business.service.ServiceFactory;
-import business.service.cart.CartFacade;
 
 import java.io.IOException;
 import java.math.BigDecimal;

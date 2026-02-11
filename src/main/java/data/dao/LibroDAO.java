@@ -31,7 +31,8 @@ public class LibroDAO {
             if (conn != null) {
                 try {
                     conn.rollback();
-                } catch (SQLException ignored) {}
+                } catch (SQLException ignored) {
+                }
             }
             e.printStackTrace();
             return false;

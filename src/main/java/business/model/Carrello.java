@@ -11,29 +11,11 @@ public class Carrello implements java.io.Serializable {
     private static final long serialVersionUID = 1L;
     private final Map<Libro, Integer> articoli = new HashMap<>();
 
-    public static class ArticoloCarrello implements java.io.Serializable {
-        private static final long serialVersionUID = 1L;
-        private final Libro libro;
-        private int quantita;
-        
-        public ArticoloCarrello(Libro libro, int quantita) {
-            this.libro = libro;
-            this.quantita = quantita;
-        }
-        
-        public Libro getLibro() { return libro; }
-        public int getQuantita() { return quantita; }
-        public void setQuantita(int quantita) { this.quantita = quantita; }
-        public BigDecimal getTotale() {
-            return libro.getPrezzo().multiply(BigDecimal.valueOf(quantita));
-        }
-    }
-
     public boolean aggiungiLibro(Libro libro, int quantita) {
         if (libro == null || quantita <= 0 || libro.getDisponibilita() <= 0) {
             return false;
         }
-        
+
         int nuovaQuantita = articoli.getOrDefault(libro, 0) + quantita;
 
         if (nuovaQuantita > libro.getDisponibilita()) {
@@ -51,7 +33,7 @@ public class Carrello implements java.io.Serializable {
         if (nuovaQuantita <= 0) {
             return rimuoviLibro(idLibro);
         }
-        
+
         for (Map.Entry<Libro, Integer> entry : articoli.entrySet()) {
             if (entry.getKey().getIdLibro() == idLibro) {
                 if (nuovaQuantita > entry.getKey().getDisponibilita()) {
@@ -100,5 +82,32 @@ public class Carrello implements java.io.Serializable {
                     return dettaglio;
                 })
                 .collect(Collectors.toList());
+    }
+
+    public static class ArticoloCarrello implements java.io.Serializable {
+        private static final long serialVersionUID = 1L;
+        private final Libro libro;
+        private int quantita;
+
+        public ArticoloCarrello(Libro libro, int quantita) {
+            this.libro = libro;
+            this.quantita = quantita;
+        }
+
+        public Libro getLibro() {
+            return libro;
+        }
+
+        public int getQuantita() {
+            return quantita;
+        }
+
+        public void setQuantita(int quantita) {
+            this.quantita = quantita;
+        }
+
+        public BigDecimal getTotale() {
+            return libro.getPrezzo().multiply(BigDecimal.valueOf(quantita));
+        }
     }
 }

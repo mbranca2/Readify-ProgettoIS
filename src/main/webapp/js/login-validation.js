@@ -25,9 +25,11 @@ function validateLoginForm() {
 
     return isValid;
 }
+
 function isValidEmail(email) {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
+
 function showError(fieldId, message) {
     const field = document.getElementById(fieldId);
     const errorDiv = document.createElement('div');
@@ -37,6 +39,7 @@ function showError(fieldId, message) {
     field.classList.add('is-invalid');
     field.parentNode.appendChild(errorDiv);
 }
+
 function resetErrorMessages() {
     document.querySelectorAll('.invalid-feedback').forEach(el => el.remove());
     document.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));

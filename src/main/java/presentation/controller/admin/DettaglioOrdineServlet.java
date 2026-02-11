@@ -1,16 +1,16 @@
 package presentation.controller.admin;
 
+import business.model.Utente;
+import business.service.ServiceFactory;
+import business.service.order.AdminOrderService;
+import business.service.order.AdminOrderServiceException;
+import business.service.order.dto.AdminOrderDetail;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import business.model.Utente;
-import business.service.ServiceFactory;
-import business.service.order.AdminOrderService;
-import business.service.order.AdminOrderServiceException;
-import business.service.order.dto.AdminOrderDetail;
 
 import java.io.IOException;
 
@@ -48,9 +48,9 @@ public class DettaglioOrdineServlet extends HttpServlet {
         try {
             AdminOrderDetail detail = adminOrderService.getOrderDetail(idOrdine);
 
-            req.setAttribute("ordine", detail.getOrdine());
-            req.setAttribute("utenteOrdine", detail.getUtente());
-            req.setAttribute("indirizzoOrdine", detail.getIndirizzo());
+            req.setAttribute("ordine", detail.ordine());
+            req.setAttribute("utenteOrdine", detail.utente());
+            req.setAttribute("indirizzoOrdine", detail.indirizzo());
 
             req.getRequestDispatcher("/WEB-INF/jsp/admin/dettaglio-ordine.jsp").forward(req, resp);
 

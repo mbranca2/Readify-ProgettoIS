@@ -13,7 +13,7 @@
 </head>
 <body class="page-catalogo-v2">
 
-<jsp:include page="header.jsp" />
+<jsp:include page="header.jsp"/>
 
 <main class="catalogo-shell">
     <section class="catalogo-topbar">
@@ -116,7 +116,8 @@
                              data-disponibile="${libro.disponibilita > 0}"
                              data-titolo="${fn:escapeXml(libro.titolo)}"
                              data-autore="${fn:escapeXml(libro.autore)}">
-                        <a class="book-media" href="${pageContext.request.contextPath}/dettaglio-libro?id=${libro.idLibro}">
+                        <a class="book-media"
+                           href="${pageContext.request.contextPath}/dettaglio-libro?id=${libro.idLibro}">
                             <img class="book-cover"
                                  src="${pageContext.request.contextPath}/img/libri/copertine/${not empty libro.copertina ? libro.copertina : 'default.jpg'}"
                                  alt="${fn:escapeXml(libro.titolo)}"
@@ -133,7 +134,8 @@
 
                         <div class="book-body">
                             <div class="book-main">
-                                <a class="book-title-link" href="${pageContext.request.contextPath}/dettaglio-libro?id=${libro.idLibro}">
+                                <a class="book-title-link"
+                                   href="${pageContext.request.contextPath}/dettaglio-libro?id=${libro.idLibro}">
                                     <h3 class="book-title">${fn:escapeXml(libro.titolo)}</h3>
                                 </a>
                                 <div class="book-author">${fn:escapeXml(libro.autore)}</div>
@@ -164,20 +166,24 @@
                                 </div>
 
                                 <div class="cta">
-                                    <a class="btn-primary btn-sm" href="${pageContext.request.contextPath}/dettaglio-libro?id=${libro.idLibro}">
+                                    <a class="btn-primary btn-sm"
+                                       href="${pageContext.request.contextPath}/dettaglio-libro?id=${libro.idLibro}">
                                         Dettagli
                                     </a>
                                     <c:choose>
                                         <c:when test="${libro.disponibilita > 0}">
-                                            <form method="post" action="${pageContext.request.contextPath}/carrello" class="inline-form">
+                                            <form method="post" action="${pageContext.request.contextPath}/carrello"
+                                                  class="inline-form">
                                                 <input type="hidden" name="azione" value="aggiungi">
                                                 <input type="hidden" name="idLibro" value="${libro.idLibro}">
                                                 <input type="hidden" name="quantita" value="1">
-                                                <button type="submit" class="btn-soft btn-sm">Aggiungi al carrello</button>
+                                                <button type="submit" class="btn-soft btn-sm">Aggiungi al carrello
+                                                </button>
                                             </form>
                                         </c:when>
                                         <c:otherwise>
-                                            <button type="button" class="btn-ghost btn-sm" disabled>Non disponibile</button>
+                                            <button type="button" class="btn-ghost btn-sm" disabled>Non disponibile
+                                            </button>
                                         </c:otherwise>
                                     </c:choose>
                                 </div>
@@ -206,7 +212,7 @@
     </section>
 </main>
 
-<jsp:include page="footer.jsp" />
+<jsp:include page="footer.jsp"/>
 
 <script src="${pageContext.request.contextPath}/js/catalogo-filtri.js"></script>
 

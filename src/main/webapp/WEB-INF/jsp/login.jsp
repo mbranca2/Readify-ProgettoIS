@@ -4,8 +4,8 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Accedi - Readify</title>
 
     <link rel="stylesheet" href="<c:url value='/css/main.css' />">
@@ -13,7 +13,7 @@
 </head>
 <body>
 
-<jsp:include page="/WEB-INF/jsp/header.jsp" />
+<jsp:include page="/WEB-INF/jsp/header.jsp"/>
 
 <main class="auth-page">
     <div class="container auth-container">
@@ -44,13 +44,13 @@
                 <div class="form-group">
                     <label for="email">Email</label>
                     <input id="email" name="email" type="email" class="form-control"
-                           value="${param.email}" autocomplete="email" required />
+                           value="${param.email}" autocomplete="email" required/>
                 </div>
 
                 <div class="form-group">
                     <label for="password">Password</label>
                     <input id="password" name="password" type="password" class="form-control"
-                           autocomplete="current-password" required />
+                           autocomplete="current-password" required/>
                 </div>
 
                 <div class="form-actions">
@@ -66,7 +66,7 @@
     </div>
 </main>
 
-<jsp:include page="/WEB-INF/jsp/footer.jsp" />
+<jsp:include page="/WEB-INF/jsp/footer.jsp"/>
 
 </body>
 </html>

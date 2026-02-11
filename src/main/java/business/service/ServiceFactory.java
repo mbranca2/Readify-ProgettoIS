@@ -1,6 +1,5 @@
 package business.service;
 
-import data.dao.*;
 import business.service.account.AccountService;
 import business.service.account.AdminUserService;
 import business.service.account.impl.AccountServiceImpl;
@@ -24,10 +23,12 @@ import business.service.review.AdminReviewService;
 import business.service.review.ReviewService;
 import business.service.review.impl.AdminReviewServiceImpl;
 import business.service.review.impl.ReviewServiceImpl;
+import data.dao.*;
 
 public class ServiceFactory {
 
-    private ServiceFactory() {}
+    private ServiceFactory() {
+    }
 
     public static AccountService accountService() {
         return new AccountServiceImpl(new UtenteDAO(), new IndirizzoDAO());

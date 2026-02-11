@@ -35,12 +35,14 @@
 
         <div class="form-group">
             <label for="prezzo">Prezzo (€) *</label>
-            <input type="number" id="prezzo" name="prezzo" class="form-control" step="0.01" min="0" value="${libro.prezzo}" required>
+            <input type="number" id="prezzo" name="prezzo" class="form-control" step="0.01" min="0"
+                   value="${libro.prezzo}" required>
         </div>
 
         <div class="form-group">
             <label for="quantita">Quantità *</label>
-            <input type="number" id="quantita" name="quantita" class="form-control" value="${libro.disponibilita}" min="0" required>
+            <input type="number" id="quantita" name="quantita" class="form-control" value="${libro.disponibilita}"
+                   min="0" required>
         </div>
 
         <div class="form-group">
@@ -49,7 +51,7 @@
                 <option value="">Seleziona una categoria</option>
                 <c:forEach items="${categorie}" var="cat">
                     <option value="${cat.idCategoria}" ${libro.categorie.contains(cat.idCategoria) ? 'selected' : ''}>
-                        ${cat.nomeCategoria}
+                            ${cat.nomeCategoria}
                     </option>
                 </c:forEach>
             </select>
@@ -67,24 +69,24 @@
     </form>
 </div>
 <script>
-    document.querySelector('.book-edit-form').addEventListener('submit', function(e) {
+    document.querySelector('.book-edit-form').addEventListener('submit', function (e) {
         const prezzo = document.getElementById('prezzo');
         const quantita = document.getElementById('quantita');
-        
+
         if (parseFloat(prezzo.value) < 0) {
             e.preventDefault();
             alert('Il prezzo non può essere negativo');
             prezzo.focus();
             return false;
         }
-        
+
         if (parseInt(quantita.value) < 0) {
             e.preventDefault();
             alert('La quantità non può essere negativa');
             quantita.focus();
             return false;
         }
-        
+
         return true;
     });
 </script>

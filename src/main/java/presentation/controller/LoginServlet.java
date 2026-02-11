@@ -1,17 +1,17 @@
 package presentation.controller;
 
-import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import business.model.Carrello;
 import business.model.Utente;
 import business.service.ServiceFactory;
 import business.service.account.AccountService;
 import business.service.account.AccountServiceException;
 import business.service.cart.CartFacade;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -21,8 +21,22 @@ import java.util.Map;
 public class LoginServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private static final String USER_ATTRIBUTE = "utente";
-    private final AccountService accountService = ServiceFactory.accountService();
-    private final CartFacade cartFacade = ServiceFactory.cartFacade();
+    private AccountService accountService;
+    private CartFacade cartFacade;
+
+    @Override
+    public void init() throws ServletException {
+        this.accountService = ServiceFactory.accountService();
+        this.cartFacade = ServiceFactory.cartFacade();
+    }
+
+    void setAccountService(AccountService accountService) {
+        this.accountService = accountService;
+    }
+
+    void setCartFacade(CartFacade cartFacade) {
+        this.cartFacade = cartFacade;
+    }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -59,7 +73,6 @@ public class LoginServlet extends HttpServlet {
         }
 
         try {
-            // --- LOGIN via Service ---
             Utente utente;
             try {
                 utente = accountService.login(email.trim(), password);
@@ -88,7 +101,6 @@ public class LoginServlet extends HttpServlet {
             newSession.setAttribute("utente", utente);
             newSession.setAttribute("idUtente", utente.getIdUtente());
 
-            // --- Carrello: delega alla Facade ---
             Carrello carrello = cartFacade.syncAfterLogin(utente.getIdUtente(), carrelloTemporaneo);
             newSession.setAttribute("carrello", carrello);
 

@@ -311,10 +311,9 @@
 }
 
 .cart-empty {
-    background:
-        radial-gradient(120% 120% at 10% 10%, rgba(42, 157, 143, 0.12), transparent 45%),
-        radial-gradient(120% 120% at 90% 0%, rgba(231, 111, 81, 0.12), transparent 50%),
-        linear-gradient(150deg, #ffffff 0%, #f7f3ee 100%);
+    background: radial-gradient(120% 120% at 10% 10%, rgba(42, 157, 143, 0.12), transparent 45%),
+    radial-gradient(120% 120% at 90% 0%, rgba(231, 111, 81, 0.12), transparent 50%),
+    linear-gradient(150deg, #ffffff 0%, #f7f3ee 100%);
     border: 1px solid rgba(31, 42, 55, 0.08);
     border-radius: 22px;
     padding: 30px 36px;
@@ -419,9 +418,26 @@ body > footer {
     animation: item-rise 0.45s ease both;
 }
 
-.cart-item:nth-child(1) { animation-delay: 0.05s; }
-.cart-item:nth-child(2) { animation-delay: 0.1s; }
-.cart-item:nth-child(3) { animation-delay: 0.15s; }
-.cart-item:nth-child(4) { animation-delay: 0.2s; }
-.cart-item:nth-child(5) { animation-delay: 0.25s; }
-.cart-item:nth-child(6) { animation-delay: 0.3s; }
+.cart-item:nth-child(1) {
+    animation-delay: 0.05s;
+}
+
+.cart-item:nth-child(2) {
+    animation-delay: 0.1s;
+}
+
+.cart-item:nth-child(3) {
+    animation-delay: 0.15s;
+}
+
+.cart-item:nth-child(4) {
+    animation-delay: 0.2s;
+}
+
+.cart-item:nth-child(5) {
+    animation-delay: 0.25s;
+}
+
+.cart-item:nth-child(6) {
+    animation-delay: 0.3s;
+}

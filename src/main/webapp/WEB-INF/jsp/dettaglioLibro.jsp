@@ -21,11 +21,37 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/book-detail.css">
     <style>
-        .review-actions { display:flex; gap:8px; margin-top:8px; }
-        .btn-small { padding:6px 10px; border-radius:10px; border:1px solid #ddd; background:#f7f7f7; cursor:pointer; }
-        .btn-danger { background:#fff3f3; border-color:#ffd4d4; }
-        .edit-form { margin-top:10px; padding:10px; border:1px solid #eee; border-radius:12px; background:#fafafa; display:none; }
-        .edit-form .form-group { margin-bottom:10px; }
+        .review-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .btn-small {
+            padding: 6px 10px;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+            background: #f7f7f7;
+            cursor: pointer;
+        }
+
+        .btn-danger {
+            background: #fff3f3;
+            border-color: #ffd4d4;
+        }
+
+        .edit-form {
+            margin-top: 10px;
+            padding: 10px;
+            border: 1px solid #eee;
+            border-radius: 12px;
+            background: #fafafa;
+            display: none;
+        }
+
+        .edit-form .form-group {
+            margin-bottom: 10px;
+        }
     </style>
 </head>
 <body>
@@ -226,7 +252,8 @@
                                                 ✏️ Modifica
                                             </button>
 
-                                            <form action="${pageContext.request.contextPath}/recensioni/elimina" method="post"
+                                            <form action="${pageContext.request.contextPath}/recensioni/elimina"
+                                                  method="post"
                                                   onsubmit="return confirm('Vuoi eliminare questa recensione?');">
                                                 <input type="hidden" name="idRecensione" value="${r.idRecensione}">
                                                 <input type="hidden" name="idLibro" value="${libro.idLibro}">
@@ -235,24 +262,31 @@
                                         </div>
 
                                         <div class="edit-form" id="edit-form-${r.idRecensione}">
-                                            <form action="${pageContext.request.contextPath}/recensioni/modifica" method="post">
+                                            <form action="${pageContext.request.contextPath}/recensioni/modifica"
+                                                  method="post">
                                                 <input type="hidden" name="idRecensione" value="${r.idRecensione}">
                                                 <input type="hidden" name="idLibro" value="${libro.idLibro}">
 
                                                 <div class="form-group">
                                                     <label>Valutazione</label>
                                                     <select name="voto" required>
-                                                        <option value="5" ${r.voto == 5 ? 'selected' : ''}>★★★★★ (5)</option>
-                                                        <option value="4" ${r.voto == 4 ? 'selected' : ''}>★★★★☆ (4)</option>
-                                                        <option value="3" ${r.voto == 3 ? 'selected' : ''}>★★★☆☆ (3)</option>
-                                                        <option value="2" ${r.voto == 2 ? 'selected' : ''}>★★☆☆☆ (2)</option>
-                                                        <option value="1" ${r.voto == 1 ? 'selected' : ''}>★☆☆☆☆ (1)</option>
+                                                        <option value="5" ${r.voto == 5 ? 'selected' : ''}>★★★★★ (5)
+                                                        </option>
+                                                        <option value="4" ${r.voto == 4 ? 'selected' : ''}>★★★★☆ (4)
+                                                        </option>
+                                                        <option value="3" ${r.voto == 3 ? 'selected' : ''}>★★★☆☆ (3)
+                                                        </option>
+                                                        <option value="2" ${r.voto == 2 ? 'selected' : ''}>★★☆☆☆ (2)
+                                                        </option>
+                                                        <option value="1" ${r.voto == 1 ? 'selected' : ''}>★☆☆☆☆ (1)
+                                                        </option>
                                                     </select>
                                                 </div>
 
                                                 <div class="form-group">
                                                     <label>Commento</label>
-                                                    <textarea name="commento" rows="4" maxlength="2000">${r.commento}</textarea>
+                                                    <textarea name="commento" rows="4"
+                                                              maxlength="2000">${r.commento}</textarea>
                                                 </div>
 
                                                 <div class="review-actions">

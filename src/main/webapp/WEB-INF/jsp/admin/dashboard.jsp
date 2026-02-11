@@ -7,7 +7,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Amministratore - Readify</title>
-    <jsp:include page="../header.jsp" />
+    <jsp:include page="../header.jsp"/>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/dashboard-styles.css">
     <style>
         .icon {
@@ -17,10 +17,22 @@
             margin-right: 0;
             vertical-align: middle;
         }
-        .icon-users::before { content: "\1F465"; }
-        .icon-book::before { content: "\1F4DA"; }
-        .icon-orders::before { content: "\1F9FE"; }
-        .icon-arrow-right::before { content: "\2192"; }
+
+        .icon-users::before {
+            content: "\1F465";
+        }
+
+        .icon-book::before {
+            content: "\1F4DA";
+        }
+
+        .icon-orders::before {
+            content: "\1F9FE";
+        }
+
+        .icon-arrow-right::before {
+            content: "\2192";
+        }
     </style>
 </head>
 <body>
@@ -91,6 +103,6 @@
 </div>
 </body>
 
-<jsp:include page="../footer.jsp" />
+<jsp:include page="../footer.jsp"/>
 
 </html>

@@ -1,7 +1,7 @@
 ﻿<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-<jsp:include page="header.jsp" />
+<jsp:include page="header.jsp"/>
 
 <title>Registrazione - Readify</title>
 
@@ -20,7 +20,8 @@
                 <div class="alert alert-danger">${fn:escapeXml(errori.generico)}</div>
             </c:if>
 
-            <form id="registrationForm" action="${pageContext.request.contextPath}/registrazione" method="post" class="auth-form" novalidate>
+            <form id="registrationForm" action="${pageContext.request.contextPath}/registrazione" method="post"
+                  class="auth-form" novalidate>
                 <div class="auth-grid">
                     <div class="form-group">
                         <label for="nome">Nome *</label>
@@ -109,7 +110,9 @@
                                pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).+"
                                title="La password deve contenere almeno 8 caratteri, una maiuscola, una minuscola e un numero"
                                class="form-control" placeholder="Min 8 caratteri, 1 maiuscola, 1 minuscola, 1 numero">
-                        <div class="form-text format-hint">Almeno 8 caratteri, una maiuscola, una minuscola e un numero</div>
+                        <div class="form-text format-hint">Almeno 8 caratteri, una maiuscola, una minuscola e un
+                            numero
+                        </div>
                         <div class="invalid-feedback">La password non soddisfa i requisiti minimi</div>
                     </div>
 
@@ -137,4 +140,4 @@
 
 <script src="${pageContext.request.contextPath}/js/form-validation.js"></script>
 
-<jsp:include page="footer.jsp" />
+<jsp:include page="footer.jsp"/>

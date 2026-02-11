@@ -1,11 +1,11 @@
 package business.service.catalog.impl;
 
 import business.model.Libro;
-import data.dao.LibroDAO;
 import business.service.catalog.AdminCatalogService;
 import business.service.catalog.CatalogEvent;
 import business.service.catalog.CatalogEventType;
 import business.service.catalog.CatalogObserver;
+import data.dao.LibroDAO;
 import data.util.DBManager;
 
 import java.math.BigDecimal;
@@ -76,7 +76,10 @@ public class AdminCatalogServiceImpl implements AdminCatalogService {
             return true;
 
         } catch (Exception e) {
-            try { if (conn != null) conn.rollback(); } catch (Exception ignored) {}
+            try {
+                if (conn != null) conn.rollback();
+            } catch (Exception ignored) {
+            }
             return false;
 
         } finally {
@@ -85,7 +88,8 @@ public class AdminCatalogServiceImpl implements AdminCatalogService {
                     conn.setAutoCommit(true);
                     conn.close();
                 }
-            } catch (Exception ignored) {}
+            } catch (Exception ignored) {
+            }
         }
     }
 
@@ -153,7 +157,10 @@ public class AdminCatalogServiceImpl implements AdminCatalogService {
             return true;
 
         } catch (Exception e) {
-            try { if (conn != null) conn.rollback(); } catch (Exception ignored) {}
+            try {
+                if (conn != null) conn.rollback();
+            } catch (Exception ignored) {
+            }
             return false;
 
         } finally {
@@ -162,7 +169,8 @@ public class AdminCatalogServiceImpl implements AdminCatalogService {
                     conn.setAutoCommit(true);
                     conn.close();
                 }
-            } catch (Exception ignored) {}
+            } catch (Exception ignored) {
+            }
         }
     }
 
@@ -206,7 +214,10 @@ public class AdminCatalogServiceImpl implements AdminCatalogService {
             return true;
 
         } catch (Exception e) {
-            try { if (conn != null) conn.rollback(); } catch (Exception ignored) {}
+            try {
+                if (conn != null) conn.rollback();
+            } catch (Exception ignored) {
+            }
             return false;
 
         } finally {
@@ -215,7 +226,8 @@ public class AdminCatalogServiceImpl implements AdminCatalogService {
                     conn.setAutoCommit(true);
                     conn.close();
                 }
-            } catch (Exception ignored) {}
+            } catch (Exception ignored) {
+            }
         }
     }
 

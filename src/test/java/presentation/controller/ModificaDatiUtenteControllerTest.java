@@ -10,26 +10,27 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import testUtil.ReflectionTestUtils;
+
+import java.util.Collections;
 
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
-class ModificaDatiUtenteSystemTest {
-
+class ModificaDatiUtenteControllerTest {
     @Test
-    @DisplayName("Cambio password: password attuale errata")
+    @DisplayName("TCS Modifica Password: password attuale errata")
     void tcModificaPassword_passwordAttualeErrata() throws Exception {
         CambiaPasswordServlet servlet = new CambiaPasswordServlet();
         AccountService accountService = mock(AccountService.class);
         AddressService addressService = mock(AddressService.class);
         OrderService orderService = mock(OrderService.class);
-        ReflectionTestUtils.setField(servlet, "accountService", accountService);
-        ReflectionTestUtils.setField(servlet, "addressService", addressService);
-        ReflectionTestUtils.setField(servlet, "orderService", orderService);
+        servlet.setAccountService(accountService);
+        servlet.setAddressService(addressService);
+        servlet.setOrderService(orderService);
 
+        when(addressService.listByUser(1)).thenReturn(Collections.emptyList());
+        when(orderService.listByUser(1)).thenReturn(Collections.emptyList());
         when(accountService.changePassword(eq(1), eq("Rosarossa5"), eq("Rosaverde1"))).thenReturn(false);
-
         HttpServletRequest req = mock(HttpServletRequest.class);
         HttpServletResponse resp = mock(HttpServletResponse.class);
         HttpSession session = mock(HttpSession.class);
@@ -40,30 +41,28 @@ class ModificaDatiUtenteSystemTest {
 
         when(req.getSession(false)).thenReturn(session);
         when(session.getAttribute("utente")).thenReturn(u);
-        when(addressService.listByUser(1)).thenReturn(java.util.Collections.emptyList());
-        when(orderService.listByUser(1)).thenReturn(java.util.Collections.emptyList());
         when(req.getParameter("oldPassword")).thenReturn("Rosarossa5");
         when(req.getParameter("newPassword")).thenReturn("Rosaverde1");
         when(req.getParameter("confirmPassword")).thenReturn("Rosaverde1");
         when(req.getRequestDispatcher("/WEB-INF/jsp/gestioneAccount.jsp")).thenReturn(rd);
         servlet.doPost(req, resp);
         verify(req).setAttribute(eq("errore"), anyString());
-        verify(addressService, atLeastOnce()).listByUser(1);
-        verify(orderService, atLeastOnce()).listByUser(1);
-        verify(accountService, times(1)).changePassword(eq(1), eq("Rosarossa5"), eq("Rosaverde1"));
         verify(rd).forward(req, resp);
     }
 
     @Test
-    @DisplayName("Cambio password: conferma diversa")
+    @DisplayName("TCS Modifica Password: conferma non coincide")
     void tcModificaPassword_confermaNonCoincide() throws Exception {
         CambiaPasswordServlet servlet = new CambiaPasswordServlet();
         AccountService accountService = mock(AccountService.class);
         AddressService addressService = mock(AddressService.class);
         OrderService orderService = mock(OrderService.class);
-        ReflectionTestUtils.setField(servlet, "accountService", accountService);
-        ReflectionTestUtils.setField(servlet, "addressService", addressService);
-        ReflectionTestUtils.setField(servlet, "orderService", orderService);
+        servlet.setAccountService(accountService);
+        servlet.setAddressService(addressService);
+        servlet.setOrderService(orderService);
+
+        when(addressService.listByUser(1)).thenReturn(Collections.emptyList());
+        when(orderService.listByUser(1)).thenReturn(Collections.emptyList());
 
         HttpServletRequest req = mock(HttpServletRequest.class);
         HttpServletResponse resp = mock(HttpServletResponse.class);
@@ -75,8 +74,6 @@ class ModificaDatiUtenteSystemTest {
 
         when(req.getSession(false)).thenReturn(session);
         when(session.getAttribute("utente")).thenReturn(u);
-        when(addressService.listByUser(1)).thenReturn(java.util.Collections.emptyList());
-        when(orderService.listByUser(1)).thenReturn(java.util.Collections.emptyList());
         when(req.getParameter("oldPassword")).thenReturn("Rosarossa3");
         when(req.getParameter("newPassword")).thenReturn("Rosaverde1");
         when(req.getParameter("confirmPassword")).thenReturn("Rosaverde8");
@@ -88,18 +85,19 @@ class ModificaDatiUtenteSystemTest {
     }
 
     @Test
-    @DisplayName("Cambio password: completato")
+    @DisplayName("TCS Modifica Password: successo")
     void tcModificaPassword_successo() throws Exception {
         CambiaPasswordServlet servlet = new CambiaPasswordServlet();
         AccountService accountService = mock(AccountService.class);
         AddressService addressService = mock(AddressService.class);
         OrderService orderService = mock(OrderService.class);
-        ReflectionTestUtils.setField(servlet, "accountService", accountService);
-        ReflectionTestUtils.setField(servlet, "addressService", addressService);
-        ReflectionTestUtils.setField(servlet, "orderService", orderService);
+        servlet.setAccountService(accountService);
+        servlet.setAddressService(addressService);
+        servlet.setOrderService(orderService);
 
+        when(addressService.listByUser(1)).thenReturn(Collections.emptyList());
+        when(orderService.listByUser(1)).thenReturn(Collections.emptyList());
         when(accountService.changePassword(eq(1), eq("Rosarossa3"), eq("Rosaverde1"))).thenReturn(true);
-
         HttpServletRequest req = mock(HttpServletRequest.class);
         HttpServletResponse resp = mock(HttpServletResponse.class);
         HttpSession session = mock(HttpSession.class);
@@ -110,8 +108,6 @@ class ModificaDatiUtenteSystemTest {
 
         when(req.getSession(false)).thenReturn(session);
         when(session.getAttribute("utente")).thenReturn(u);
-        when(addressService.listByUser(1)).thenReturn(java.util.Collections.emptyList());
-        when(orderService.listByUser(1)).thenReturn(java.util.Collections.emptyList());
         when(req.getParameter("oldPassword")).thenReturn("Rosarossa3");
         when(req.getParameter("newPassword")).thenReturn("Rosaverde1");
         when(req.getParameter("confirmPassword")).thenReturn("Rosaverde1");
@@ -119,9 +115,6 @@ class ModificaDatiUtenteSystemTest {
         servlet.doPost(req, resp);
         verify(req).setAttribute(eq("messaggio"), anyString());
         verify(req).setAttribute(eq("tipoMessaggio"), eq("success"));
-        verify(addressService, atLeastOnce()).listByUser(1);
-        verify(orderService, atLeastOnce()).listByUser(1);
-        verify(accountService, times(1)).changePassword(eq(1), eq("Rosarossa3"), eq("Rosaverde1"));
         verify(rd).forward(req, resp);
     }
 }

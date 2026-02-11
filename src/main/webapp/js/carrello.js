@@ -44,7 +44,7 @@ async function onQuantityButtonClick(e) {
 
     if (next === current) return;
 
-    await updateQuantity(productId, next, { previous: current, input });
+    await updateQuantity(productId, next, {previous: current, input});
 }
 
 async function onQuantityInputChange(e) {
@@ -62,7 +62,7 @@ async function onQuantityInputChange(e) {
 
     input.value = next;
 
-    await updateQuantity(productId, next, { previous: prev, input });
+    await updateQuantity(productId, next, {previous: prev, input});
 }
 
 async function onRemoveClick(e) {
@@ -161,7 +161,7 @@ async function postCartAction(azione, idLibro, quantita) {
         throw new Error(msg);
     }
 
-    return data || { success: false, message: 'Risposta non valida' };
+    return data || {success: false, message: 'Risposta non valida'};
 }
 
 function applyCartUpdate(data) {

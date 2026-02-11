@@ -15,7 +15,7 @@
     <script src="<c:url value='/js/main.js' />" defer></script>
 </head>
 <body>
-<jsp:include page="header.jsp" />
+<jsp:include page="header.jsp"/>
 
 <div class="cart-container ${empty carrello.articoli ? 'is-empty' : ''}">
     <div class="cart-header">
@@ -62,7 +62,9 @@
                                     <div>
                                         <div class="cart-item-title">${articolo.libro.titolo}</div>
                                         <div class="cart-item-author">${articolo.libro.autore}</div>
-                                        <div class="cart-item-meta">Disponibilita: ${articolo.libro.disponibilita} copie</div>
+                                        <div class="cart-item-meta">Disponibilita: ${articolo.libro.disponibilita}
+                                            copie
+                                        </div>
                                     </div>
                                 </div>
 
@@ -97,7 +99,9 @@
                                     <div class="cart-item-pricebox">
                                         <span>Prezzo</span>
                                         <strong class="price-value" id="totale-${articolo.libro.idLibro}">
-                                            <fmt:formatNumber value="${articolo.totale}" type="currency" currencySymbol="&#8364;" minFractionDigits="2" maxFractionDigits="2"/>
+                                            <fmt:formatNumber value="${articolo.totale}" type="currency"
+                                                              currencySymbol="&#8364;" minFractionDigits="2"
+                                                              maxFractionDigits="2"/>
                                         </strong>
                                     </div>
                                 </div>
@@ -126,19 +130,23 @@
                         <div class="summary-row">
                             <span>Totale</span>
                             <strong id="totale-prezzo">
-                                <fmt:formatNumber value="${carrello.totale}" type="currency" currencySymbol="&#8364;" minFractionDigits="2" maxFractionDigits="2"/>
+                                <fmt:formatNumber value="${carrello.totale}" type="currency" currencySymbol="&#8364;"
+                                                  minFractionDigits="2" maxFractionDigits="2"/>
                             </strong>
                         </div>
 
                         <div class="summary-actions">
-                            <a href="${pageContext.request.contextPath}/libri" class="btn btn-outline-secondary">Continua lo shopping</a>
+                            <a href="${pageContext.request.contextPath}/libri" class="btn btn-outline-secondary">Continua
+                                lo shopping</a>
 
                             <c:choose>
                                 <c:when test="${not empty sessionScope.utente}">
-                                    <a href="${pageContext.request.contextPath}/checkout" class="btn btn-primary">Procedi all'acquisto</a>
+                                    <a href="${pageContext.request.contextPath}/checkout" class="btn btn-primary">Procedi
+                                        all'acquisto</a>
                                 </c:when>
                                 <c:otherwise>
-                                    <a href="${pageContext.request.contextPath}/login" class="btn btn-primary">Accedi per acquistare</a>
+                                    <a href="${pageContext.request.contextPath}/login" class="btn btn-primary">Accedi
+                                        per acquistare</a>
                                 </c:otherwise>
                             </c:choose>
                         </div>
@@ -150,7 +158,7 @@
     </c:choose>
 </div>
 
-<jsp:include page="footer.jsp" />
+<jsp:include page="footer.jsp"/>
 
 <script>
     const contextPath = '${pageContext.request.contextPath}';

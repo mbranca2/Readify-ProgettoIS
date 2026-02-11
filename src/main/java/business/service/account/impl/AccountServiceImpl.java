@@ -2,11 +2,11 @@ package business.service.account.impl;
 
 import business.model.Indirizzo;
 import business.model.Utente;
-import data.dao.IndirizzoDAO;
-import data.dao.UtenteDAO;
 import business.service.account.AccountService;
 import business.service.account.AccountServiceException;
 import business.service.account.RegistrationData;
+import data.dao.IndirizzoDAO;
+import data.dao.UtenteDAO;
 import data.util.DBManager;
 import data.util.HashUtil;
 
@@ -41,17 +41,17 @@ public class AccountServiceImpl implements AccountService {
     public boolean register(RegistrationData data) throws AccountServiceException {
         if (data == null) throw new AccountServiceException("Dati di registrazione mancanti.");
 
-        String email = safe(data.email);
-        String password = data.password; // password può includere spazi
-        String nome = safe(data.nome);
-        String cognome = safe(data.cognome);
-        String telefono = safe(data.telefono);
+        String email = safe(data.email());
+        String password = data.password(); // password può includere spazi
+        String nome = safe(data.nome());
+        String cognome = safe(data.cognome());
+        String telefono = safe(data.telefono());
 
-        String via = safe(data.via);
-        String citta = safe(data.citta);
-        String cap = safe(data.cap);
-        String provincia = safe(data.provincia);
-        String paese = safe(data.paese);
+        String via = safe(data.via());
+        String citta = safe(data.citta());
+        String cap = safe(data.cap());
+        String provincia = safe(data.provincia());
+        String paese = safe(data.paese());
         if (paese.isEmpty()) paese = "Italia";
 
         if (email.isEmpty() || password == null || password.isEmpty()) {

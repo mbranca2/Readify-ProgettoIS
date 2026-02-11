@@ -5,13 +5,13 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 // classe per valida registrazione.
 class ValidaRegistrazioneTest {
 
     @Test
-    @DisplayName("TC1.1.1 Registrazione: password non valida -> errore password")
+    @DisplayName("TC1.1.1 Registrazione: password non valida")
     void passwordFormatoErrato_errorePassword() {
         Map<String, String> err = valida(
                 "robertorossi103@gmail.com",
@@ -26,7 +26,7 @@ class ValidaRegistrazioneTest {
     }
 
     @Test
-    @DisplayName("TC1.1.2 Registrazione: conferma password non coincide -> errore confermaPassword")
+    @DisplayName("TC1.1.2 Registrazione: conferma password non coincide")
     void confermaPasswordNonMatch_erroreConferma() {
         Map<String, String> err = valida(
                 "robertorossi103@gmail.com",
@@ -41,7 +41,7 @@ class ValidaRegistrazioneTest {
     }
 
     @Test
-    @DisplayName("TC1.1.3 Registrazione: email non valida -> errore email")
+    @DisplayName("TC1.1.3 Registrazione: email non valida")
     void emailNonValida_erroreEmail() {
         Map<String, String> err = valida(
                 "robertorossi103gmail.com",
@@ -56,7 +56,7 @@ class ValidaRegistrazioneTest {
     }
 
     @Test
-    @DisplayName("TC1.1.4 Registrazione: CAP non valido -> errore cap")
+    @DisplayName("TC1.1.4 Registrazione: CAP non valido")
     void capNonValido_erroreCap() {
         Map<String, String> err = valida(
                 "robertorossi103@gmail.com",
@@ -71,7 +71,7 @@ class ValidaRegistrazioneTest {
     }
 
     @Test
-    @DisplayName("TC1.1.5 Registrazione: provincia non valida -> errore provincia")
+    @DisplayName("TC1.1.5 Registrazione: provincia non valida")
     void provinciaNonValida_erroreProvincia() {
         Map<String, String> err = valida(
                 "robertorossi103@gmail.com",
@@ -86,13 +86,13 @@ class ValidaRegistrazioneTest {
     }
 
     @Test
-    @DisplayName("TC1.1.6 Registrazione: telefono non valido -> errore telefono")
+    @DisplayName("TC1.1.6 Registrazione: telefono non valido")
     void telefonoNonValido_erroreTelefono() {
         Map<String, String> err = valida(
                 "robertorossi103@gmail.com",
                 "Rosarossa3",
                 "Rosarossa3",
-                "391343588891",
+                "ABC",
                 "20019",
                 "MI"
         );
@@ -101,7 +101,7 @@ class ValidaRegistrazioneTest {
     }
 
     @Test
-    @DisplayName("TC1.1.7 Registrazione: dati validi -> nessun errore")
+    @DisplayName("TC1.1.7 Registrazione: dati validi")
     void datiValidi_nessunErrore() {
         Map<String, String> err = valida(
                 "robertorossi103@gmail.com",
